@@ -4,6 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "common.h"
+#include "device_config.h"
 
 void init_mem_content (volatile uint32_t mem_array [], int32_t num_words) {
    uart_writeStr(BSP_UART_TERMINAL, "Initialize memory content..\n\r");

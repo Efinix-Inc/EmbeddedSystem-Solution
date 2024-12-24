@@ -98,9 +98,9 @@ port (
     sd_dat_o : out std_logic_vector(3 downto 0);
     sd_dat_oe : out std_logic;
     m_axi_awburst : out std_logic_vector(1 downto 0);
-    m_axi_wdata : out std_logic_vector(127 downto 0);
-    m_axi_wstrb : out std_logic_vector(15 downto 0);
-    m_axi_rdata : in std_logic_vector(127 downto 0);
+    m_axi_wdata : out std_logic_vector(31 downto 0);
+    m_axi_wstrb : out std_logic_vector(3 downto 0);
+    m_axi_rdata : in std_logic_vector(31 downto 0);
     s_axi_wstrb : in std_logic_vector(3 downto 0)
 );
 end component gSDHC;

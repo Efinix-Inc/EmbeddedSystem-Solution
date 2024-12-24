@@ -43,7 +43,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-`define IP_UUID _e049bbe341914f3d8d51af95abfcd948
+`define IP_UUID _9f18b505e6a945de97e2267da17b21ac
 `define IP_NAME_CONCAT(a,b) a``b
 `define IP_MODULE_NAME(name) `IP_NAME_CONCAT(name,`IP_UUID)
 module gTSE_1to2_switch

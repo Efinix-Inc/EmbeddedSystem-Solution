@@ -44,4 +44,4 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 localparam DATA_BUFFER_DEPTH = 512;
-localparam ADMA_DATA_WIDTH = 128;
+localparam ADMA_DATA_WIDTH = 32;

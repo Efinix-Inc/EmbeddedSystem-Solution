@@ -3,7 +3,7 @@
         "-o",
         "gSDHC",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -14,31 +14,17 @@
     ],
     "conf": {
         "DATA_BUFFER_DEPTH": "512",
-        "ADMA_DATA_WIDTH": "128"
+        "ADMA_DATA_WIDTH": "32"
     },
     "output": {
         "external_script_reference_design": [],
         "external_source_source": [
-            "gSDHC\\gSDHC.v",
-            "gSDHC\\gSDHC_define.vh",
-            "gSDHC\\gSDHC_tmpl.vhd",
-            "gSDHC\\gSDHC_tmpl.v"
-        ],
-        "external_testbench_modelsim": [
-            "gSDHC\\Testbench\\modelsim\\gSDHC.v"
-        ],
-        "external_testbench_testbench": [
-            "gSDHC\\Testbench\\tb_top.v",
-            "gSDHC\\Testbench\\top.v",
-            "gSDHC\\Testbench\\sdModel.v",
-            "gSDHC\\Testbench\\axi_ram.v",
-            "gSDHC\\Testbench\\axi_interconnect.v",
-            "gSDHC\\Testbench\\apb3_2_axi4_lite.v",
-            "gSDHC\\Testbench\\modelsim.do",
-            "gSDHC\\Testbench\\gSDHC.v",
-            "gSDHC\\Testbench\\gSDHC_define.vh"
+            "gSDHC/gSDHC_tmpl.v",
+            "gSDHC/gSDHC.v",
+            "gSDHC/gSDHC_define.vh",
+            "gSDHC/gSDHC_tmpl.vhd"
         ]
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:40:16.690023+00:00"
+    "generated_date": "2024-11-29T08:59:23.788583+00:00"
 }

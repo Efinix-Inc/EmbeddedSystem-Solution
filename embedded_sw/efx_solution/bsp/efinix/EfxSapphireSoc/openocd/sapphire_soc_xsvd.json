@@ -3,12 +3,12 @@
     "contentVersion": "0.2.0",
     "headerVersion": "0.2.0",
     "license": "MIT",
-    "copyright": "Copyright (C) 2013-2024 Efinix Inc. All rights reserved.",
+    "copyright": "Copyright (C) 2013-2023 Efinix Inc. All rights reserved.",
     "device": {
-        "Sapphire High Performance SoC": {
+        "sapphire SoC": {
             "version": "1.0.0",
-            "displayName": "Sapphire High Performance SoC",
-            "description": " Hardened High Performance Quad Core RISC-V SoC",
+            "displayName": "Sapphire SoC",
+            "description": "Configurable, cached soft RISC-V SoC, with optional memory controller interface.",
             "supplier": {
                 "name": "efinix",
                 "id": "1",
@@ -20,22 +20,22 @@
             "resetMask": "all",
             "resetValue": "0x00000000",
             "access": "rw",
-            "headerGuardPrefix": "SAPPHIRE_HP_SOC_",
-            "headerTypePrefix": "sapphire_hp_soc_",
+            "headerGuardPrefix": "SAPPHIRE_SOC_",
+            "headerTypePrefix": "sapphire_soc_",
             "headerInterruptPrefix": "sapphire_soc_interrupt_global_",
             "headerInterruptEnumPrefix": "riscv_interrupts_global_",
             "revision": "r0p0",
-            "numInterrupts": "24",
+            "numInterrupts": "26",
             "priorityBits": "3",
             "regWidth": "32",
             "cores": {
                 "VexRiscv": {
-                    "harts": "4",
-                    "isa": "RV32IMCAFD",
+                    "harts": "2",
+                    "isa": "RV32IMAFD",
                     "isaVersion": "2.2",
                     "mpu": "none",
-                    "mmu": "1",
-                    "numLocalInterrupts": "24"
+                    "mmu": "true",
+                    "numLocalInterrupts": "16"
                 }
             },
             "peripherals": {
@@ -93,139 +93,129 @@
                             "addressOffset": "0x1000",
                             "access": "r",
                             "fields": {
+                                "uart0_ip": {
+                                    "description": "UART 0 Interrupt Pending",
+                                    "bitOffset": "1",
+                                    "bitWidth": "1"
+                                },
+                                "uart1_ip": {
+                                    "description": "UART 1 Interrupt Pending",
+                                    "bitOffset": "2",
+                                    "bitWidth": "1"
+                                },
+                                "uart2_ip": {
+                                    "description": "UART 2 Interrupt Pending",
+                                    "bitOffset": "3",
+                                    "bitWidth": "1"
+                                },
+                                "spi0_ip": {
+                                    "description": "SPI 0 Interrupt Pending",
+                                    "bitOffset": "4",
+                                    "bitWidth": "1"
+                                },
+                                "spi1_ip": {
+                                    "description": "SPI 1 Interrupt Pending",
+                                    "bitOffset": "5",
+                                    "bitWidth": "1"
+                                },
+                                "spi2_ip": {
+                                    "description": "SPI 2 Interrupt Pending",
+                                    "bitOffset": "6",
+                                    "bitWidth": "1"
+                                },
+                                "i2c0_ip": {
+                                    "description": "I2C 0 Interrupt Pending",
+                                    "bitOffset": "8",
+                                    "bitWidth": "1"
+                                },
+                                "i2c1_ip": {
+                                    "description": "I2C 1 Interrupt Pending",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                },
+                                "i2c2_ip": {
+                                    "description": "I2C 2 Interrupt Pending",
+                                    "bitOffset": "10",
+                                    "bitWidth": "1"
+                                },
+                                "gpio0i0_ip": {
+                                    "description": "GPIO 0 Interrupt 0 Pending",
+                                    "bitOffset": "12",
+                                    "bitWidth": "1"
+                                },
+                                "gpio0i1_ip": {
+                                    "description": "GPIO 0 Interrupt 1 Pending",
+                                    "bitOffset": "13",
+                                    "bitWidth": "1"
+                                },
+                                "gpio1i0_ip": {
+                                    "description": "GPIO 1 Interrupt 0 Pending",
+                                    "bitOffset": "14",
+                                    "bitWidth": "1"
+                                },
+                                "gpio1i1_ip": {
+                                    "description": "GPIO 1 Interrupt 1 Pending",
+                                    "bitOffset": "15",
+                                    "bitWidth": "1"
+                                },
                                 "userIntA_ip": {
                                     "description": "User Interrupt A Pending",
-                                    "bitOffset": "1",
+                                    "bitOffset": "16",
                                     "bitWidth": "1"
                                 },
                                 "userIntB_ip": {
                                     "description": "User Interrupt B Pending",
-                                    "bitOffset": "2",
+                                    "bitOffset": "16",
                                     "bitWidth": "1"
                                 },
                                 "userIntC_ip": {
                                     "description": "User Interrupt C Pending",
-                                    "bitOffset": "3",
+                                    "bitOffset": "22",
                                     "bitWidth": "1"
                                 },
                                 "userIntD_ip": {
                                     "description": "User Interrupt D Pending",
-                                    "bitOffset": "4",
+                                    "bitOffset": "23",
                                     "bitWidth": "1"
                                 },
                                 "userIntE_ip": {
                                     "description": "User Interrupt E Pending",
-                                    "bitOffset": "5",
+                                    "bitOffset": "24",
                                     "bitWidth": "1"
                                 },
                                 "userIntF_ip": {
                                     "description": "User Interrupt F Pending",
-                                    "bitOffset": "6",
+                                    "bitOffset": "25",
                                     "bitWidth": "1"
                                 },
                                 "userIntG_ip": {
                                     "description": "User Interrupt G Pending",
-                                    "bitOffset": "7",
+                                    "bitOffset": "26",
                                     "bitWidth": "1"
                                 },
                                 "userIntH_ip": {
                                     "description": "User Interrupt H Pending",
-                                    "bitOffset": "8",
-                                    "bitWidth": "1"
-                                },
-                                "userIntI_ip": {
-                                    "description": "User Interrupt I Pending",
-                                    "bitOffset": "9",
-                                    "bitWidth": "1"
-                                },
-                                "userIntJ_ip": {
-                                    "description": "User Interrupt J Pending",
-                                    "bitOffset": "10",
-                                    "bitWidth": "1"
-                                },
-                                "userIntK_ip": {
-                                    "description": "User Interrupt K Pending",
-                                    "bitOffset": "11",
-                                    "bitWidth": "1"
-                                },
-                                "userIntL_ip": {
-                                    "description": "User Interrupt L Pending",
-                                    "bitOffset": "12",
-                                    "bitWidth": "1"
-                                },
-                                "userIntM_ip": {
-                                    "description": "User Interrupt M Pending",
-                                    "bitOffset": "13",
-                                    "bitWidth": "1"
-                                },
-                                "userIntN_ip": {
-                                    "description": "User Interrupt N Pending",
-                                    "bitOffset": "14",
-                                    "bitWidth": "1"
-                                },
-                                "userIntO_ip": {
-                                    "description": "User Interrupt O Pending",
-                                    "bitOffset": "15",
-                                    "bitWidth": "1"
-                                },
-                                "userIntP_ip": {
-                                    "description": "User Interrupt P Pending",
-                                    "bitOffset": "16",
-                                    "bitWidth": "1"
-                                },
-                                "userIntQ_ip": {
-                                    "description": "User Interrupt Q Pending",
-                                    "bitOffset": "17",
-                                    "bitWidth": "1"
-                                },
-                                "userIntR_ip": {
-                                    "description": "User Interrupt R Pending",
-                                    "bitOffset": "18",
-                                    "bitWidth": "1"
-                                },
-                                "userIntS_ip": {
-                                    "description": "User Interrupt S Pending",
-                                    "bitOffset": "19",
-                                    "bitWidth": "1"
-                                },
-                                "userIntT_ip": {
-                                    "description": "User Interrupt T Pending",
-                                    "bitOffset": "20",
-                                    "bitWidth": "1"
-                                },
-                                "userIntU_ip": {
-                                    "description": "User Interrupt U Pending",
-                                    "bitOffset": "21",
-                                    "bitWidth": "1"
-                                },
-                                "userIntV_ip": {
-                                    "description": "User Interrupt V Pending",
-                                    "bitOffset": "22",
-                                    "bitWidth": "1"
-                                },
-                                "userIntW_ip": {
-                                    "description": "User Interrupt W Pending",
-                                    "bitOffset": "23",
-                                    "bitWidth": "1"
-                                },
-                                "userIntX_ip": {
-                                    "description": "User Interrupt X Pending",
-                                    "bitOffset": "24",
+                                    "bitOffset": "27",
                                     "bitWidth": "1"
                                 },
                                 "userTim0_ip": {
                                     "description": "User Timer Interrupt 0 Pending",
-                                    "bitOffset": "50",
+                                    "bitOffset": "19",
                                     "bitWidth": "1"
                                 },
                                 "userTim1_ip": {
                                     "description": "User Timer Interrupt 1 Pending",
-                                    "bitOffset": "49",
+                                    "bitOffset": "20",
+                                    "bitWidth": "1"
+                                },
+                                "userTim2_ip": {
+                                    "description": "User Timer Interrupt 2 Pending",
+                                    "bitOffset": "21",
                                     "bitWidth": "1"
                                 },
                                 "axiA_ip": {
                                     "description": "AXI A Interrupt Pending",
-                                    "bitOffset": "30",
+                                    "bitOffset": "21",
                                     "bitWidth": "1"
                                 }
                             }
@@ -725,124 +715,44 @@
                                             "description": "Interrupt Enable Bits Registers",
                                             "addressOffset": "0x0000",
                                             "fields": {
-                                                "userInterruptA": {
-                                                    "description": "User Interrupt A Enable Bit",
-                                                    "bitOffset": "1",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptB": {
-                                                    "description": "User Interrupt B Enable Bit",
-                                                    "bitOffset": "2",
-                                                    "bitWidth": "1"
-                                                },
                                                 "userInterruptC": {
                                                     "description": "User Interrupt C Enable Bit",
-                                                    "bitOffset": "3",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptD": {
-                                                    "description": "User Interrupt D Enable Bit",
-                                                    "bitOffset": "4",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptE": {
-                                                    "description": "User Interrupt E Enable Bit",
-                                                    "bitOffset": "5",
+                                                    "bitOffset": "22",
                                                     "bitWidth": "1"
                                                 },
                                                 "userInterruptF": {
                                                     "description": "User Interrupt F Enable Bit",
-                                                    "bitOffset": "6",
+                                                    "bitOffset": "25",
+                                                    "bitWidth": "1"
+                                                },
+                                                "userInterruptA": {
+                                                    "description": "User Interrupt A Enable Bit",
+                                                    "bitOffset": "16",
+                                                    "bitWidth": "1"
+                                                },
+                                                "userInterruptE": {
+                                                    "description": "User Interrupt E Enable Bit",
+                                                    "bitOffset": "24",
+                                                    "bitWidth": "1"
+                                                },
+                                                "userInterruptD": {
+                                                    "description": "User Interrupt D Enable Bit",
+                                                    "bitOffset": "23",
                                                     "bitWidth": "1"
                                                 },
                                                 "userInterruptG": {
                                                     "description": "User Interrupt G Enable Bit",
-                                                    "bitOffset": "7",
+                                                    "bitOffset": "26",
                                                     "bitWidth": "1"
                                                 },
                                                 "userInterruptH": {
                                                     "description": "User Interrupt H Enable Bit",
-                                                    "bitOffset": "8",
+                                                    "bitOffset": "27",
                                                     "bitWidth": "1"
                                                 },
-                                                "userInterruptI": {
-                                                    "description": "User Interrupt I Enable Bit",
-                                                    "bitOffset": "9",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptJ": {
-                                                    "description": "User Interrupt J Enable Bit",
-                                                    "bitOffset": "10",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptK": {
-                                                    "description": "User Interrupt K Enable Bit",
-                                                    "bitOffset": "11",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptL": {
-                                                    "description": "User Interrupt L Enable Bit",
-                                                    "bitOffset": "12",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptM": {
-                                                    "description": "User Interrupt M Enable Bit",
-                                                    "bitOffset": "13",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptN": {
-                                                    "description": "User Interrupt N Enable Bit",
-                                                    "bitOffset": "14",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptO": {
-                                                    "description": "User Interrupt O Enable Bit",
-                                                    "bitOffset": "15",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptP": {
-                                                    "description": "User Interrupt P Enable Bit",
-                                                    "bitOffset": "16",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptQ": {
-                                                    "description": "User Interrupt Q Enable Bit",
+                                                "userInterruptB": {
+                                                    "description": "User Interrupt B Enable Bit",
                                                     "bitOffset": "17",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptR": {
-                                                    "description": "User Interrupt R Enable Bit",
-                                                    "bitOffset": "18",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptS": {
-                                                    "description": "User Interrupt S Enable Bit",
-                                                    "bitOffset": "19",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptT": {
-                                                    "description": "User Interrupt T Enable Bit",
-                                                    "bitOffset": "20",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptU": {
-                                                    "description": "User Interrupt U Enable Bit",
-                                                    "bitOffset": "21",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptV": {
-                                                    "description": "User Interrupt V Enable Bit",
-                                                    "bitOffset": "22",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptW": {
-                                                    "description": "User Interrupt W Enable Bit",
-                                                    "bitOffset": "23",
-                                                    "bitWidth": "1"
-                                                },
-                                                "userInterruptX": {
-                                                    "description": "User Interrupt X Enable Bit",
-                                                    "bitOffset": "24",
                                                     "bitWidth": "1"
                                                 },
                                                 "axiA": {
@@ -850,14 +760,84 @@
                                                     "bitOffset": "30",
                                                     "bitWidth": "1"
                                                 },
-                                                "userTim0": {
-                                                    "description": "User Timer 0 Interrupt Enable Bit",
-                                                    "bitOffset": "50",
+                                                "uart1": {
+                                                    "description": "UART 1 Interrupt Enable Bit",
+                                                    "bitOffset": "2",
+                                                    "bitWidth": "1"
+                                                },
+                                                "uart0": {
+                                                    "description": "UART 0 Interrupt Enable Bit",
+                                                    "bitOffset": "1",
+                                                    "bitWidth": "1"
+                                                },
+                                                "uart2": {
+                                                    "description": "UART 2 Interrupt Enable Bit",
+                                                    "bitOffset": "3",
+                                                    "bitWidth": "1"
+                                                },
+                                                "spi0": {
+                                                    "description": "SPI 0 Interrupt Enable Bit",
+                                                    "bitOffset": "4",
+                                                    "bitWidth": "1"
+                                                },
+                                                "spi1": {
+                                                    "description": "SPI 1 Interrupt Enable Bit",
+                                                    "bitOffset": "5",
+                                                    "bitWidth": "1"
+                                                },
+                                                "spi2": {
+                                                    "description": "SPI 2 Interrupt Enable Bit",
+                                                    "bitOffset": "6",
+                                                    "bitWidth": "1"
+                                                },
+                                                "i2c0": {
+                                                    "description": "I2C 0 Interrupt Enable Bit",
+                                                    "bitOffset": "8",
+                                                    "bitWidth": "1"
+                                                },
+                                                "i2c2": {
+                                                    "description": "I2C 2 Interrupt Enable Bit",
+                                                    "bitOffset": "10",
+                                                    "bitWidth": "1"
+                                                },
+                                                "i2c1": {
+                                                    "description": "I2C 1 Interrupt Enable Bit",
+                                                    "bitOffset": "9",
                                                     "bitWidth": "1"
                                                 },
                                                 "userTim1": {
                                                     "description": "User Timer 1 Interrupt Enable Bit",
-                                                    "bitOffset": "49",
+                                                    "bitOffset": "20",
+                                                    "bitWidth": "1"
+                                                },
+                                                "userTim2": {
+                                                    "description": "User Timer 2 Interrupt Enable Bit",
+                                                    "bitOffset": "21",
+                                                    "bitWidth": "1"
+                                                },
+                                                "userTim0": {
+                                                    "description": "User Timer 0 Interrupt Enable Bit",
+                                                    "bitOffset": "19",
+                                                    "bitWidth": "1"
+                                                },
+                                                "gpio0i0": {
+                                                    "description": "GPIO 0 Interrupt 0 Interrupt Enable Bit",
+                                                    "bitOffset": "12",
+                                                    "bitWidth": "1"
+                                                },
+                                                "gpio0i1": {
+                                                    "description": "GPIO 0 Interrupt 1 Interrupt Enable Bit",
+                                                    "bitOffset": "13",
+                                                    "bitWidth": "1"
+                                                },
+                                                "gpio1i0": {
+                                                    "description": "GPIO 1 Interrupt 0 Interrupt Enable Bit",
+                                                    "bitOffset": "14",
+                                                    "bitWidth": "1"
+                                                },
+                                                "gpio1i1": {
+                                                    "description": "GPIO 1 Interrupt 1 Interrupt Enable Bit",
+                                                    "bitOffset": "15",
                                                     "bitWidth": "1"
                                                 }
                                             }
@@ -908,105 +888,25 @@
                     "interrupts": {
                         "userInterruptA": {
                             "description": "User Interrupt A",
-                            "value": "1"
+                            "value": "16"
                         },
                         "userInterruptB": {
                             "description": "User Interrupt B",
-                            "value": "2"
+                            "value": "17"
                         },
                         "userInterruptC": {
                             "description": "User Interrupt C",
-                            "value": "3"
+                            "value": "22"
                         },
                         "userInterruptD": {
                             "description": "User Interrupt D",
-                            "value": "4"
-                        },
-                        "userInterruptE": {
-                            "description": "User Interrupt E",
-                            "value": "5"
-                        },
-                        "userInterruptF": {
-                            "description": "User Interrupt F",
-                            "value": "6"
-                        },
-                        "userInterruptG": {
-                            "description": "User Interrupt G",
-                            "value": "7"
-                        },
-                        "userInterruptH": {
-                            "description": "User Interrupt H",
-                            "value": "8"
-                        },
-                        "userInterruptI": {
-                            "description": "User Interrupt I",
-                            "value": "9"
-                        },
-                        "userInterruptJ": {
-                            "description": "User Interrupt J",
-                            "value": "10"
-                        },
-                        "userInterruptK": {
-                            "description": "User Interrupt K",
-                            "value": "11"
-                        },
-                        "userInterruptL": {
-                            "description": "User Interrupt L",
-                            "value": "12"
-                        },
-                        "userInterruptM": {
-                            "description": "User Interrupt M",
-                            "value": "13"
-                        },
-                        "userInterruptN": {
-                            "description": "User Interrupt N",
-                            "value": "14"
-                        },
-                        "userInterruptO": {
-                            "description": "User Interrupt O",
-                            "value": "15"
-                        },
-                        "userInterruptP": {
-                            "description": "User Interrupt P",
-                            "value": "16"
-                        },
-                        "userInterruptQ": {
-                            "description": "User Interrupt Q",
-                            "value": "17"
-                        },
-                        "userInterruptR": {
-                            "description": "User Interrupt R",
-                            "value": "18"
-                        },
-                        "userInterruptS": {
-                            "description": "User Interrupt S",
-                            "value": "19"
-                        },
-                        "userInterruptT": {
-                            "description": "User Interrupt T",
-                            "value": "20"
-                        },
-                        "userInterruptU": {
-                            "description": "User Interrupt U",
-                            "value": "21"
-                        },
-                        "userInterruptV": {
-                            "description": "User Interrupt V",
-                            "value": "22"
-                        },
-                        "userInterruptW": {
-                            "description": "User Interrupt W",
                             "value": "23"
-                        },
-                        "userInterruptX": {
-                            "description": "User Interrupt X",
-                            "value": "24"
                         }
                     }
                 },
                 "gpio 0": {
                     "description": "General Purpose Input/Output Controller (GPIO) 0 Peripheral",
-                    "baseAddress": "0xe8040000",
+                    "baseAddress": "0xf8016000",
                     "size": "0x100",
                     "registers": {
                         "Input": {
@@ -1105,17 +1005,17 @@
                     "interrupts": {
                         "gpio0int0": {
                             "description": "GPIO0 Interrupt 0",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_F_INTERRUPT"
+                            "value": "12"
                         },
                         "gpio0int1": {
                             "description": "GPIO0 Interrupt 1",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_G_INTERRUPT"
+                            "value": "13"
                         }
                     }
                 },
                 "uart0": {
                     "description": "Universal Asynchronous Receiver/Transmitter (UART) 0 Peripheral",
-                    "baseAddress": "0xe8010000",
+                    "baseAddress": "0xf8010000",
                     "size": "0x40",
                     "resetMask": "none",
                     "groupName": "uart",
@@ -1262,13 +1162,13 @@
                     "interrupts": {
                         "uart0": {
                             "description": "UART0 Interrupt",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_A_INTERRUPT"
+                            "value": "1"
                         }
                     }
                 },
                 "spi0": {
                     "description": "Serial Peripheral Interface (SPI) 0 Peripheral",
-                    "baseAddress": "0xe8030000",
+                    "baseAddress": "0xf8014000",
                     "size": "0x1000",
                     "resetMask": "none",
                     "groupName": "spi",
@@ -1475,13 +1375,13 @@
                     "interrupts": {
                         "spi0": {
                             "description": "SPI0 Interrupt",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_B_INTERRUPT"
+                            "value": "4"
                         }
                     }
                 },
                 "spi1": {
                     "description": "Serial Peripheral Interface (SPI) 1 Peripheral",
-                    "baseAddress": "0xe8031000",
+                    "baseAddress": "0xf8015000",
                     "size": "0x1000",
                     "resetMask": "none",
                     "groupName": "spi",
@@ -1688,13 +1588,13 @@
                     "interrupts": {
                         "spi1": {
                             "description": "SPI1 Interrupt",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_C_INTERRUPT"
+                            "value": "5"
                         }
                     }
                 },
                 "i2c0": {
                     "description": "Inter-Integrated Circuit (I2C) 0 Peripheral",
-                    "baseAddress": "0xe8020000",
+                    "baseAddress": "0xf8017000",
                     "size": "0x100",
                     "resetMask": "none",
                     "groupName": "i2c",
@@ -2155,13 +2055,13 @@
                     "interrupts": {
                         "i2c0": {
                             "description": "I2C0 Interrupt",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_D_INTERRUPT"
+                            "value": "8"
                         }
                     }
                 },
                 "i2c1": {
                     "description": "Inter-Integrated Circuit (I2C) 1 Peripheral",
-                    "baseAddress": "0xe8021000",
+                    "baseAddress": "0xf8018000",
                     "size": "0x100",
                     "resetMask": "none",
                     "groupName": "i2c",
@@ -2622,13 +2522,480 @@
                     "interrupts": {
                         "i2c1": {
                             "description": "I2C1 Interrupt",
-                            "value": "SYSTEM_PLIC_USER_INTERRUPT_E_INTERRUPT"
+                            "value": "9"
+                        }
+                    }
+                },
+                "i2c2": {
+                    "description": "Inter-Integrated Circuit (I2C) 2 Peripheral",
+                    "baseAddress": "0xf8019000",
+                    "size": "0x100",
+                    "resetMask": "none",
+                    "groupName": "i2c",
+                    "registers": {
+                        "txData": {
+                            "description": "Transmit Data Register",
+                            "addressOffset": "0x0000",
+                            "fields": {
+                                "value": {
+                                    "description": "Transmit data value",
+                                    "bitOffset": "0",
+                                    "bitWidth": "8",
+                                    "access": "w"
+                                },
+                                "valid": {
+                                    "description": "Transmit data valid bit",
+                                    "bitOffset": "8",
+                                    "bitWidth": "1"
+                                },
+                                "enable": {
+                                    "description": "Transmit data enable",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                },
+                                "repeat": {
+                                    "description": "Transmit data repeat bit",
+                                    "bitOffset": "10",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                },
+                                "disableDataConflict": {
+                                    "description": "Disable transmit data conflict",
+                                    "bitOffset": "11",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "txAck": {
+                            "description": "Transmit Acknowledge Register",
+                            "addressOffset": "0x0004",
+                            "fields": {
+                                "value": {
+                                    "description": "Transmit acknowledge bit",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                },
+                                "valid": {
+                                    "description": "Transmit acknowledge valid bit",
+                                    "bitOffset": "8",
+                                    "bitWidth": "1"
+                                },
+                                "enable": {
+                                    "description": "Transmit acknowledge enable",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                },
+                                "repeat": {
+                                    "description": "Transmit acknowledge repeat bit",
+                                    "bitOffset": "10",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                },
+                                "disableDataConflict": {
+                                    "description": "Disable acknowledge data conflict",
+                                    "bitOffset": "11",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "rxData": {
+                            "description": "Receive Data Register",
+                            "addressOffset": "0x0008",
+                            "fields": {
+                                "value": {
+                                    "description": "Received data",
+                                    "bitOffset": "0",
+                                    "bitWidth": "8",
+                                    "access": "r"
+                                },
+                                "valid": {
+                                    "description": "Receive data valid",
+                                    "bitOffset": "8",
+                                    "bitWidth": "1"
+                                },
+                                "listen": {
+                                    "description": "Start listen data",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                }
+                            }
+                        },
+                        "rxAck": {
+                            "description": "Receive Acknowledge Register",
+                            "addressOffset": "0x000C",
+                            "fields": {
+                                "value": {
+                                    "description": "Received acknowledge bit",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                },
+                                "valid": {
+                                    "description": "Receive acknowledge valid",
+                                    "bitOffset": "8",
+                                    "bitWidth": "1"
+                                },
+                                "listen": {
+                                    "description": "Start listen acknowledge",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                }
+                            }
+                        },
+                        "interrupt": {
+                            "description": "Interrupt Register",
+                            "addressOffset": "0x0020",
+                            "fields": {
+                                "rxDataEnable": {
+                                    "description": "Receive data interrupt enable",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1"
+                                },
+                                "rxAckEnable": {
+                                    "description": "Receive acknowledge interrupt enable",
+                                    "bitOffset": "1",
+                                    "bitWidth": "1"
+                                },
+                                "txDataEnable": {
+                                    "description": "Transmit data interrupt enable",
+                                    "bitOffset": "2",
+                                    "bitWidth": "1"
+                                },
+                                "txAckEnable": {
+                                    "description": "Transmit acknowledge interrupt enable",
+                                    "bitOffset": "3",
+                                    "bitWidth": "1"
+                                },
+                                "startEnable": {
+                                    "description": "Start interrupt enable",
+                                    "bitOffset": "4",
+                                    "bitWidth": "1"
+                                },
+                                "restartEnable": {
+                                    "description": "Restart interrupt enable",
+                                    "bitOffset": "5",
+                                    "bitWidth": "1"
+                                },
+                                "endEnable": {
+                                    "description": "End interrupt enable",
+                                    "bitOffset": "6",
+                                    "bitWidth": "1"
+                                },
+                                "dropEnable": {
+                                    "description": "Drop interrupt enable",
+                                    "bitOffset": "7",
+                                    "bitWidth": "1"
+                                },
+                                "clockGenExitEnable": {
+                                    "description": "Master clock generation exit interrupt enable",
+                                    "bitOffset": "15",
+                                    "bitWidth": "1"
+                                },
+                                "clockGenEnterEnable": {
+                                    "description": "Master clock generation enter interrupt enable",
+                                    "bitOffset": "16",
+                                    "bitWidth": "1"
+                                },
+                                "filterEnable": {
+                                    "description": "Slave address filtering hit interrupt enable",
+                                    "bitOffset": "17",
+                                    "bitWidth": "1"
+                                }
+                            }
+                        },
+                        "interruptClear": {
+                            "description": "Interrupt Clear Register",
+                            "addressOffset": "0x0024",
+                            "fields": {
+                                "startFlag": {
+                                    "description": "Start interrupt flag",
+                                    "bitOffset": "4",
+                                    "bitWidth": "1"
+                                },
+                                "restartFlag": {
+                                    "description": "Restart interrupt flag",
+                                    "bitOffset": "5",
+                                    "bitWidth": "1"
+                                },
+                                "endFlag": {
+                                    "description": "End interrupt flag",
+                                    "bitOffset": "6",
+                                    "bitWidth": "1"
+                                },
+                                "dropFlag": {
+                                    "description": "Drop interrupt flag",
+                                    "bitOffset": "7",
+                                    "bitWidth": "1"
+                                },
+                                "clockGenExitFlag": {
+                                    "description": "Master clock generation exit interrupt flag",
+                                    "bitOffset": "15",
+                                    "bitWidth": "1"
+                                },
+                                "clockGenEnterFlag": {
+                                    "description": "Master clock generation enter interrupt flag",
+                                    "bitOffset": "16",
+                                    "bitWidth": "1"
+                                },
+                                "filterFlag": {
+                                    "description": "Slave address filtering hit interrupt",
+                                    "bitOffset": "17",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "sampClkDiv": {
+                            "description": "Sampling Clock Divider Register",
+                            "addressOffset": "0x0028",
+                            "fields": {
+                                "samplingClockDividerWidth": {
+                                    "description": "Clock divider width. Controls the rate at which the I2C controller reads SCL and SDA",
+                                    "bitOffset": "0",
+                                    "bitWidth": "10",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "timeout": {
+                            "description": "Timeout Register",
+                            "addressOffset": "0x002C",
+                            "fields": {
+                                "value": {
+                                    "description": "Inactive timeout setting",
+                                    "bitOffset": "0",
+                                    "bitWidth": "20",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "tsuData": {
+                            "description": "Data Setup Time Register",
+                            "addressOffset": "0x0030",
+                            "fields": {
+                                "value": {
+                                    "description": "Data setup time",
+                                    "bitOffset": "0",
+                                    "bitWidth": "6",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "masterStatus": {
+                            "description": "Master Status Register",
+                            "addressOffset": "0x0040",
+                            "fields": {
+                                "isBusy": {
+                                    "description": "Master busy",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                },
+                                "start": {
+                                    "description": "Master start",
+                                    "bitOffset": "4",
+                                    "bitWidth": "1"
+                                },
+                                "stop": {
+                                    "description": "Master stop",
+                                    "bitOffset": "5",
+                                    "bitWidth": "1"
+                                },
+                                "drop": {
+                                    "description": "Master drop",
+                                    "bitOffset": "6",
+                                    "bitWidth": "1"
+                                },
+                                "recover": {
+                                    "description": "Order a recover sequence",
+                                    "bitOffset": "7",
+                                    "bitWidth": "1"
+                                },
+                                "startDropped": {
+                                    "description": "Indicates timeout occurred during start sequence. Clear on set",
+                                    "bitOffset": "9",
+                                    "bitWidth": "1"
+                                },
+                                "stopDropped": {
+                                    "description": "Indicates timeout occurred during stop sequence. Clear on set",
+                                    "bitOffset": "10",
+                                    "bitWidth": "1"
+                                },
+                                "recoverDropped": {
+                                    "description": "Indicates timeout occurred during recover sequence. Clear on set",
+                                    "bitOffset": "11",
+                                    "bitWidth": "1"
+                                }
+                            }
+                        },
+                        "slaveStatus": {
+                            "description": "Slave Status Register",
+                            "addressOffset": "0x0044",
+                            "fields": {
+                                "inFrame": {
+                                    "description": "Indicates the transaction is already started.",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                },
+                                "sda": {
+                                    "description": "Read the current state of SDA line. 1: High state; 0: Low state",
+                                    "bitOffset": "1",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                },
+                                "scl": {
+                                    "description": "Read the current state of SCL line. 1: High state; 0: Low state",
+                                    "bitOffset": "2",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                }
+                            }
+                        },
+                        "slaveOverride": {
+                            "description": "Slave Override Register",
+                            "addressOffset": "0x0048",
+                            "fields": {
+                                "sda": {
+                                    "description": "Force SDA line pull low when cleared",
+                                    "bitOffset": "1",
+                                    "bitWidth": "1"
+                                },
+                                "scl": {
+                                    "description": "Force SCL line pull low when cleared",
+                                    "bitOffset": "2",
+                                    "bitWidth": "1"
+                                }
+                            }
+                        },
+                        "tLow": {
+                            "description": "tLow Register",
+                            "addressOffset": "0x0050",
+                            "fields": {
+                                "value": {
+                                    "description": "SCL low period",
+                                    "bitOffset": "0",
+                                    "bitWidth": "12",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "tHigh": {
+                            "description": "tHigh Register",
+                            "addressOffset": "0x0054",
+                            "fields": {
+                                "value": {
+                                    "description": "SCL high period",
+                                    "bitOffset": "0",
+                                    "bitWidth": "12",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "tBuf": {
+                            "description": "tBuf Register",
+                            "addressOffset": "0x0054",
+                            "fields": {
+                                "value": {
+                                    "description": "Start and stop bus free time",
+                                    "bitOffset": "0",
+                                    "bitWidth": "12",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "filterStatus": {
+                            "description": "Filtering Status Register",
+                            "addressOffset": "0x0080",
+                            "fields": {
+                                "hit_0": {
+                                    "description": "Filtering hit bit 0",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                },
+                                "hit_1": {
+                                    "description": "Filtering hit bit 1",
+                                    "bitOffset": "1",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                }
+                            }
+                        },
+                        "hitContext": {
+                            "description": "Hit Context Register",
+                            "addressOffset": "0x0084",
+                            "fields": {
+                                "rw": {
+                                    "description": "Hit context read",
+                                    "bitOffset": "0",
+                                    "bitWidth": "1",
+                                    "access": "r"
+                                }
+                            }
+                        },
+                        "filterConfig0": {
+                            "description": "Filtering Configuration 0 Register",
+                            "addressOffset": "0x0088",
+                            "fields": {
+                                "value": {
+                                    "description": "Set the filter 0 value",
+                                    "bitOffset": "0",
+                                    "bitWidth": "10",
+                                    "access": "w"
+                                },
+                                "10BitAddr": {
+                                    "description": "Set the filter address to 10 bits wide",
+                                    "bitOffset": "14",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                },
+                                "enable": {
+                                    "description": "Enable filter address 0",
+                                    "bitOffset": "15",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                }
+                            }
+                        },
+                        "filterConfig1": {
+                            "description": "Filtering Configuration 1 Register",
+                            "addressOffset": "0x008C",
+                            "fields": {
+                                "value": {
+                                    "description": "Set the filter 1 value",
+                                    "bitOffset": "0",
+                                    "bitWidth": "10",
+                                    "access": "w"
+                                },
+                                "10BitAddr": {
+                                    "description": "Set the filter address to 10 bits wide",
+                                    "bitOffset": "14",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                },
+                                "enable": {
+                                    "description": "Enable filter address 1",
+                                    "bitOffset": "15",
+                                    "bitWidth": "1",
+                                    "access": "w"
+                                }
+                            }
+                        }
+                    },
+                    "interrupts": {
+                        "i2c1": {
+                            "description": "I2C2 Interrupt",
+                            "value": "10"
                         }
                     }
                 },
                 "timer0": {
                     "description": "User Timer 0 Peripheral",
-                    "baseAddress": "0xF8015000",
+                    "baseAddress": "0xf801a000",
                     "size": "0x1000",
                     "registers": {
                         "Prescaler": {
@@ -2638,7 +3005,7 @@
                                 "prescalerValue": {
                                     "description": "The clock divider ratio",
                                     "bitOffset": "0",
-                                    "bitWidth": "16"
+                                    "bitWidth": "8"
                                 }
                             }
                         },
@@ -2670,7 +3037,7 @@
                                 "limitValue": {
                                     "description": "Value for the timer to an generate output pulse",
                                     "bitOffset": "0",
-                                    "bitWidth": "32"
+                                    "bitWidth": "12"
                                 }
                             }
                         },
@@ -2681,7 +3048,7 @@
                                 "timerValue": {
                                     "description": "Value of the increment counter when it detects a timer tick",
                                     "bitOffset": "0",
-                                    "bitWidth": "32"
+                                    "bitWidth": "12"
                                 }
                             }
                         }
@@ -2689,13 +3056,13 @@
                     "interrupts": {
                         "userTimer0": {
                             "description": "User Timer Interrupt 0",
-                            "value": "22"
+                            "value": "19"
                         }
                     }
                 },
                 "timer1": {
                     "description": "User Timer 1 Peripheral",
-                    "baseAddress": "0xF8016000",
+                    "baseAddress": "0xf801b000",
                     "size": "0x1000",
                     "registers": {
                         "Prescaler": {
@@ -2705,7 +3072,7 @@
                                 "prescalerValue": {
                                     "description": "The clock divider ratio",
                                     "bitOffset": "0",
-                                    "bitWidth": "16"
+                                    "bitWidth": "8"
                                 }
                             }
                         },
@@ -2737,7 +3104,7 @@
                                 "limitValue": {
                                     "description": "Value for the timer to an generate output pulse",
                                     "bitOffset": "0",
-                                    "bitWidth": "32"
+                                    "bitWidth": "12"
                                 }
                             }
                         },
@@ -2748,7 +3115,7 @@
                                 "timerValue": {
                                     "description": "Value of the increment counter when it detects a timer tick",
                                     "bitOffset": "0",
-                                    "bitWidth": "32"
+                                    "bitWidth": "12"
                                 }
                             }
                         }
@@ -2756,7 +3123,7 @@
                     "interrupts": {
                         "userTimer1": {
                             "description": "User Timer Interrupt 1",
-                            "value": "23"
+                            "value": "20"
                         }
                     }
                 }

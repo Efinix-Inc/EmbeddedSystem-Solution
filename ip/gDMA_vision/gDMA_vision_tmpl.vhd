@@ -65,7 +65,7 @@ port (
     read_arprot : out std_logic_vector(2 downto 0);
     read_rready : out std_logic;
     read_rvalid : in std_logic;
-    read_rdata : in std_logic_vector(511 downto 0);
+    read_rdata : in std_logic_vector(255 downto 0);
     read_rlast : in std_logic;
     write_awvalid : out std_logic;
     write_awready : in std_logic;
@@ -80,8 +80,8 @@ port (
     write_awprot : out std_logic_vector(2 downto 0);
     write_wvalid : out std_logic;
     write_wready : in std_logic;
-    write_wdata : out std_logic_vector(511 downto 0);
-    write_wstrb : out std_logic_vector(63 downto 0);
+    write_wdata : out std_logic_vector(255 downto 0);
+    write_wstrb : out std_logic_vector(31 downto 0);
     write_wlast : out std_logic;
     write_bvalid : in std_logic;
     write_bready : out std_logic;

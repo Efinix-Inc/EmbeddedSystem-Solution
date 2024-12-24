@@ -43,7 +43,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-`define IP_UUID _08ee2984a5bb4437886d377d2cd3b204
+`define IP_UUID _9c51cd082e6149aeaca9d6aed464db29
 `define IP_NAME_CONCAT(a,b) a``b
 `define IP_MODULE_NAME(name) `IP_NAME_CONCAT(name,`IP_UUID)
 module gSDHC
@@ -107,15 +107,15 @@ module gSDHC
     output [3:0] sd_dat_o,
     output sd_dat_oe,
     output [1:0] m_axi_awburst,
-    output [127:0] m_axi_wdata,
-    output [15:0] m_axi_wstrb,
-    input [127:0] m_axi_rdata,
+    output [31:0] m_axi_wdata,
+    output [3:0] m_axi_wstrb,
+    input [31:0] m_axi_rdata,
     input [3:0] s_axi_wstrb
 );
 `IP_MODULE_NAME(sdhc)
 #(
     .DATA_BUFFER_DEPTH (512),
-    .ADMA_DATA_WIDTH (128)
+    .ADMA_DATA_WIDTH (32)
 )
 u_sdhc
 (
@@ -186,12 +186,12 @@ u_sdhc
 endmodule
 
 // Generator : SpinalHDL dev    git head : 9cdee03b276638ef8e7a948b606bb7acc6e4c8d0
-// Component : Asic32To128UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204
+// Component : Asic32To128UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29
 // Git hash  : cd16421fb7a4d44431a2445f9a92b82070ab9b8a
 
 `timescale 1ns/1ps
 
-module Asic32To128UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To128UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output              io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -314,7 +314,7 @@ module Asic32To128UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
   wire                writeOnly_io_output_w_payload_last;
   wire                writeOnly_io_output_b_ready;
 
-  Asic32To128UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 readOnly (
+  Asic32To128UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 readOnly (
     .io_input_ar_valid           (io_input_ar_valid                        ), //i
     .io_input_ar_ready           (readOnly_io_input_ar_ready               ), //o
     .io_input_ar_payload_addr    (io_input_ar_payload_addr[31:0]           ), //i
@@ -354,7 +354,7 @@ module Asic32To128UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
     .clk                         (clk                                      ), //i
     .reset                       (reset                                    )  //i
   );
-  Asic32To128UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 writeOnly (
+  Asic32To128UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 writeOnly (
     .io_input_aw_valid           (io_input_aw_valid                         ), //i
     .io_input_aw_ready           (writeOnly_io_input_aw_ready               ), //o
     .io_input_aw_payload_addr    (io_input_aw_payload_addr[31:0]            ), //i
@@ -442,7 +442,7 @@ module Asic32To128UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To128UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To128UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output reg          io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -848,7 +848,7 @@ module Asic32To128UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To128UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To128UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_ar_valid,
   output reg          io_input_ar_ready,
   input      [31:0]   io_input_ar_payload_addr,
@@ -967,7 +967,7 @@ module Asic32To128UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
   assign _zz_dataLogic_byteCounterNext_1 = ({7'd0,1'b1} <<< dataLogic_size);
   assign _zz_dataLogic_byteCounterNext = _zz_dataLogic_byteCounterNext_1[4:0];
   assign _zz_io_input_r_payload_data_1 = (dataLogic_byteCounter >>> 2'd2);
-  Asic32To128UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 dataLogic_cmdPush_fifo (
+  Asic32To128UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 dataLogic_cmdPush_fifo (
     .io_push_valid           (dataLogic_cmdPush_valid                           ), //i
     .io_push_ready           (dataLogic_cmdPush_fifo_io_push_ready              ), //o
     .io_push_payload_startAt (dataLogic_cmdPush_payload_startAt[3:0]            ), //i
@@ -1111,7 +1111,7 @@ module Asic32To128UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To128UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To128UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_push_valid,
   output              io_push_ready,
   input      [3:0]    io_push_payload_startAt,
@@ -1277,12 +1277,12 @@ endmodule
 
 
 // Generator : SpinalHDL dev    git head : 9cdee03b276638ef8e7a948b606bb7acc6e4c8d0
-// Component : Asic32To256UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204
+// Component : Asic32To256UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29
 // Git hash  : cd16421fb7a4d44431a2445f9a92b82070ab9b8a
 
 `timescale 1ns/1ps
 
-module Asic32To256UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To256UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output              io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -1405,7 +1405,7 @@ module Asic32To256UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
   wire                writeOnly_io_output_w_payload_last;
   wire                writeOnly_io_output_b_ready;
 
-  Asic32To256UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 readOnly (
+  Asic32To256UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 readOnly (
     .io_input_ar_valid           (io_input_ar_valid                        ), //i
     .io_input_ar_ready           (readOnly_io_input_ar_ready               ), //o
     .io_input_ar_payload_addr    (io_input_ar_payload_addr[31:0]           ), //i
@@ -1445,7 +1445,7 @@ module Asic32To256UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
     .clk                         (clk                                      ), //i
     .reset                       (reset                                    )  //i
   );
-  Asic32To256UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 writeOnly (
+  Asic32To256UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 writeOnly (
     .io_input_aw_valid           (io_input_aw_valid                         ), //i
     .io_input_aw_ready           (writeOnly_io_input_aw_ready               ), //o
     .io_input_aw_payload_addr    (io_input_aw_payload_addr[31:0]            ), //i
@@ -1533,7 +1533,7 @@ module Asic32To256UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To256UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To256UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output reg          io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -2071,7 +2071,7 @@ module Asic32To256UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To256UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To256UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_ar_valid,
   output reg          io_input_ar_ready,
   input      [31:0]   io_input_ar_payload_addr,
@@ -2190,7 +2190,7 @@ module Asic32To256UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
   assign _zz_dataLogic_byteCounterNext_1 = ({7'd0,1'b1} <<< dataLogic_size);
   assign _zz_dataLogic_byteCounterNext = _zz_dataLogic_byteCounterNext_1[5:0];
   assign _zz_io_input_r_payload_data_1 = (dataLogic_byteCounter >>> 2'd2);
-  Asic32To256UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 dataLogic_cmdPush_fifo (
+  Asic32To256UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 dataLogic_cmdPush_fifo (
     .io_push_valid           (dataLogic_cmdPush_valid                           ), //i
     .io_push_ready           (dataLogic_cmdPush_fifo_io_push_ready              ), //o
     .io_push_payload_startAt (dataLogic_cmdPush_payload_startAt[4:0]            ), //i
@@ -2338,7 +2338,7 @@ module Asic32To256UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To256UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To256UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_push_valid,
   output              io_push_ready,
   input      [4:0]    io_push_payload_startAt,
@@ -2504,12 +2504,12 @@ endmodule
 
 
 // Generator : SpinalHDL dev    git head : 9cdee03b276638ef8e7a948b606bb7acc6e4c8d0
-// Component : Asic32To512UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204
+// Component : Asic32To512UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29
 // Git hash  : cd16421fb7a4d44431a2445f9a92b82070ab9b8a
 
 `timescale 1ns/1ps
 
-module Asic32To512UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To512UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output              io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -2632,7 +2632,7 @@ module Asic32To512UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
   wire                writeOnly_io_output_w_payload_last;
   wire                writeOnly_io_output_b_ready;
 
-  Asic32To512UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 readOnly (
+  Asic32To512UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 readOnly (
     .io_input_ar_valid           (io_input_ar_valid                        ), //i
     .io_input_ar_ready           (readOnly_io_input_ar_ready               ), //o
     .io_input_ar_payload_addr    (io_input_ar_payload_addr[31:0]           ), //i
@@ -2672,7 +2672,7 @@ module Asic32To512UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
     .clk                         (clk                                      ), //i
     .reset                       (reset                                    )  //i
   );
-  Asic32To512UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 writeOnly (
+  Asic32To512UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 writeOnly (
     .io_input_aw_valid           (io_input_aw_valid                         ), //i
     .io_input_aw_ready           (writeOnly_io_input_aw_ready               ), //o
     .io_input_aw_payload_addr    (io_input_aw_payload_addr[31:0]            ), //i
@@ -2760,7 +2760,7 @@ module Asic32To512UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To512UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To512UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output reg          io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -3560,7 +3560,7 @@ module Asic32To512UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To512UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To512UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_ar_valid,
   output reg          io_input_ar_ready,
   input      [31:0]   io_input_ar_payload_addr,
@@ -3679,7 +3679,7 @@ module Asic32To512UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
   assign _zz_dataLogic_byteCounterNext_1 = ({7'd0,1'b1} <<< dataLogic_size);
   assign _zz_dataLogic_byteCounterNext = _zz_dataLogic_byteCounterNext_1[6:0];
   assign _zz_io_input_r_payload_data_1 = (dataLogic_byteCounter >>> 2'd2);
-  Asic32To512UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 dataLogic_cmdPush_fifo (
+  Asic32To512UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 dataLogic_cmdPush_fifo (
     .io_push_valid           (dataLogic_cmdPush_valid                           ), //i
     .io_push_ready           (dataLogic_cmdPush_fifo_io_push_ready              ), //o
     .io_push_payload_startAt (dataLogic_cmdPush_payload_startAt[5:0]            ), //i
@@ -3835,7 +3835,7 @@ module Asic32To512UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To512UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To512UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_push_valid,
   output              io_push_ready,
   input      [5:0]    io_push_payload_startAt,
@@ -4001,12 +4001,12 @@ endmodule
 
 
 // Generator : SpinalHDL dev    git head : 9cdee03b276638ef8e7a948b606bb7acc6e4c8d0
-// Component : Asic32To64UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204
+// Component : Asic32To64UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29
 // Git hash  : cd16421fb7a4d44431a2445f9a92b82070ab9b8a
 
 `timescale 1ns/1ps
 
-module Asic32To64UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To64UpsizerAxi4Upsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output              io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -4129,7 +4129,7 @@ module Asic32To64UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
   wire                writeOnly_io_output_w_payload_last;
   wire                writeOnly_io_output_b_ready;
 
-  Asic32To64UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 readOnly (
+  Asic32To64UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 readOnly (
     .io_input_ar_valid           (io_input_ar_valid                        ), //i
     .io_input_ar_ready           (readOnly_io_input_ar_ready               ), //o
     .io_input_ar_payload_addr    (io_input_ar_payload_addr[31:0]           ), //i
@@ -4169,7 +4169,7 @@ module Asic32To64UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
     .clk                         (clk                                      ), //i
     .reset                       (reset                                    )  //i
   );
-  Asic32To64UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 writeOnly (
+  Asic32To64UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 writeOnly (
     .io_input_aw_valid           (io_input_aw_valid                         ), //i
     .io_input_aw_ready           (writeOnly_io_input_aw_ready               ), //o
     .io_input_aw_payload_addr    (io_input_aw_payload_addr[31:0]            ), //i
@@ -4257,7 +4257,7 @@ module Asic32To64UpsizerAxi4Upsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To64UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To64UpsizerAxi4WriteOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_aw_valid,
   output reg          io_input_aw_ready,
   input      [31:0]   io_input_aw_payload_addr,
@@ -4593,7 +4593,7 @@ module Asic32To64UpsizerAxi4WriteOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To64UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To64UpsizerAxi4ReadOnlyUpsizer_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_input_ar_valid,
   output reg          io_input_ar_ready,
   input      [31:0]   io_input_ar_payload_addr,
@@ -4712,7 +4712,7 @@ module Asic32To64UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
   assign _zz_dataLogic_byteCounterNext_1 = ({7'd0,1'b1} <<< dataLogic_size);
   assign _zz_dataLogic_byteCounterNext = _zz_dataLogic_byteCounterNext_1[3:0];
   assign _zz_io_input_r_payload_data_1 = (dataLogic_byteCounter >>> 2'd2);
-  Asic32To64UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 dataLogic_cmdPush_fifo (
+  Asic32To64UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 dataLogic_cmdPush_fifo (
     .io_push_valid           (dataLogic_cmdPush_valid                           ), //i
     .io_push_ready           (dataLogic_cmdPush_fifo_io_push_ready              ), //o
     .io_push_payload_startAt (dataLogic_cmdPush_payload_startAt[2:0]            ), //i
@@ -4854,7 +4854,7 @@ module Asic32To64UpsizerAxi4ReadOnlyUpsizer_08ee2984a5bb4437886d377d2cd3b204 (
 
 endmodule
 
-module Asic32To64UpsizerStreamFifo_08ee2984a5bb4437886d377d2cd3b204 (
+module Asic32To64UpsizerStreamFifo_9c51cd082e6149aeaca9d6aed464db29 (
   input               io_push_valid,
   output              io_push_ready,
   input      [2:0]    io_push_payload_startAt,

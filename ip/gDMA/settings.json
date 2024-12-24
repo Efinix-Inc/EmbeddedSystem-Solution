@@ -3,7 +3,7 @@
         "-o",
         "gDMA",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -20,7 +20,7 @@
         "RdQueue": "1'b0",
         "BufferWidth": "32",
         "BufferWords": "4096",
-        "MemExtWidth": "128",
+        "MemExtWidth": "64",
         "CH0_SGMode": "1'b1",
         "CH0_Output": "1'b0",
         "CH0_Input": "1'b1",
@@ -71,7 +71,7 @@
         "CH2_AsyncMode": "1'b0",
         "CH4_AsyncMode": "1'b0",
         "CH0_BufferSize": "4096",
-        "CH0_BurstSize": "1024",
+        "CH0_BurstSize": "64",
         "CH0_SR": "1'b0",
         "CH0_Width": "8",
         "CH1_Input": "1'b0",
@@ -87,7 +87,7 @@
         "CH2_Output": "1'b1",
         "CH2_Input": "1'b1",
         "CH1_BufferSize": "4096",
-        "CH1_BurstSize": "1024",
+        "CH1_BurstSize": "64",
         "CH2_Enable_user": "1'b0",
         "CH2_Enable_default": "1'b0",
         "CH3_Enable_default": "1'b0",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA\\gDMA.v",
-            "gDMA\\gDMA_define.vh",
-            "gDMA\\gDMA_tmpl.vhd",
-            "gDMA\\gDMA_tmpl.v"
+            "gDMA/gDMA_tmpl.v",
+            "gDMA/gDMA.v",
+            "gDMA/gDMA_define.vh",
+            "gDMA/gDMA_tmpl.vhd"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:43:27.222803+00:00"
+    "generated_date": "2024-11-29T09:02:48.421389+00:00"
 }
