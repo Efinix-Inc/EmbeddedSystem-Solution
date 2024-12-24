@@ -1,0 +1,12 @@
+work_*
+outflow
+*.vdb
+.lock
+.cproject
+.project
+.settings
+*.launch
+build
+workspace
+SimSOC
+

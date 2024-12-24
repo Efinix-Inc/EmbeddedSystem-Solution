@@ -1,0 +1,9 @@
+hdmi_display/display_hdmi_rgb_to_yuv.sv
+hdmi_display/display_hdmi_vga_gen_v2.v
+hdmi_display/display_hdmi_yuv.sv
+hdmi_display/display_hdmi_config.v
+hdmi_display/display_hdmi_color_coding_converter.v
+hdmi_display/display_hdmi_data_unpack.v
+hdmi_display/display_hdmi_dual_clock_fifo.v
+hdmi_display/display_hdmi_i2c_wrapper.v
+hdmi_display/efx_isg_hdmi_display_wrapper.sv

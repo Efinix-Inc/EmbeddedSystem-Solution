@@ -1,0 +1,42 @@
+v0.2.3-beta
+    RTL: Use static vision related fifo with version 7.0 for all devices.
+    RTL: Fix AXI-Interconnect functionality when SDHC is disabled for soft sapphire devices.
+    RTL: Disable 480p support for Ti375C529 device.
+    UG: Add regenerate soc ug.
+    
+v0.2.2-beta
+    RTL: Update to 2024.1 patch 3.
+    RTL: Replace static vision related fifo with latest fifo from IPM for Ti375 device.
+    RTL: Fix mipi_pclk for frame rate profiling Ti180J484 device.
+    SW: Miscellaneous fix on embedded software.
+    SW: Remove bootloader_linux app/Config. 
+    Tested on efinity v2024.1.163.3.13.
+
+v0.2.1-beta
+    RTL: Update to 2024.1 patch 2.
+    RTL: Reduce io_peripheralClk from 200MHz to 100MHz in Ti180J484 to make it more stable in Linux bootup/ethernet. 
+    Tested on efinity v2024.1.163.2.15.
+
+v0.2.0-beta
+    RTL: Add linux support for Ti180J484.
+    RTL: Add linux support for Ti375C529.
+    SW: Add PicamV3 support. (Not supported in Trion yet)
+    Tested on efinity v2024.1.163.
+
+v0.1.2-alpha
+    RTL: HDMI Chip reset fix.
+    SW: Updated ds3231 driver.
+    SW: Miscellaneous software fixes.
+    UG: Update all license headers.
+    UG: Readme update.
+    Tested on efinity v2024.1.163.
+
+v0.1.1-alpha
+    RTL: Integrate HPS design into the repo.
+    RTL: Update TSEMAC Design.
+    Tested on efinity v2024.1.163.
+
+v0.1.0-alpha
+    RTL: Updated from v2023.2.
+    Tested on efinity v2024.1.163.
+

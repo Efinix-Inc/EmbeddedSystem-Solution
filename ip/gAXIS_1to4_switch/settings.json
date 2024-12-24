@@ -1,0 +1,52 @@
+{
+    "args": [
+        "-o",
+        "gAXIS_1to4_switch",
+        "--base_path",
+        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "--vlnv",
+        {
+            "vendor": "efinixinc.com",
+            "library": "axi_infra",
+            "name": "efx_axi_interconnect",
+            "version": "5.3"
+        }
+    ],
+    "conf": {
+        "ARB_MODE": "\"ROUND_ROBIN_1\"",
+        "S_PORTS": "1",
+        "TABLE0_AXI_S0__MIN": "32'd0",
+        "TABLE0_AXI_S1__MIN": "32'd16777216",
+        "TABLE0_AXI_S2__MIN": "32'd17825792",
+        "TABLE0_AXI_S3__MIN": "32'd18874368",
+        "TABLE0_AXI_S4__MIN": "32'd536870912",
+        "TABLE0_AXI_S5__MIN": "32'd805306368",
+        "TABLE0_AXI_S6__MIN": "32'd1073741824",
+        "TABLE0_AXI_S7__MIN": "32'd1090519040",
+        "TABLE0_AXI_S0__MAX": "32'd24",
+        "TABLE0_AXI_S1__MAX": "32'd16",
+        "TABLE0_AXI_S2__MAX": "32'd16",
+        "TABLE0_AXI_S3__MAX": "32'd16",
+        "TABLE0_AXI_S4__MAX": "32'd28",
+        "TABLE0_AXI_S5__MAX": "32'd28",
+        "TABLE0_AXI_S6__MAX": "32'd24",
+        "TABLE0_AXI_S7__MAX": "32'd20",
+        "DATA_WIDTH": "32",
+        "ADDR_WIDTH": "32",
+        "M_PORTS": "4",
+        "ID_WIDTH": "8",
+        "USER_WIDTH": "3",
+        "PROTOCOL": "\"AXI4\""
+    },
+    "output": {
+        "external_script_generator": [],
+        "external_source_source": [
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch.v",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_define.vh",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.vhd",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.v"
+        ]
+    },
+    "sw_version": "2024.2.294",
+    "generated_date": "2024-11-29T08:46:38.654389+00:00"
+}

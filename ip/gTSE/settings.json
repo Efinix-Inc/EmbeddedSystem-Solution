@@ -1,0 +1,36 @@
+{
+    "args": [
+        "-o",
+        "gTSE",
+        "--base_path",
+        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "--vlnv",
+        {
+            "vendor": "efinixinc.com",
+            "library": "ethernet",
+            "name": "efx_tsemac",
+            "version": "6.3"
+        }
+    ],
+    "conf": {
+        "VERSION": "16",
+        "TXFIFO_EN": "1'b1",
+        "RXFIFO_EN": "1'b1",
+        "TXFIFO_DTH": "4096",
+        "RXFIFO_DTH": "4096",
+        "PHY_INTF_MODE": "0",
+        "AXIS_DW": "8",
+        "RGMII_RXC_EDGE": "1'b1",
+        "RGMII_TXC_DLY": "1'b1"
+    },
+    "output": {
+        "external_source_source": [
+            "gTSE\\gTSE.v",
+            "gTSE\\gTSE_define.vh",
+            "gTSE\\gTSE_tmpl.vhd",
+            "gTSE\\gTSE_tmpl.v"
+        ]
+    },
+    "sw_version": "2024.2.294",
+    "generated_date": "2024-11-29T08:40:24.791754+00:00"
+}
