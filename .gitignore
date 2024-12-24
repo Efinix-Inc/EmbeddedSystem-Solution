@@ -6,6 +6,8 @@ outflow
 .project
 .settings
 *.launch
+.vscode
+.metadata
 build
 workspace
 SimSOC

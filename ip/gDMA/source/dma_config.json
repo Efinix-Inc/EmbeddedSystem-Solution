@@ -14,12 +14,12 @@
     },
     "read": {
         "address_width": 32,
-        "data_width_external": 128,
+        "data_width_external": 64,
         "data_width_internal": 64
     },
     "write": {
         "address_width": 32,
-        "data_width_external": 128,
+        "data_width_external": 64,
         "data_width_internal": 64
     },
     "channels": {
@@ -33,7 +33,7 @@
             ],
             "half_completion_interrupt": false,
             "self_restart_capable": false,
-            "bytes_per_burst": 1024,
+            "bytes_per_burst": 64,
             "buffer_address": 0,
             "buffer_size": 4096
         },
@@ -47,7 +47,7 @@
             ],
             "half_completion_interrupt": false,
             "self_restart_capable": false,
-            "bytes_per_burst": 1024,
+            "bytes_per_burst": 64,
             "buffer_address": 4096,
             "buffer_size": 4096
         }

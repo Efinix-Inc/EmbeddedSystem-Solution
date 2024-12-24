@@ -4,7 +4,7 @@ ENTRY( _start )
 
 MEMORY
 {
-  ram  (wxai!r) : ORIGIN = 0xF9000000, LENGTH = 16K
+  ram  (wxai!r) : ORIGIN = 0xF9000000, LENGTH = 2K
 }
 
 PHDRS

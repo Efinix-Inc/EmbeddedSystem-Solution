@@ -1,4 +1,4 @@
-#include "smpDemo.h"
+#include "userDef.h"
 
 .global smpInit
 

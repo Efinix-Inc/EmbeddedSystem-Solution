@@ -3,7 +3,7 @@
         "-o",
         "gDMA_vision",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -19,8 +19,8 @@
         "EfinixDDR": "1'b0",
         "RdQueue": "1'b0",
         "BufferWidth": "128",
-        "BufferWords": "1024",
-        "MemExtWidth": "512",
+        "BufferWords": "4096",
+        "MemExtWidth": "256",
         "CH0_SGMode": "1'b0",
         "CH0_Output": "1'b0",
         "CH0_Input": "1'b1",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA_vision\\gDMA_vision.v",
-            "gDMA_vision\\gDMA_vision_define.vh",
-            "gDMA_vision\\gDMA_vision_tmpl.vhd",
-            "gDMA_vision\\gDMA_vision_tmpl.v"
+            "gDMA_vision/gDMA_vision_tmpl.v",
+            "gDMA_vision/gDMA_vision.v",
+            "gDMA_vision/gDMA_vision_define.vh",
+            "gDMA_vision/gDMA_vision_tmpl.vhd"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:45:43.757717+00:00"
+    "generated_date": "2024-11-29T09:01:47.542716+00:00"
 }
