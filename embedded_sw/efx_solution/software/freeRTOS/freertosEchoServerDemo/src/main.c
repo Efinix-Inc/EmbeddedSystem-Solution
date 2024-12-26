@@ -48,10 +48,8 @@
 #include <FreeRTOS.h>
 #include "task.h"
 #include "bsp.h"
-#include "device_config.h"
 #include "riscv.h"
 #include "gpio.h"
-
 
 /* Demo application includes. */
 #include "FreeRTOS_IP.h"
@@ -119,8 +117,9 @@ void vSendString( const char * const pcString )
 
 int main( void )
 {
-	bsp_init();
 	const uint32_t ulLongTime_ms = pdMS_TO_TICKS( 1000UL );
+	
+	bsp_init();
 
 	/*
 	 * Instructions for using this project are provided on:
@@ -272,12 +271,12 @@ static void vCreateTCPServerSocket( void *pvParameters )
     /* Set the socket into a listening state so it can accept connections.
     The maximum number of simultaneous connections is limited to 20. */
     FreeRTOS_listen( xListeningSocket, xBacklog );
+
 	int8_t cIPAddressString[ 16 ];
 	FreeRTOS_inet_ntoa( FreeRTOS_GetIPAddress(), ( char * ) cIPAddressString );
     bsp_printf( "To test this demo, execute following command on your host computer:\r\n" );
     bsp_printf( "    echotool.exe %s /p tcp /r 10000 /d efinix /n 1\r\n", cIPAddressString );
     bsp_printf( "You should see the string being received and echoed back\r\n" );
-
 
     for( ;; )
     {

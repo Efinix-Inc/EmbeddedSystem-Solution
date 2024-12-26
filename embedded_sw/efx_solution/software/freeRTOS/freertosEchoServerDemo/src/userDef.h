@@ -35,6 +35,7 @@
 #define DST_IP 			0xc0a80165
 #define SRC_PORT		0x0521
 #define DST_PORT		0x2715
+#define RX_HANDLER_PRIORITY	( configMAX_PRIORITIES - 1 )
 
 /************************** HW Header File ***************************/
 #define TSE_Speed_1000Mhz	0x04
