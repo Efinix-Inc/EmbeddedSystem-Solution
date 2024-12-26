@@ -31,63 +31,22 @@ module efx_isg_hdmi_display_wrapper #(
     input [7:0]                 display_dma_rkeep, 
     output                      display_dma_rready, 
     
-    output                      hdmi_yuv_vs,
-    output                      hdmi_yuv_hs,
-    output                      hdmi_yuv_de,
-    output [15:0]               hdmi_yuv_data
+    // LVDS Video output
+    output [6:0]        lvds_1a_DATA,
+    output [6:0]        lvds_1b_DATA,
+    output [6:0]        lvds_1c_DATA,
+    output [6:0]        lvds_1d_DATA,
+    output [6:0]        lvds_2a_DATA,
+    output [6:0]        lvds_2b_DATA,
+    output [6:0]        lvds_2c_DATA,
+    output [6:0]        lvds_2d_DATA,
+    output [6:0]        lvds_clk
 
 );
 
-//Resolution Parameter (Vesa Standard): 
-// * 1080p (HDMI Clock 148.5 MHz )
-// * 720p (HDMI Clock 74.250 MHz)
-// * 480p (HDMI Clock 25.250 MHz)
-
-localparam FRAME_WIDTH  = (DISPLAY_MODE == "1920x1080_60Hz")? 12'd1920 :
-                         (DISPLAY_MODE == "1280x720_60Hz") ? 12'd1280 :
-                                                             12'd640  ;
-
-localparam FRAME_HEIGHT = (DISPLAY_MODE == "1920x1080_60Hz") ? 12'd1080:
-                         (DISPLAY_MODE == "1280x720_60Hz")  ? 12'd720 :
-                                                              12'd480 ;  
-
-localparam VIDEO_MAX_HRES  = (DISPLAY_MODE == "1920x1080_60Hz")? 11'd1920:
-                            (DISPLAY_MODE == "1280x720_60Hz") ? 11'd1280:
-                                                                11'd640 ;
-
-localparam VIDEO_HSP  = (DISPLAY_MODE == "1920x1080_60Hz")? 8'd44:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 8'd40:
-                                                           8'd96;
-
-localparam VIDEO_HBP  = (DISPLAY_MODE == "1920x1080_60Hz")? 8'd148:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 8'd220:
-                                                           8'd40;
-
-localparam VIDEO_HFP  = (DISPLAY_MODE == "1920x1080_60Hz")? 8'd88:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 8'd110:
-                                                           8'd8;
-
-localparam VIDEO_MAX_VRES  = (DISPLAY_MODE == "1920x1080_60Hz")? 11'd1080:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 11'd720:
-                                                           11'd480;
-
-localparam VIDEO_VSP  = (DISPLAY_MODE == "1920x1080_60Hz")? 6'd5:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 6'd5:
-                                                           6'd2;
-
-localparam VIDEO_VBP  = (DISPLAY_MODE == "1920x1080_60Hz")? 6'd36:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 6'd20:
-                                                           6'd25;
-
-
-localparam VIDEO_VFP  = (DISPLAY_MODE == "1920x1080_60Hz")? 6'd4:
-                       (DISPLAY_MODE == "1280x720_60Hz") ? 6'd5:
-                                                           6'd2;
-
-
 /**************************************************
  *
- * display_hdmi_adv7511_config Instantiation
+ * display_hdmi_config Instantiation
  * 
 **************************************************/ 
 display_hdmi_config #(
@@ -109,44 +68,32 @@ display_hdmi_config #(
 
 /**************************************************
  *
- * display_hdmi_yuv Instantiation
+ * display_lvds Instantiation
  * Diplay post process from DMA to HDMI Port
  * 
 **************************************************/ 
-display_hdmi_yuv #(
-    .FRAME_WIDTH     (FRAME_WIDTH),
-    .FRAME_HEIGHT    (FRAME_HEIGHT),
-
-    .VIDEO_MAX_HRES  (VIDEO_MAX_HRES),
-    .VIDEO_HSP       (VIDEO_HSP),
-    .VIDEO_HBP       (VIDEO_HBP),
-    .VIDEO_HFP       (VIDEO_HFP),
-
-    .VIDEO_MAX_VRES  (VIDEO_MAX_VRES),
-    .VIDEO_VSP       (VIDEO_VSP),
-    .VIDEO_VBP       (VIDEO_VBP),
-    .VIDEO_VFP       (VIDEO_VFP)
-) inst_display_hdmi_yuv(
-    .iHdmiClk                           ( hdmi_clk ),
-    .iRst_n                             ( rstn ),
-    
-    //DMA RGB Input
-    .ivDisplayDmaRdData                 ( display_dma_rdata ),
-    .iDisplayDmaRdValid                 ( display_dma_rvalid ),
-    .iv7DisplayDmaRdKeep                ( display_dma_rkeep ),
-    .oDisplayDmaRdReady                 ( display_dma_rready ),
-    
-    // Status.
-    .iRstDebugReg                       ( 1'b0 ),
-    .oDebugDisplayDMAFifoStatus         ( debug_display_dma_fifo_status ), 
-    .ov32DebugDisplayDmaFifoRCount      ( debug_display_dma_fifo_rcount ), 
-    .ov32DebugDisplayDmaFifoWCount      ( debug_display_dma_fifo_wcount ),
-
-    // Output to HDMI
-    .oHdmiYuvVs                         ( hdmi_yuv_vs ),
-    .oHdmiYuvHs                         ( hdmi_yuv_hs ),
-    .oHdmiYuvDe                         ( hdmi_yuv_de ),
-    .ov16HdmiYuvData                    ( hdmi_yuv_data )
+display_lvds # (
+   .DISPLAY_MODE                     ( DISPLAY_MODE       ) 
+) u_display (
+   .lvds_slowclk                     ( hdmi_clk           ),
+   .rst_n                            ( rstn               ),
+   .display_dma_rdata                ( display_dma_rdata  ),
+   .display_dma_rvalid               ( display_dma_rvalid ),
+   .display_dma_rready               ( display_dma_rready ),
+   .display_dma_rkeep                ( display_dma_rkeep  ),
+   .lvds_1a_DATA                     ( lvds_1a_DATA       ),
+   .lvds_1b_DATA                     ( lvds_1b_DATA       ),
+   .lvds_1c_DATA                     ( lvds_1c_DATA       ),
+   .lvds_1d_DATA                     ( lvds_1d_DATA       ),
+   .lvds_2a_DATA                     ( lvds_2a_DATA       ),
+   .lvds_2b_DATA                     ( lvds_2b_DATA       ),
+   .lvds_2c_DATA                     ( lvds_2c_DATA       ),
+   .lvds_2d_DATA                     ( lvds_2d_DATA       ),
+   .lvds_clk                         ( lvds_clk           ),
+   //Debug Signal
+   .debug_display_dma_fifo_status    ( debug_display_dma_fifo_status ),
+   .debug_display_dma_fifo_rcount    ( debug_display_dma_fifo_rcount ),
+   .debug_display_dma_fifo_wcount    ( debug_display_dma_fifo_wcount )
 );
 
 //Debug Display Signal

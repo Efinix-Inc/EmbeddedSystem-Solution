@@ -3,7 +3,7 @@
         "-o",
         "EfxSapphireSoc",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -14,12 +14,12 @@
     ],
     "conf": {
         "HexFile_PathEnable": "1'b0",
-        "HexFile_Path": "\"../../common/bootloader/bootloader_linux_Ti180J484_100.hex\"",
+        "HexFile_Path": "\"''\"",
         "APBSlave0_Size": "65536",
         "DEVKIT_CUSTOM": "\"sapphireBoard_rev0\"",
         "LDSize": "2044",
-        "LDStackSize": "256",
-        "DEVKIT": "14",
+        "LDStackSize": "32",
+        "DEVKIT": "3",
         "DEBUG": "1'b1",
         "IDE_SEL": "1'b0",
         "RISCV_DEBUG_PRIV": "1'b1",
@@ -28,9 +28,9 @@
         "TAP_MODE": "1'b0",
         "TAP_COUNT": "1",
         "TAP_SEL": "8",
-        "Frequency": "200",
+        "Frequency": "50",
         "PeriFrequencyEnable": "1'b1",
-        "PeriFrequency": "100",
+        "PeriFrequency": "50",
         "UART2_FIFODEPTH": "128",
         "UART2_INT_ID": "3",
         "TEST": "1'b0",
@@ -62,12 +62,12 @@
         "CMREXT": "1'b1",
         "FPEXT": "1'b1",
         "FPU": "1'b1",
-        "LINUX": "1'b1",
-        "ICACHEWAY": "8",
-        "DCACHEWAY": "8",
+        "LINUX": "1'b0",
+        "ICACHEWAY": "2",
+        "DCACHEWAY": "2",
         "CpuCount": "2",
-        "ICacheSize": "32768",
-        "DCacheSize": "32768",
+        "ICacheSize": "8192",
+        "DCacheSize": "8192",
         "Cache": "1'b1",
         "ICache_EN": "1'b1",
         "DCache_EN": "1'b1",
@@ -167,14 +167,14 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v",
             "EfxSapphireSoc/EfxSapphireSoc.v",
             "EfxSapphireSoc/EfxSapphireSoc_define.vh",
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd"
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd",
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v"
         ],
         "external_script_script": [],
         "external_script_embedded_sw": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:00:45.429085+00:00"
+    "generated_date": "2024-11-29T07:14:40.325074+00:00"
 }

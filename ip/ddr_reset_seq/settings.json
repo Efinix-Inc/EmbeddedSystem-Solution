@@ -1,0 +1,28 @@
+{
+    "args": [
+        "-o",
+        "ddr_reset_seq",
+        "--base_path",
+        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
+        "--vlnv",
+        {
+            "vendor": "efinixinc.com",
+            "library": "memory_controller",
+            "name": "efx_ddr_reset_controller",
+            "version": "5.1"
+        }
+    ],
+    "conf": {
+        "FREQ": "100"
+    },
+    "output": {
+        "external_source_source": [
+            "ddr_reset_seq/ddr_reset_seq.v",
+            "ddr_reset_seq/ddr_reset_seq_define.vh",
+            "ddr_reset_seq/ddr_reset_seq_tmpl.vhd",
+            "ddr_reset_seq/ddr_reset_seq_tmpl.v"
+        ]
+    },
+    "sw_version": "2024.2.294",
+    "generated_date": "2024-11-29T07:02:11.266378+00:00"
+}

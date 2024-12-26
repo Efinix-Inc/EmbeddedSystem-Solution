@@ -1,15 +1,3 @@
-/////////////////////////////////////////////////////////////////////////////
-//
-// Copyright (C) 2013-2019 Efinix Inc. All rights reserved.
-//
-// display_hdmi_i2c_wrapper.v
-//
-// *******************************
-// Revisions:
-// 1.0 Initial rev
-// *******************************
-/////////////////////////////////////////////////////////////////////////////
-
 module display_hdmi_i2c_wrapper
 #(
 	parameter	DEVICE_ADDRESS	= 8'h00,		// TODO
@@ -702,7 +690,7 @@ endmodule
 // unmodified form immediately below this header.
 //
 // WARRANTY DISCLAIMER.  
-//     THE  DESIGN, CODE, OR INFORMATION ARE PROVIDED AS IS AND 
+//     THE  DESIGN, CODE, OR INFORMATION ARE PROVIDED “AS IS” AND 
 //     EFINIX MAKES NO WARRANTIES, EXPRESS OR IMPLIED WITH 
 //     RESPECT THERETO, AND EXPRESSLY DISCLAIMS ANY IMPLIED WARRANTIES, 
 //     INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF 
@@ -727,4 +715,3 @@ endmodule
 //     APPLY TO LICENSEE.
 //
 /////////////////////////////////////////////////////////////////////////////
-

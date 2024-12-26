@@ -21,7 +21,7 @@ module display_hdmi_config #(
 );
 
 localparam DEVICE_ADDRESS    = (FAMILY == "TRION")? 8'h00:7'h39;
-localparam INITIAL_CODE      = (FAMILY == "TRION")? "source/submodules/hdmi_display/display_hdmi_it6263_reg.mem":"source/submodules/hdmi_display/display_hdmi_adv7511_reg.mem";
+localparam INITIAL_CODE      = (FAMILY == "TRION")? "source/submodules/hdmi_display/display_hdmi_it6263_reg.mem":"source/verilog/submodules/hdmi_display/display_hdmi_adv7511_reg.mem";
 localparam NO_REG_DATA       = (FAMILY == "TRION")? 9'd130:9'd53;
 
 // ADDR_I handled using always block

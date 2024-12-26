@@ -2,7 +2,8 @@
 // Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
-//Soft Sapphire Device Config Ti180J484
+
+//Soft Sapphire Device Config T120F576
 
 #ifndef DEV_CONFIG
 #define DEV_CONFIG
@@ -14,7 +15,7 @@
 #define TSE_TX_INTR			 SYSTEM_PLIC_USER_INTERRUPT_B_INTERRUPT
 #define TSE_DMASG_RX_CH		 1
 #define TSE_RX_INTR			 SYSTEM_PLIC_USER_INTERRUPT_C_INTERRUPT
-#define PHY_ADDR   			 0x0
+#define PHY_ADDR   			 0x3 // Hardware Configuration
 #define SUPPORT_ETH_HOT_PLUG 0
 
 //RTC - DS3231
@@ -31,15 +32,17 @@
 #define ISP_AXI4_SLAVE_BASE SYSTEM_AXI_A_BMB
 #define ISP_CAM_APB3 		IO_APB_SLAVE_1_INPUT
 #define I2C_CTRL_MIPI		SYSTEM_I2C_0_IO_CTRL
-#define I2C_CTRL_HZ         SYSTEM_CLINT_HZ
+#define I2C_CTRL_HZ			SYSTEM_CLINT_HZ
 
 //Camera
 //Define the picam version. By default is set to Picam V2.
-#define PICAM_VERSION 		3
+//PicamV3 do not support in Trion T120F576.
+#define PICAM_VERSION 		2
 
 //Resolution of Display
 #define FRAME_WIDTH         1280
 #define FRAME_HEIGHT        720
+
 
 
 

@@ -3,7 +3,7 @@
         "-o",
         "gDMA",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\T120F576\\T120F576_devkit\\ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA/gDMA_tmpl.v",
-            "gDMA/gDMA.v",
-            "gDMA/gDMA_define.vh",
-            "gDMA/gDMA_tmpl.vhd"
+            "gDMA\\gDMA.v",
+            "gDMA\\gDMA_define.vh",
+            "gDMA\\gDMA_tmpl.vhd",
+            "gDMA\\gDMA_tmpl.v"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:02:48.421389+00:00"
+    "generated_date": "2024-11-29T08:38:29.724241+00:00"
 }

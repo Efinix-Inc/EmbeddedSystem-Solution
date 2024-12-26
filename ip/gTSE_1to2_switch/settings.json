@@ -3,7 +3,7 @@
         "-o",
         "gTSE_1to2_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -41,12 +41,12 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v",
             "gTSE_1to2_switch/gTSE_1to2_switch.v",
             "gTSE_1to2_switch/gTSE_1to2_switch_define.vh",
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd"
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd",
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v"
         ]
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:02:56.000301+00:00"
+    "generated_date": "2024-11-29T07:05:37.175472+00:00"
 }

@@ -24,22 +24,19 @@
 `timescale 1ns / 1ps
 // To enable RiscV soft tap connection (for debugger).
 //`define SOFTTAP 
-
-// Uncomment the following line to disable IP 
-`define TITANIUM_DEVICE   
-`define ENABLE_SDHC              // Comment out this line to disable SDHC , Modify gAXIS_1to3_switch IP manually !!           
+`define TRION_DEVICE                
+`define ENABLE_SDHC              // Comment out this line to disable SDHC  , Modify gAXIS_1to3_switch IP manually !!
 `define ENABLE_EVSOC             // Comment out this line to disable EVSOC , Modify gAXIS_1to3_switch IP manually !!
 `define ENABLE_ETHERNET          // Comment out this line to disable EVSOC , Modify gAXIS_1to3_switch IP manually !!
 `define ENABLE_AXI_INTERCONNECT  // Comment out this line to disable AXI-INTERCONNECT (Hardware Accelerator <=> SDHC <=> TSEMAC)
 `define DISPLAY_1280x720_60Hz    // Default Set to 720p
-  
+
+
 `ifdef ENABLE_EVSOC
     `define ENABLE_EVSOC_CAMERA     // Comment out this line to disable the PiCAM camera portion of EVSOC
     `define ENABLE_EVSOC_DISPLAY    // Comment out this line to disable the HDMI display portion of EVSOC
     `define ENABLE_EVSOC_HW_ACCEL   // Comment out this line to disable the hardware accelerator for EVSOC
-`endif 
-
-
+`endif  
 
 module top_soc (
 
@@ -50,9 +47,8 @@ module top_soc (
     input       mipi_pclk,                              // Clock For Mipi PiCam V2
     input       hdmi_clk,                               // Clock for I2C Init HDMI module with 480p
     input       io_tseClk,                              // Clock for TSEMAC -> 125MHz
-    input       hdmi_yuv_clk,                           // Clock for init HDMI-YUV(25.25MHz)
-    output      mipi_dphy_rx_inst1_RESET_N,             // Active Low Reset for MIPI Control 
-    output      mipi_dphy_rx_inst1_RST0_N,              // Active Low Reset for MIPI Control 
+    input       tx_slowclk,                             // Clock for LVDS-> HDMI         
+
 
 //PLL
     input       i_master_rstn,                          // Active Low Reset for SoC
@@ -63,82 +59,57 @@ module top_soc (
     output      mipi_pll_rstn,                          // Active Low Reset for MIPI PLL
     input       mipi_pll_locked,                        // MIPI PLL Locked
     output      tse_pll_rstn,                           // Active Low Reset for TSE PLL
+    input       tse_pll_locked,                         // TSE PLL Locked
+    output      o_hdmi_rstn,                            // Active Low Reset for HDMI chip
+    output      lvds_pll_rstn,                          // Active Low Reset for LVDS PLL
+    input       lvds_pll_locked,                        // LVDS PLL Locked
+    output      hdmi_pll_rstn,                          // Active Low Reset for HDMI PLL
+    input       hdmi_pll_locked,                        // HDMI PLL Locked
 
-// Titanium DDR Config Controller
-    output		cfg_start,                              // Start the DDR configuration controller.
-    output		cfg_reset,                              // Active-high DDR configuration controller reset.
-    output		cfg_sel,                                // To select whether to use internal DDR configuration controller or user register ports for configuration:
-                                                        // 0: Use internal configuration controller.
-                                                        // 1: Use register configuration ports (cfg_rst, cfg_start, cfg_done will be disabled).
-    input		cfg_done,                               // Indicates the controller configuration is done
-    output		cfg_ok,
-    output		DDR_AXI0_resetn,                        // Active low Reset signal for DDR AXI 0
-    output		DDR_AXI1_resetn,                        // Active low Reset signal for DDR AXI 1
+// Trion DDR Config Controller
+    output		         ddr_inst1_CFG_SEQ_START,
+    output		         ddr_inst1_CFG_RST_N,
+    output		         ddr_inst1_CFG_SEQ_RST,
 
-// Titanium DDR-AXI_0 is directly connected to Sapphire Soc
-    output			    io_ddrA_ar_valid,               // Address valid. This signal indicates that the channel is signaling valid address and control information.
-    input			    io_ddrA_ar_ready,               // Address ready. This signal indicates that the slave is ready to accept an address and associated control signals.
-    output [32:0]       io_ddrA_ar_payload_addr,        // Read address. It gives the address of the first transfer in a burst transaction.
-    output [5:0]        io_ddrA_ar_payload_id,          // Address ID. This signal identifies the group of address signals.
-    output [7:0]        io_ddrA_ar_payload_len,         // Burst length. This signal indicates the number of transfers in a burst.
-    output [2:0]        io_ddrA_ar_payload_size,        // Burst size. This signal indicates the size of each transfer in the burst.
-    output [1:0]        io_ddrA_ar_payload_burst,       // Burst type. The burst type and the size determine how the address for each transfer within the burst is calculated.
-    output		    	io_ddrA_ar_payload_lock,        // Lock type. This signal provides additional information about the atomic characteristics of the transfer.
-    output		    	io_ddrA_ar_apcmd,               // Read auto-precharge.
-    output		    	io_ddrA_ar_payload_qos,         // QoS indentifier for read transaction.
-    output			    io_ddrA_aw_valid,               // Address valid. This signal indicates that the channel is signaling valid address and control information.
-    input			    io_ddrA_aw_ready,               // Address ready. This signal indicates that the slave is ready to accept an address and associated control signals.
-    output [32:0]       io_ddrA_aw_payload_addr,        // Write address. It gives the address of the first transfer in a burst transaction.
-    output [5:0]        io_ddrA_aw_payload_id,          // Address ID. This signal identifies the group of address signals.
-    output [7:0]        io_ddrA_aw_payload_len,         // Burst length. This signal indicates the number of transfers in a burst.
-    output [2:0]        io_ddrA_aw_payload_size,        // Burst size. This signal indicates the size of each transfer in the burst.
-    output [1:0]        io_ddrA_aw_payload_burst,       // Burst type. The burst type and the size determine how the address for each transfer within the burst is calculated.
-    output			    io_ddrA_aw_payload_lock,        // Lock type. This signal provides additional information about the atomic characteristics of the transfer.
-    output [3:0]        io_ddrA_aw_payload_cache,       // Memory type. This signal indicates how transactions are required to progress through a system.
-    output		    	io_ddrA_aw_payload_qos,         // QoS indentifier for write transaction.
-    output		    	io_ddrA_aw_payload_allstrb,     // Write all strobes asserted.
-    output		    	io_ddrA_aw_apcmd,               // Write auto-precharge.
-    output		    	io_ddrA_awcobuf,                // Write coherent bufferable selection.  
-    output [512-1:0]    io_ddrA_w_payload_data,         // Write data. AXI4 port 0 is 256, port 1 is 128.
-    output [64-1:0]     io_ddrA_w_payload_strb,         // Write strobes. This signal indicates which byte lanes hold valid data. There is one write strobe bit for each eight bits of the write data bus.
-    input [1:0]         io_ddrA_b_payload_resp,         // Read response. This signal indicates the status of the read transfer.
-    input [5:0]         io_ddrA_b_payload_id,           // Response ID tag. This signal is the ID tag of the write response.
-    input [512-1:0]     io_ddrA_r_payload_data,         // Read data.
-    input [5:0]         io_ddrA_r_payload_id,           // Read ID tag. This signal is the identification tag for the read data group of signals generated by the slave.
-    input [1:0]         io_ddrA_r_payload_resp,         // Read response. This signal indicates the status of the read transfer.
+// Trion DDR-AXI_1 is directly connected to Sapphire Soc
 
-// Titanium DDR-AXI_1 is directly connected to DMA
-    output			    io_ddrB_ar_valid,               // Address valid. This signal indicates that the channel is signaling valid address and control information.
-    input			    io_ddrB_ar_ready,               // Address ready. This signal indicates that the slave is ready to accept an address and associated control signals.
-    output [32:0]       io_ddrB_ar_payload_addr,        // Read address. It gives the address of the first transfer in a burst transaction.
-    output [5:0]        io_ddrB_ar_payload_id,          // Address ID. This signal identifies the group of address signals.
-    output [7:0]        io_ddrB_ar_payload_len,         // Burst length. This signal indicates the number of transfers in a burst.
-    output [2:0]        io_ddrB_ar_payload_size,        // Burst size. This signal indicates the size of each transfer in the burst.
-    output [1:0]        io_ddrB_ar_payload_burst,       // Burst type. The burst type and the size determine how the address for each transfer within the burst is calculated.
-    output		    	io_ddrB_ar_payload_lock,        // Lock type. This signal provides additional information about the atomic characteristics of the transfer.
-    output		    	io_ddrB_ar_apcmd,               // Read auto-precharge.
-    output		    	io_ddrB_ar_payload_qos,         // QoS indentifier for read transaction.
-    output			    io_ddrB_aw_valid,               // Address valid. This signal indicates that the channel is signaling valid address and control information.
-    input			    io_ddrB_aw_ready,               // Address ready. This signal indicates that the slave is ready to accept an address and associated control signals.
-    output [32:0]       io_ddrB_aw_payload_addr,        // Write address. It gives the address of the first transfer in a burst transaction.
-    output [5:0]        io_ddrB_aw_payload_id,          // Address ID. This signal identifies the group of address signals.
-    output [7:0]        io_ddrB_aw_payload_len,         // Burst length. This signal indicates the number of transfers in a burst.
-    output [2:0]        io_ddrB_aw_payload_size,        // Burst size. This signal indicates the size of each transfer in the burst.
-    output [1:0]        io_ddrB_aw_payload_burst,       // Burst type. The burst type and the size determine how the address for each transfer within the burst is calculated.
-    output			    io_ddrB_aw_payload_lock,        // Lock type. This signal provides additional information about the atomic characteristics of the transfer.
-    output [3:0]        io_ddrB_aw_payload_cache,       // Memory type. This signal indicates how transactions are required to progress through a system.
-    output		    	io_ddrB_aw_payload_qos,         // QoS indentifier for write transaction.
-    output		    	io_ddrB_aw_payload_allstrb,     // Write all strobes asserted.
-    output		    	io_ddrB_aw_apcmd,               // Write auto-precharge.
-    output		    	io_ddrB_awcobuf,                // Write coherent bufferable selection.  
-    output [512-1:0]    io_ddrB_w_payload_data,         // Write data. AXI4 port 0 is 256, port 1 is 128.
-    output [64-1:0]     io_ddrB_w_payload_strb,         // Write strobes. This signal indicates which byte lanes hold valid data. There is one write strobe bit for each eight bits of the write data bus.
-    input [1:0]         io_ddrB_b_payload_resp,         // Read response. This signal indicates the status of the read transfer.
-    input [5:0]         io_ddrB_b_payload_id,           // Response ID tag. This signal is the ID tag of the write response.
-    input [512-1:0]     io_ddrB_r_payload_data,         // Read data.
-    input [5:0]         io_ddrB_r_payload_id,           // Read ID tag. This signal is the identification tag for the read data group of signals generated by the slave.
-    input [1:0]         io_ddrB_r_payload_resp,         // Read response. This signal indicates the status of the read transfer.
-    
+    output               io_ddrA_arw_valid,            // Address and control information valid. Indicates the validity of the address and control signals.
+    input                io_ddrA_arw_ready,            // Address and control information ready. Indicates that the slave is ready to accept an address and control signals.
+    output     [31:0]    io_ddrA_arw_payload_addr,     // Address for the transfer. Provides the address of the first transfer in a burst transaction.
+    output     [7:0]     io_ddrA_arw_payload_id,       // Address ID. Identifies the group of address signals.
+    output     [7:0]     io_ddrA_arw_payload_len,      // Burst length. Indicates the number of transfers in a burst.
+    output     [2:0]     io_ddrA_arw_payload_size,     // Burst size. Indicates the size of each transfer in the burst.
+    output     [1:0]     io_ddrA_arw_payload_burst,    // Burst type. Determines how the address for each transfer within the burst is calculated.
+    output     [1:0]     io_ddrA_arw_payload_lock,     // Lock type. Provides additional information about the atomic characteristics of the transfer.
+    output               io_ddrA_arw_payload_write,    // Write enable. Indicates whether the transfer is a read or write.
+    output     [7:0]     io_ddrA_w_payload_id,         // Write ID. Identifies the group of write signals.
+    output     [127:0]   io_ddrA_w_payload_data,       // Write data. The data being written in the transfer.
+    output     [15:0]    io_ddrA_w_payload_strb,       // Write strobes. Indicates which byte lanes hold valid data.
+    input      [7:0]     io_ddrA_b_payload_id,         // Response ID tag for write. The ID tag of the write response.
+    input      [127:0]   io_ddrA_r_payload_data,       // Read data. The data being read in the transfer.
+    input      [7:0]     io_ddrA_r_payload_id,         // Read ID tag. Identification tag for the read data signals.
+    input      [1:0]     io_ddrA_r_payload_resp,       // Read response. Indicates the status of the read transfer.
+
+
+// Trion DDR-AXI_0 is directly connected to DMA
+
+    output               io_ddrB_arw_valid,            // Address and control information valid. Indicates the validity of the address and control signals.
+    input                io_ddrB_arw_ready,            // Address and control information ready. Indicates that the slave is ready to accept an address and control signals.
+    output     [31:0]    io_ddrB_arw_payload_addr,     // Address for the transfer. Provides the address of the first transfer in a burst transaction.
+    output     [7:0]     io_ddrB_arw_payload_id,       // Address ID. Identifies the group of address signals.
+    output     [7:0]     io_ddrB_arw_payload_len,      // Burst length. Indicates the number of transfers in a burst.
+    output     [2:0]     io_ddrB_arw_payload_size,     // Burst size. Indicates the size of each transfer in the burst.
+    output     [1:0]     io_ddrB_arw_payload_burst,    // Burst type. Determines how the address for each transfer within the burst is calculated.
+    output     [1:0]     io_ddrB_arw_payload_lock,     // Lock type. Provides additional information about the atomic characteristics of the transfer.
+    output               io_ddrB_arw_payload_write,    // Write enable. Indicates whether the transfer is a read or write.
+    output     [7:0]     io_ddrB_w_payload_id,         // Write ID. Identifies the group of write signals.
+    output     [255:0]   io_ddrB_w_payload_data,       // Write data. The data being written in the transfer.
+    output     [31:0]    io_ddrB_w_payload_strb,       // Write strobes. Indicates which byte lanes hold valid data.
+    input      [7:0]     io_ddrB_b_payload_id,         // Response ID tag for write. The ID tag of the write response.
+    input      [255:0]   io_ddrB_r_payload_data,       // Read data. The data being read in the transfer.
+    input      [7:0]     io_ddrB_r_payload_id,         // Read ID tag. Identification tag for the read data signals.
+    input      [1:0]     io_ddrB_r_payload_resp,       // Read response. Indicates the status of the read transfer.
+
     //Common Signal for DDR -> Sapphire Soc
     input			    io_ddrA_b_valid,                // Write response valid. This signal indicates that the channel is signaling a valid write response.
     output			    io_ddrA_b_ready,                // Response ready. This signal indicates that the master can accept a write response.   
@@ -198,88 +169,65 @@ module top_soc (
 
 `ifdef ENABLE_EVSOC_CAMERA
 // Common Evsoc Camera interface
-   input               i_cam_sda,
-   output              o_cam_sda_oe,
-   input               i_cam_scl,
-   output              o_cam_scl_oe,
-   output              o_cam_rstn,            //Active Low Reset for Picam
+    input               i_cam_sda,
+    output              o_cam_sda_oe,
+    input               i_cam_scl,
+    output              o_cam_scl_oe,
+    output              o_cam_rstn,            //Active Low Reset for Picam
 
-//MIPI DPHY RX0: CSI RX Interface
-    input                               mipi_dphy_rx_inst1_WORD_CLKOUT_HS,
-    output                              mipi_dphy_rx_inst1_FORCE_RX_MODE,
-    input                               mipi_dphy_rx_inst1_ERR_CONTENTION_LP0,
-    input                               mipi_dphy_rx_inst1_ERR_CONTENTION_LP1,
-    input                               mipi_dphy_rx_inst1_ERR_CONTROL_LAN0,
-    input                               mipi_dphy_rx_inst1_ERR_CONTROL_LAN1,
-    input                               mipi_dphy_rx_inst1_ERR_ESC_LAN0,
-    input                               mipi_dphy_rx_inst1_ERR_ESC_LAN1,
-    input                               mipi_dphy_rx_inst1_ERR_SOT_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_ERR_SOT_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_LP_CLK,
-    input                               mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_RX_CLK_ACTIVE_HS,
-    input                               mipi_dphy_rx_inst1_ESC_LAN0_CLK,
-    input                               mipi_dphy_rx_inst1_ESC_LAN1_CLK,
-    input [7:0]                         mipi_dphy_rx_inst1_RX_DATA_ESC,
-    input [CSI_RX_DATA_WIDTH_LANE-1:0]  mipi_dphy_rx_inst1_RX_DATA_HS_LAN0,
-    input [CSI_RX_DATA_WIDTH_LANE-1:0]  mipi_dphy_rx_inst1_RX_DATA_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_RX_LPDT_ESC,
-    input                               mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_RX_SYNC_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_SYNC_HS_LAN1,
-    input [3:0]                         mipi_dphy_rx_inst1_RX_TRIGGER_ESC,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_CLK_NOT,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN1,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_CLK_NOT,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN1,
-    input                               mipi_dphy_rx_inst1_RX_VALID_ESC,
-    input                               mipi_dphy_rx_inst1_RX_VALID_HS_LAN0,
-    input                               mipi_dphy_rx_inst1_RX_VALID_HS_LAN1,
-    input                               mipi_dphy_rx_inst1_STOPSTATE_CLK,
-    input                               mipi_dphy_rx_inst1_STOPSTATE_LAN0,
-    input                               mipi_dphy_rx_inst1_STOPSTATE_LAN1,
+    // MIPI Control
+    output [3:0]        mipi_inst1_VC_ENA,
+    output [1:0]        mipi_inst1_LANES,
+    output              mipi_inst1_CLEAR,
 
+    // MIPI Video input
+    input [3:0]         mipi_inst1_HSYNC,
+    input [3:0]         mipi_inst1_VSYNC,
+    input [3:0]         mipi_inst1_CNT,
+    input               mipi_inst1_VALID,
+    input [5:0]         mipi_inst1_TYPE,
+    input [63:0]        mipi_inst1_DATA,
+    input [1:0]         mipi_inst1_VC,
+    input [17:0]        mipi_inst1_ERR,
+    output              mipi_inst1_DPHY_RSTN,   // Active Low Reset for MIPI Control (DPHY)
+    output              mipi_inst1_RSTN,        // Active Low Reset for MIPI Control (CSI-2)
 
 `endif // ENABLE_EVSOC_CAMERA
 
 `ifdef ENABLE_EVSOC_DISPLAY
 // Common Evsoc I2C Configuration for HDMI
-    output                               hdmi_sda_writeEnable,
-    input                                hdmi_sda_read,
-    output                               hdmi_scl_writeEnable,
-    input                                hdmi_scl_read,
+    output              hdmi_sda_writeEnable,
+    input               hdmi_sda_read,
+    output              hdmi_scl_writeEnable,
+    input               hdmi_scl_read,
 
-    //  HDMI YUV Output
-    output                               hdmi_yuv_vs,
-    output                               hdmi_yuv_hs,
-    output                               hdmi_yuv_de,
-    output  [15:0]                       hdmi_yuv_data,
+   // LVDS Video output
+    output [6:0]        lvds_1a_DATA,
+    output [6:0]        lvds_1b_DATA,
+    output [6:0]        lvds_1c_DATA,
+    output [6:0]        lvds_1d_DATA,
+    output [6:0]        lvds_2a_DATA,
+    output [6:0]        lvds_2b_DATA,
+    output [6:0]        lvds_2c_DATA,
+    output [6:0]        lvds_2d_DATA,
+    output [6:0]        lvds_clk,
 
 `endif // ENABLE_EVSOC_DISPLAY
 
 
 `ifdef ENABLE_ETHERNET
 
-// TSE
-    input                   mux_clk,
-    output          [1:0]   mux_clk_sw,  
+//TSE   
     output  wire    [3:0]   rgmii_txd_HI,
     output  wire    [3:0]   rgmii_txd_LO,
     output  wire            rgmii_txc_HI,
     output  wire            rgmii_txc_LO,
     input           [3:0]   rgmii_rxd_HI,
     input           [3:0]   rgmii_rxd_LO,
-    output  wire            rgmii_tx_ctl_HI,
-    output  wire            rgmii_tx_ctl_LO,
-    input                   rgmii_rx_ctl_HI,
-    input                   rgmii_rx_ctl_LO,
-
+    input                   rgmii_rxc,
+    input                   rgmii_rx_ctl,
+    output  wire            rgmii_tx_ctl,  
+   
 //TEMAC PHY Ctr Interface
     output  wire            o_phy_rstn,
 
@@ -318,10 +266,10 @@ module top_soc (
 //////////////////
 
 // Device 
-`ifdef TITANIUM_DEVICE
-    localparam FAMILY  = "TITANIUM";
-`else
+`ifdef TRION_DEVICE
     localparam FAMILY  = "TRION";
+`else
+    localparam FAMILY  = "TITANIUM";
 `endif 
 
 //Display
@@ -335,7 +283,6 @@ module top_soc (
     localparam  DISPLAY_MODE    = "1280x720_60Hz" ;  // Display setting for LVDS
 `endif
 
-
 //Vision related paramter
 localparam MIPI_FRAME_WIDTH       = 1920;  // Resolution of Camera input 
 localparam MIPI_FRAME_HEIGHT      = 1080;  // Resolution of Camera input 
@@ -343,14 +290,11 @@ localparam APB3_ADDR_WIDTH        = 16;    // Vision APB3 CSR Address Width
 localparam APB3_DATA_WIDTH        = 32;    // Vision APB3 CSR Data Width
 localparam HW_ACCEL_ADDR_WIDTH    = 32;    // Hardware Accelerator Address Width
 localparam HW_ACCEL_DATA_WIDTH    = 32;     // Hardware Accelerator Data Width
-localparam CSI_RX_DATA_WIDTH_LANE = 16;
 
 //SD
 localparam SD_AXI_DW   = 32;            // Data Width
 localparam SD_AXI_AW   = 32;            // Address Width
 localparam SD_AXI_SW   = SD_AXI_DW/8;   // Write Strobes Width
-
-
 
 //AXI Interconnect
 localparam HW_ACCEL     = 0; 
@@ -361,7 +305,7 @@ localparam AXIS_DEV     = 3;
 // DMA - TSEMAC
 localparam AXIS_DW = 64;
 
-/************************************Common Wire  ***************************************/
+/************************************Common Wire ***************************************/
 
 //////////////////
 //Wires & Registers
@@ -434,337 +378,131 @@ assign hdmi_pll_rstn    = 1'b1;
 
 
 //Assignment for pll and reset
-assign pll_locked = w_master_rstn & systemClk_locked & my_ddr_pll_locked & mipi_pll_locked & cfg_ok;
+assign pll_locked = w_master_rstn & systemClk_locked & my_ddr_pll_locked & mipi_pll_locked & lvds_pll_locked & hdmi_pll_locked & tse_pll_locked;        
 assign reset      = ~pll_locked;
 
 assign  o_sensor_sda_oe    = !o_sensor_sda;
 assign  o_sensor_scl_oe    = !o_sensor_scl;
 
-/*********************************************LPDDR4 Configuration (Titanium)******************************************/
 
-////////////////////////////////////
-// DDR Configuration for Titanium 
-////////////////////////////////////
+/*********************************************LPDDR3 Configuration (Trion)*********************************************/
 
-//ddr4 config
-localparam [1:0]    IDLE        = 2'b00,
-                    CFG_START   = 2'b01,
-                    CFG_DONE    = 2'b11;
-
-//ddr4 configuration related wires 
-reg  [1:0]   cfg_st, cfg_next;
-reg  [7:0]   cfg_count;
-wire [7:0]   dma_arid;
-wire [7:0]   dma_awid;
-
-//Configure for DDR -> SOC                   
-assign io_ddrA_ar_apcmd             = 1'b0;
-assign io_ddrA_aw_payload_allstrb   = 1'b0;
-assign io_ddrA_aw_apcmd             = 1'b0;
-assign io_ddrA_awcobuf              = 1'b0;
-assign io_ddrA_ar_payload_addr      = { 1'b0, io_ddr_ar_payload_addr_u[31:0] };
-assign io_ddrA_aw_payload_addr      = { 1'b0, io_ddr_aw_payload_addr_u[31:0] };
-assign io_ddrA_ar_payload_id        = { io_ddr_ar_payload_id_u[7:6], io_ddr_ar_payload_id_u[3:0]    };
-assign io_ddrA_aw_payload_id        = { io_ddr_aw_payload_id_u[7:6], io_ddr_aw_payload_id_u[3:0]    };
-assign io_ddr_b_payload_id_i        = { io_ddrA_b_payload_id[5:4], 2'b00, io_ddrA_b_payload_id[3:0] };
-assign io_ddr_r_payload_id_i        = { io_ddrA_r_payload_id[5:4], 2'b00, io_ddrA_r_payload_id[3:0] };
+/////////////////////////////////////////////////////////////////////////////
+//  Full Duplex to Half Duplex Wrapper (Only Applicable for Trion Device)
+//////////////////
 
 
-//Configure for DDR -> DMA
-assign dma_arid = 8'hE0;
-assign dma_awid = 8'hE1;
-assign io_ddrB_aw_apcmd           = 1'b0;
-assign io_ddrB_ar_apcmd           = 1'b0;
-assign io_ddrB_aw_payload_allstrb = 1'b0;
-assign io_ddrB_awcobuf            = 1'b0;
-assign io_ddrB_ar_payload_addr    = { 1'b0, io_ddr_ar_payload_addr_u[63:32] };
-assign io_ddrB_aw_payload_addr    = { 1'b0, io_ddr_aw_payload_addr_u[63:32] };
-assign io_ddrB_ar_payload_id      = { dma_arid[7:6], dma_arid[3:0]          };
-assign io_ddrB_aw_payload_id      = { dma_awid[7:6], dma_awid[3:0]          };
-
-//Assignment for pll and reset
-assign DDR_AXI0_resetn  = cfg_ok;
-assign DDR_AXI1_resetn  = cfg_ok;
-
-// Configure DDR
-assign cfg_start    = ( cfg_st != IDLE     );
-assign cfg_ok       = ( cfg_st == CFG_DONE );
-assign cfg_reset    = ( cfg_st == IDLE     );
-assign cfg_sel      = 1'b0;
-
-always@(posedge io_systemClk or negedge w_master_rstn)
-begin
-    if(!w_master_rstn)
-        cfg_st <= IDLE;
-    else
-        cfg_st <= cfg_next;
-end
-
-always@(*)
-begin
-    cfg_next = cfg_st;
-    case(cfg_st)
-    IDLE:
-    begin
-        if(cfg_count == 'hff)
-            cfg_next = CFG_START;
-        else
-            cfg_next = IDLE;
-    end
-    CFG_START:
-    begin
-        if(cfg_done)
-            cfg_next = CFG_DONE;
-        else
-            cfg_next = CFG_START;
-    end
-    CFG_DONE:
-        cfg_next = CFG_DONE;
-    default:
-        cfg_next = IDLE;
-    endcase
-end
+localparam DDR_SOC = 0; //DDRA_AXI_1 <=> SOC (128dw)
+localparam DDR_DMA = 1; //DDRB_AXI_0 <=> DMA (256dw)
+localparam DDR_NO  = 2; //Number of Ports of DDR , AXI0 & AXI1
 
 
-always@(posedge io_systemClk)
-begin
-    if(cfg_st == IDLE)
-        cfg_count <= cfg_count + 1'b1;
-    else
-        cfg_count <= 'h0;
-end
+// Wire for Full Duplex DDR Signal
+wire                    ddrReset;
+wire [DDR_NO-1:0]		io_ddr_ar_valid;
+wire [DDR_NO-1:0]		io_ddr_ar_ready;
+wire [(DDR_NO*32)-1:0]  io_ddr_ar_payload_addr;
+wire [(DDR_NO*8)-1:0]   io_ddr_ar_payload_id;
+wire [(DDR_NO*8)-1:0]   io_ddr_ar_payload_len;
+wire [(DDR_NO*3)-1:0]   io_ddr_ar_payload_size;
+wire [(DDR_NO*2)-1:0]   io_ddr_ar_payload_burst;
+wire [(DDR_NO*2)-1:0]   io_ddr_ar_payload_lock;
+wire [DDR_NO-1:0]		io_ddr_aw_valid;
+wire [DDR_NO-1:0]		io_ddr_aw_ready;
+wire [(DDR_NO*32)-1:0]  io_ddr_aw_payload_addr;
+wire [(DDR_NO*8)-1:0]   io_ddr_aw_payload_id;
+wire [(DDR_NO*8)-1:0]   io_ddr_aw_payload_len;
+wire [(DDR_NO*3)-1:0]   io_ddr_aw_payload_size;
+wire [(DDR_NO*2)-1:0]   io_ddr_aw_payload_burst;
+wire [(DDR_NO*2)-1:0]   io_ddr_aw_payload_lock;
+wire [(DDR_NO*2)-1:0]   io_ddr_b_payload_resp;
 
-/*******************************************DDR Upsizer AXI0 & AXI1 (Titanium) **************************************/
+//Assignment for payload id
+assign io_ddr_b_payload_resp [(DDR_SOC*2)+:2]    = 2'b00;
+assign io_ddr_b_payload_resp [(DDR_DMA*2)+:2]    = 2'b00;
+assign io_ddr_ar_payload_id  [DDR_DMA*8+:8]      = 8'hE0;
+assign io_ddr_aw_payload_id  [DDR_DMA*8+:8]      = 8'hE1;
+assign io_ddrB_w_payload_id                      = 8'hE2;
 
-////////////////////////////////////
-//  AXI DDR Upsizer 128-bit to 512-bit 
-//  (Only applicable for Ti180 design, Ti180 Hardened DDR Controller supports only 512-bit)
-////////////////////////////////////
 
-
-//These signals are for DDR-UPSIZER (128/256-> 512)
-localparam UPSIZER_SOC   = 0; // This param is for 128->512 Upsizer
-localparam UPSIZER_DMA   = 1; // This param is for 256->512 Upsizer
-localparam UPSIZER       = 2; // Two upsizer is required
-
-wire      [UPSIZER-1:0]             io_ddr_aw_valid_u;
-wire      [UPSIZER-1:0]             io_ddr_aw_ready_u;
-wire      [(UPSIZER*32)-1:0]        io_ddr_aw_payload_addr_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_aw_payload_id_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_aw_payload_region_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_aw_payload_len_u;
-wire      [(UPSIZER*3)-1:0]         io_ddr_aw_payload_size_u;
-wire      [(UPSIZER*2)-1:0]         io_ddr_aw_payload_burst_u;
-wire      [UPSIZER-1:0]             io_ddr_aw_payload_lock_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_aw_payload_cache_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_aw_payload_qos_u;
-wire      [(UPSIZER*3)-1:0]         io_ddr_aw_payload_prot_u;
-wire      [UPSIZER-1:0]             io_ddr_w_valid_u;
-wire      [UPSIZER-1:0]             io_ddr_w_ready_u;
-wire      [(UPSIZER*256)-1:0]       io_ddr_w_payload_data_u;
-wire      [(UPSIZER*32)-1:0]        io_ddr_w_payload_strb_u;
-wire      [UPSIZER-1:0]             io_ddr_w_payload_last_u;
-wire      [UPSIZER-1:0]             io_ddr_b_valid_u;
-wire      [UPSIZER-1:0]             io_ddr_b_ready_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_b_payload_id_u;
-wire      [(UPSIZER*2)-1:0]         io_ddr_b_payload_resp_u;
-wire      [UPSIZER-1:0]             io_ddr_ar_valid_u;
-wire      [UPSIZER-1:0]             io_ddr_ar_ready_u;
-wire      [(UPSIZER*32)-1:0]        io_ddr_ar_payload_addr_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_ar_payload_id_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_ar_payload_region_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_ar_payload_len_u;
-wire      [(UPSIZER*3)-1:0]         io_ddr_ar_payload_size_u;
-wire      [(UPSIZER*2)-1:0]         io_ddr_ar_payload_burst_u;
-wire      [UPSIZER-1:0]             io_ddr_ar_payload_lock_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_ar_payload_cache_u;
-wire      [(UPSIZER*4)-1:0]         io_ddr_ar_payload_qos_u;
-wire      [(UPSIZER*3)-1:0]         io_ddr_ar_payload_prot_u;
-wire      [UPSIZER-1:0]             io_ddr_r_valid_u;
-wire      [UPSIZER-1:0]             io_ddr_r_ready_u;
-wire      [(UPSIZER*256)-1:0]       io_ddr_r_payload_data_u;
-wire      [(UPSIZER*8)-1:0]         io_ddr_r_payload_id_u;
-wire      [(UPSIZER*2)-1:0]         io_ddr_r_payload_resp_u;
-wire      [UPSIZER-1:0]             io_ddr_r_payload_last_u;
-
-//DDR4 signal size switch wires
-wire      [(UPSIZER*32)-1:0]        io_ddr_ar_payload_addr_i;
-wire      [(UPSIZER*32)-1:0]        io_ddr_aw_payload_addr_i;
-wire      [7:0]                     io_ddr_ar_payload_id_i;
-wire      [7:0]                     io_ddr_aw_payload_id_i;
-wire      [7:0]                     io_ddr_b_payload_id_i;
-wire      [7:0]                     io_ddr_r_payload_id_i;
-
-Asic128To512UpsizerAxi4Upsizer upsizer_SOC( //Upsizer SOC -> DDR
-
-    //128 DW bit SoC
-    .io_input_aw_valid              ( io_ddr_aw_valid_u         [UPSIZER_SOC*1+:1]     ),     
-    .io_input_aw_ready              ( io_ddr_aw_ready_u         [UPSIZER_SOC*1+:1]     ),     
-    .io_input_aw_payload_len        ( io_ddr_aw_payload_len_u   [UPSIZER_SOC*8+:8]     ),     
-    .io_input_aw_payload_size       ( io_ddr_aw_payload_size_u  [UPSIZER_SOC*3+:3]     ),    
-    .io_input_aw_payload_burst      ( io_ddr_aw_payload_burst_u [UPSIZER_SOC*2+:2]     ),   
-    .io_input_aw_payload_lock       ( io_ddr_aw_payload_lock_u  [UPSIZER_SOC*1+:1]     ),    
-    .io_input_aw_payload_qos        ( io_ddr_aw_payload_qos_u   [UPSIZER_SOC*4+:4]     ),     
-    .io_input_aw_payload_cache      ( io_ddr_aw_payload_cache_u [UPSIZER_SOC*4+:4]     ), 
-    .io_input_ar_valid              ( io_ddr_ar_valid_u         [UPSIZER_SOC*1+:1]     ),     
-    .io_input_ar_ready              ( io_ddr_ar_ready_u         [UPSIZER_SOC*1+:1]     ),     
-    .io_input_ar_payload_len        ( io_ddr_ar_payload_len_u   [UPSIZER_SOC*8+:8]     ),     
-    .io_input_ar_payload_size       ( io_ddr_ar_payload_size_u  [UPSIZER_SOC*3+:3]     ),   
-    .io_input_ar_payload_burst      ( io_ddr_ar_payload_burst_u [UPSIZER_SOC*2+:2]     ),   
-    .io_input_ar_payload_lock       ( io_ddr_ar_payload_lock_u  [UPSIZER_SOC*1+:1]     ),   
-    .io_input_ar_payload_qos        ( io_ddr_ar_payload_qos_u   [UPSIZER_SOC*4+:4]     ),     
-    .io_input_w_valid               ( io_ddr_w_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_w_ready               ( io_ddr_w_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_w_payload_data        ( io_ddr_w_payload_data_u   [UPSIZER_SOC*256+:256] ),
-    .io_input_w_payload_strb        ( io_ddr_w_payload_strb_u   [UPSIZER_SOC*32+:32]   ),
-    .io_input_w_payload_last        ( io_ddr_w_payload_last_u   [UPSIZER_SOC*1+:1]     ),
-    .io_input_b_valid               ( io_ddr_b_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_b_ready               ( io_ddr_b_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_b_payload_resp        ( io_ddr_b_payload_resp_u   [UPSIZER_SOC*2+:2]     ),
-    .io_input_r_valid               ( io_ddr_r_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_r_ready               ( io_ddr_r_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_input_r_payload_data        ( io_ddr_r_payload_data_u   [UPSIZER_SOC*256+:256] ),
-    .io_input_r_payload_resp        ( io_ddr_r_payload_resp_u   [UPSIZER_SOC*2+:2]     ),
-    .io_input_r_payload_last        ( io_ddr_r_payload_last_u   [UPSIZER_SOC*1+:1]     ),
-    .io_input_ar_payload_addr       ( io_ddr_ar_payload_addr_i  [UPSIZER_SOC*32+:32]   ),
-    .io_input_aw_payload_addr       ( io_ddr_aw_payload_addr_i  [UPSIZER_SOC*32+:32]   ),
-    .io_input_ar_payload_id         ( io_ddr_ar_payload_id_i                           ), //output to soc
-    .io_input_aw_payload_id         ( io_ddr_aw_payload_id_i                           ), //output to soc
-    .io_input_b_payload_id          ( io_ddr_b_payload_id_u     [UPSIZER_SOC*8+:8]     ), //output to Soc as well
-    .io_input_r_payload_id          ( io_ddr_r_payload_id_u     [UPSIZER_SOC*8+:8]     ), //output to Soc as well
-    .io_input_aw_payload_prot       (   ),
-    .io_input_aw_payload_region     (   ), 
-    .io_input_ar_payload_prot       (   ),
-    .io_input_ar_payload_cache      (   ),
-    .io_input_ar_payload_region     (   ),  
-    //512 DW bit DDR
-    .io_output_aw_payload_prot      (   ),
-    .io_output_aw_payload_region    (   ),
-    .io_output_ar_payload_prot      (   ),
-    .io_output_ar_payload_cache     (   ),
-    .io_output_ar_payload_region    (   ),
-    .io_output_ar_payload_addr      ( io_ddr_ar_payload_addr_u  [UPSIZER_SOC*32+:32]  ),
-    .io_output_aw_payload_addr      ( io_ddr_aw_payload_addr_u  [UPSIZER_SOC*32+:32]  ),
-    .io_output_ar_payload_id        ( io_ddr_ar_payload_id_u    [UPSIZER_SOC*8+:8]     ),
-    .io_output_aw_payload_id        ( io_ddr_aw_payload_id_u    [UPSIZER_SOC*8+:8]     ),
-    .io_output_aw_valid             ( io_ddrA_aw_valid         ),
-    .io_output_aw_ready             ( io_ddrA_aw_ready         ),
-    .io_output_aw_payload_len       ( io_ddrA_aw_payload_len   ),
-    .io_output_aw_payload_size      ( io_ddrA_aw_payload_size  ),
-    .io_output_aw_payload_burst     ( io_ddrA_aw_payload_burst ),
-    .io_output_aw_payload_lock      ( io_ddrA_aw_payload_lock  ),
-    .io_output_aw_payload_qos       ( io_ddrA_aw_payload_qos   ),
-    .io_output_aw_payload_cache     ( io_ddrA_aw_payload_cache ),
-    .io_output_ar_valid             ( io_ddrA_ar_valid         ),
-    .io_output_ar_ready             ( io_ddrA_ar_ready         ),
-    .io_output_ar_payload_len       ( io_ddrA_ar_payload_len   ),
-    .io_output_ar_payload_size      ( io_ddrA_ar_payload_size  ),
-    .io_output_ar_payload_burst     ( io_ddrA_ar_payload_burst ),
-    .io_output_ar_payload_lock      ( io_ddrA_ar_payload_lock  ),
-    .io_output_ar_payload_qos       ( io_ddrA_ar_payload_qos   ),
-    .io_output_w_valid              ( io_ddrA_w_valid          ),   
-    .io_output_w_ready              ( io_ddrA_w_ready          ),
-    .io_output_w_payload_data       ( io_ddrA_w_payload_data   ),
-    .io_output_w_payload_strb       ( io_ddrA_w_payload_strb   ),
-    .io_output_w_payload_last       ( io_ddrA_w_payload_last   ),
-    .io_output_b_valid              ( io_ddrA_b_valid          ),
-    .io_output_b_ready              ( io_ddrA_b_ready          ),
-    .io_output_b_payload_resp       ( io_ddrA_b_payload_resp   ),
-    .io_output_r_valid              ( io_ddrA_r_valid          ),
-    .io_output_r_ready              ( io_ddrA_r_ready          ),
-    .io_output_r_payload_data       ( io_ddrA_r_payload_data   ),
-    .io_output_r_payload_resp       ( io_ddrA_r_payload_resp   ),
-    .io_output_r_payload_last       ( io_ddrA_r_payload_last   ),
-    .io_output_b_payload_id         ( io_ddr_b_payload_id_i    ),
-    .io_output_r_payload_id         ( io_ddr_r_payload_id_i    ),
-    .clk                            ( io_memoryClk             ),
-    .reset                          ( io_memoryReset           )
+//TRION DDR Reset 
+ddr_reset_seq u_ddr_reset (
+    .ddr_rstn_i         ( my_ddr_pll_locked       ), 
+    .clk                ( io_memoryClk            ),
+    .ddr_rstn           ( ddr_inst1_CFG_RST_N     ),
+    .ddr_cfg_seq_rst    ( ddr_inst1_CFG_SEQ_RST   ),
+    .ddr_cfg_seq_start  ( ddr_inst1_CFG_SEQ_START ),
+    .ddr_init_done      ( ddrReset                )
 );
 
-//Upsizer DMA -> DDR
-Asic256To512UpsizerAxi4Upsizer upsizer_DMA(
-    // 256 DW bit DMA
-    .io_input_aw_valid              ( io_ddr_aw_valid_u         [UPSIZER_DMA*1+:1]     ),     
-    .io_input_aw_ready              ( io_ddr_aw_ready_u         [UPSIZER_DMA*1+:1]     ),     
-    .io_input_aw_payload_len        ( io_ddr_aw_payload_len_u   [UPSIZER_DMA*8+:8]     ),     
-    .io_input_aw_payload_size       ( io_ddr_aw_payload_size_u  [UPSIZER_DMA*3+:3]     ),    
-    .io_input_aw_payload_burst      ( io_ddr_aw_payload_burst_u [UPSIZER_DMA*2+:2]     ),   
-    .io_input_aw_payload_lock       ( io_ddr_aw_payload_lock_u  [UPSIZER_DMA*1+:1]     ),    
-    .io_input_aw_payload_qos        ( io_ddr_aw_payload_qos_u   [UPSIZER_DMA*4+:4]     ),     
-    .io_input_aw_payload_cache      ( io_ddr_aw_payload_cache_u [UPSIZER_DMA*4+:4]     ), 
-    .io_input_ar_valid              ( io_ddr_ar_valid_u         [UPSIZER_DMA*1+:1]     ),     
-    .io_input_ar_ready              ( io_ddr_ar_ready_u         [UPSIZER_DMA*1+:1]     ),     
-    .io_input_ar_payload_len        ( io_ddr_ar_payload_len_u   [UPSIZER_DMA*8+:8]     ),     
-    .io_input_ar_payload_size       ( io_ddr_ar_payload_size_u  [UPSIZER_DMA*3+:3]     ),   
-    .io_input_ar_payload_burst      ( io_ddr_ar_payload_burst_u [UPSIZER_DMA*2+:2]     ),   
-    .io_input_ar_payload_lock       ( io_ddr_ar_payload_lock_u  [UPSIZER_DMA*1+:1]     ),   
-    .io_input_ar_payload_qos        ( io_ddr_ar_payload_qos_u   [UPSIZER_DMA*4+:4]     ),     
-    .io_input_w_valid               ( io_ddr_w_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_w_ready               ( io_ddr_w_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_w_payload_data        ( io_ddr_w_payload_data_u   [UPSIZER_DMA*256+:256] ),
-    .io_input_w_payload_strb        ( io_ddr_w_payload_strb_u   [UPSIZER_DMA*32+:32]   ),
-    .io_input_w_payload_last        ( io_ddr_w_payload_last_u   [UPSIZER_DMA*1+:1]     ),
-    .io_input_b_valid               ( io_ddr_b_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_b_ready               ( io_ddr_b_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_b_payload_resp        ( io_ddr_b_payload_resp_u   [UPSIZER_DMA*2+:2]     ),
-    .io_input_r_valid               ( io_ddr_r_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_r_ready               ( io_ddr_r_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .io_input_r_payload_data        ( io_ddr_r_payload_data_u   [UPSIZER_DMA*256+:256] ),
-    .io_input_r_payload_resp        ( io_ddr_r_payload_resp_u   [UPSIZER_DMA*2+:2]     ),
-    .io_input_r_payload_last        ( io_ddr_r_payload_last_u   [UPSIZER_DMA*1+:1]     ),
-    .io_input_ar_payload_addr       ( io_ddr_ar_payload_addr_i  [UPSIZER_DMA*32+:32]   ),
-    .io_input_aw_payload_addr       ( io_ddr_aw_payload_addr_i  [UPSIZER_DMA*32+:32]   ),
-    .io_input_ar_payload_id         (   ), // Only for Soc
-    .io_input_aw_payload_id         (   ), // Only for Soc
-    .io_input_b_payload_id          (   ), // Only for Soc
-    .io_input_r_payload_id          (   ), // Only for Soc
-    .io_input_aw_payload_prot       (   ),
-    .io_input_aw_payload_region     (   ), 
-    .io_input_ar_payload_prot       (   ),
-    .io_input_ar_payload_cache      (   ),
-    .io_input_ar_payload_region     (   ),  
-    //512 DW bit DDR
-    .io_output_aw_payload_prot      (   ),
-    .io_output_aw_payload_region    (   ),
-    .io_output_ar_payload_prot      (   ),
-    .io_output_ar_payload_cache     (   ),
-    .io_output_ar_payload_region    (   ),
-    .io_output_ar_payload_id        (   ), // Only for Soc
-    .io_output_aw_payload_id        (   ), // Only for Soc
-    .io_output_b_payload_id         (   ), // Only for Soc
-    .io_output_r_payload_id         (   ), // Only for Soc
-    .io_output_ar_payload_addr      ( io_ddr_ar_payload_addr_u[UPSIZER_DMA*32+:32]    ), //output to DDR
-    .io_output_aw_payload_addr      ( io_ddr_aw_payload_addr_u[UPSIZER_DMA*32+:32]    ), //output to DDR
-    .io_output_aw_valid             ( io_ddrB_aw_valid         ),
-    .io_output_aw_ready             ( io_ddrB_aw_ready         ),
-    .io_output_aw_payload_len       ( io_ddrB_aw_payload_len   ),
-    .io_output_aw_payload_size      ( io_ddrB_aw_payload_size  ),
-    .io_output_aw_payload_burst     ( io_ddrB_aw_payload_burst ),
-    .io_output_aw_payload_lock      ( io_ddrB_aw_payload_lock  ),
-    .io_output_aw_payload_qos       ( io_ddrB_aw_payload_qos   ),
-    .io_output_aw_payload_cache     ( io_ddrB_aw_payload_cache ),
-    .io_output_ar_valid             ( io_ddrB_ar_valid         ),
-    .io_output_ar_ready             ( io_ddrB_ar_ready         ),
-    .io_output_ar_payload_len       ( io_ddrB_ar_payload_len   ),
-    .io_output_ar_payload_size      ( io_ddrB_ar_payload_size  ),
-    .io_output_ar_payload_burst     ( io_ddrB_ar_payload_burst ),
-    .io_output_ar_payload_lock      ( io_ddrB_ar_payload_lock  ),
-    .io_output_ar_payload_qos       ( io_ddrB_ar_payload_qos   ),
-    .io_output_w_valid              ( io_ddrB_w_valid          ),   
-    .io_output_w_ready              ( io_ddrB_w_ready          ),
-    .io_output_w_payload_data       ( io_ddrB_w_payload_data   ),
-    .io_output_w_payload_strb       ( io_ddrB_w_payload_strb   ),
-    .io_output_w_payload_last       ( io_ddrB_w_payload_last   ),
-    .io_output_b_valid              ( io_ddrB_b_valid          ),
-    .io_output_b_ready              ( io_ddrB_b_ready          ),
-    .io_output_b_payload_resp       ( io_ddrB_b_payload_resp   ),
-    .io_output_r_valid              ( io_ddrB_r_valid          ),
-    .io_output_r_ready              ( io_ddrB_r_ready          ),
-    .io_output_r_payload_data       ( io_ddrB_r_payload_data   ),
-    .io_output_r_payload_resp       ( io_ddrB_r_payload_resp   ),
-    .io_output_r_payload_last       ( io_ddrB_r_payload_last   ),
-    .clk                            ( io_memoryClk             ),
-    .reset                          ( io_memoryReset           )
+//Full Duplex to Half duplex Wrapper -> SOC <=> DDR_AXI_1 
+fd_to_hd_wrapper fd_to_hd_wrapper_ddrA(
+    .clk                        ( io_memoryClk              ),
+    .reset                      ( ~ddrReset                 ),
+
+    //Signal from DDR (Half Duplex) <=> Wrapper
+    .io_ddrA_arw_valid          ( io_ddrA_arw_valid         ),
+    .io_ddrA_arw_ready          ( io_ddrA_arw_ready         ),
+    .io_ddrA_arw_payload_addr   ( io_ddrA_arw_payload_addr  ),
+    .io_ddrA_arw_payload_id     ( io_ddrA_arw_payload_id    ),
+    .io_ddrA_arw_payload_len    ( io_ddrA_arw_payload_len   ),
+    .io_ddrA_arw_payload_size   ( io_ddrA_arw_payload_size  ),
+    .io_ddrA_arw_payload_burst  ( io_ddrA_arw_payload_burst ),
+    .io_ddrA_arw_payload_lock   ( io_ddrA_arw_payload_lock  ),
+    .io_ddrA_arw_payload_write  ( io_ddrA_arw_payload_write ),
+
+    //Signal from SoC (Full Duplex) <=> Wrapper
+    .io_ddrA_aw_valid           ( io_ddr_aw_valid         [DDR_SOC*1+:1]   ),
+    .io_ddrA_aw_ready           ( io_ddr_aw_ready         [DDR_SOC*1+:1]   ),
+    .io_ddrA_aw_payload_addr    ( io_ddr_aw_payload_addr  [DDR_SOC*32+:32] ),
+    .io_ddrA_aw_payload_id      ( io_ddr_aw_payload_id    [DDR_SOC*8+:8]   ),
+    .io_ddrA_aw_payload_len     ( io_ddr_aw_payload_len   [DDR_SOC*8+:8]   ),
+    .io_ddrA_aw_payload_size    ( io_ddr_aw_payload_size  [DDR_SOC*3+:3]   ),
+    .io_ddrA_aw_payload_burst   ( io_ddr_aw_payload_burst [DDR_SOC*2+:2]   ),
+    .io_ddrA_aw_payload_lock    ( io_ddr_aw_payload_lock  [DDR_SOC*2+:2]   ),
+    .io_ddrA_ar_valid           ( io_ddr_ar_valid         [DDR_SOC*1+:1]   ),
+    .io_ddrA_ar_ready           ( io_ddr_ar_ready         [DDR_SOC*1+:1]   ),
+    .io_ddrA_ar_payload_addr    ( io_ddr_ar_payload_addr  [DDR_SOC*32+:32] ),
+    .io_ddrA_ar_payload_id      ( io_ddr_ar_payload_id    [DDR_SOC*8+:8]   ),
+    .io_ddrA_ar_payload_len     ( io_ddr_ar_payload_len   [DDR_SOC*8+:8]   ),
+    .io_ddrA_ar_payload_size    ( io_ddr_ar_payload_size  [DDR_SOC*3+:3]   ),
+    .io_ddrA_ar_payload_burst   ( io_ddr_ar_payload_burst [DDR_SOC*2+:2]   ),
+    .io_ddrA_ar_payload_lock    ( io_ddr_ar_payload_lock  [DDR_SOC*2+:2]   )
+);
+
+//Full Duplex to Half duplex Wrapper -> DMA <=> DDR_AXI_0 
+fd_to_hd_wrapper fd_to_hd_wrapper_ddrB(
+    .clk                        ( io_memoryClk              ),
+    .reset                      ( ~ddrReset                 ),
+
+    //Signal from DDR (Half Duplex) <=> Wrapper
+    .io_ddrA_arw_valid          ( io_ddrB_arw_valid         ),
+    .io_ddrA_arw_ready          ( io_ddrB_arw_ready         ),
+    .io_ddrA_arw_payload_addr   ( io_ddrB_arw_payload_addr  ),
+    .io_ddrA_arw_payload_id     ( io_ddrB_arw_payload_id    ),
+    .io_ddrA_arw_payload_len    ( io_ddrB_arw_payload_len   ),
+    .io_ddrA_arw_payload_size   ( io_ddrB_arw_payload_size  ),
+    .io_ddrA_arw_payload_burst  ( io_ddrB_arw_payload_burst ),
+    .io_ddrA_arw_payload_lock   ( io_ddrB_arw_payload_lock  ),
+    .io_ddrA_arw_payload_write  ( io_ddrB_arw_payload_write ),
+
+    //Signal from DMA (Full Duplex) <=> Wrapper
+    .io_ddrA_aw_valid           ( io_ddr_aw_valid         [DDR_DMA*1+:1]   ),
+    .io_ddrA_aw_ready           ( io_ddr_aw_ready         [DDR_DMA*1+:1]   ),
+    .io_ddrA_aw_payload_addr    ( io_ddr_aw_payload_addr  [DDR_DMA*32+:32] ),
+    .io_ddrA_aw_payload_id      ( io_ddr_aw_payload_id    [DDR_DMA*8+:8]   ),
+    .io_ddrA_aw_payload_len     ( io_ddr_aw_payload_len   [DDR_DMA*8+:8]   ),
+    .io_ddrA_aw_payload_size    ( io_ddr_aw_payload_size  [DDR_DMA*3+:3]   ),
+    .io_ddrA_aw_payload_burst   ( io_ddr_aw_payload_burst [DDR_DMA*2+:2]   ),
+    .io_ddrA_aw_payload_lock    ( io_ddr_aw_payload_lock  [DDR_DMA*2+:2]   ),
+    .io_ddrA_ar_valid           ( io_ddr_ar_valid         [DDR_DMA*1+:1]   ),
+    .io_ddrA_ar_ready           ( io_ddr_ar_ready         [DDR_DMA*1+:1]   ),
+    .io_ddrA_ar_payload_addr    ( io_ddr_ar_payload_addr  [DDR_DMA*32+:32] ),
+    .io_ddrA_ar_payload_id      ( io_ddr_ar_payload_id    [DDR_DMA*8+:8]   ),
+    .io_ddrA_ar_payload_len     ( io_ddr_ar_payload_len   [DDR_DMA*8+:8]   ),
+    .io_ddrA_ar_payload_size    ( io_ddr_ar_payload_size  [DDR_DMA*3+:3]   ),
+    .io_ddrA_ar_payload_burst   ( io_ddr_ar_payload_burst [DDR_DMA*2+:2]   ),
+    .io_ddrA_ar_payload_lock    ( io_ddr_ar_payload_lock  [DDR_DMA*2+:2]   )
 );
 
 /********************************************* AXI Interconnect ********************************************/
@@ -958,7 +696,6 @@ gAXIS_1to3_switch u_AXIS_1to3_switch
 
 );
 `endif
-
 /****************************************** SD Related Modules Instantiation *****************************************/
 
 `ifdef ENABLE_SDHC
@@ -999,6 +736,7 @@ wire    [1:0]               sd_m_axi_rresp;
 wire                        sd_m_axi_rlast;
 wire                        sd_m_axi_rvalid;
 wire                        sd_m_axi_rready;
+
 
 // SD Related wires
 wire                        sd_int;
@@ -1149,16 +887,39 @@ wire                    rx_dma_descriptorUpdate;
 wire                    io_ddrMasters_0_reset;
 wire    [2:0]           tse_eth_speed;
 wire                    phy_sw_rst;
-wire                    rgmii_rxc;
+reg                     r_rgmii_rx_ctl;
+wire    [3:0]           w_rgmii_rxd_HI;
+wire    [3:0]           w_rgmii_rxd_LO;
+wire                    w_rgmii_txc_HI;
+wire                    w_rgmii_txc_LO;
+wire                    rgmii_rx_ctl_HI;
+wire                    rgmii_rx_ctl_LO;
+wire                    rgmii_tx_ctl_HI;
+wire                    rgmii_tx_ctl_LO;
 
-assign rgmii_rxc  = mux_clk;
-assign o_phy_rstn = phy_sw_rst;
-assign mux_clk_sw = tse_eth_speed[2] ? 2 : 3;    //select clock 2 when speed == 1000Mbps
+assign rgmii_tx_ctl     = rgmii_tx_ctl_HI| rgmii_tx_ctl_LO ;
+assign rgmii_txc_HI     = (tse_eth_speed== 'b100) ? w_rgmii_txc_HI : ~w_rgmii_txc_HI; 
+assign rgmii_txc_LO     = (tse_eth_speed== 'b100) ? w_rgmii_txc_LO : ~w_rgmii_txc_LO; 
+assign rgmii_rx_ctl_HI  = (tse_eth_speed== 'b100) ?   rgmii_rx_ctl :  r_rgmii_rx_ctl;
+assign rgmii_rx_ctl_LO  = (tse_eth_speed== 'b100) ?   rgmii_rx_ctl :  r_rgmii_rx_ctl;
+assign w_rgmii_rxd_HI   = rgmii_rxd_HI;
+assign w_rgmii_rxd_LO   = rgmii_rxd_LO;
+assign o_phy_rstn       = phy_sw_rst;
+
+/////////////////////////////////////////////////////////////////////////////
+
+always @(posedge rgmii_rxc or negedge tse_pll_locked)
+begin
+    if(~tse_pll_locked)
+        r_rgmii_rx_ctl <= 1'b0;
+    else 
+        r_rgmii_rx_ctl <= rgmii_rx_ctl;
+end
 
 
-tseCore #(
+tseCore  #(
     .FAMILY(FAMILY)
-    )u_core (
+    )u_core(
     .io_peripheralClk        ( io_peripheralClk   ),
     .io_peripheralReset      ( io_peripheralReset ),
     .io_tseClk               ( io_tseClk   ),
@@ -1176,10 +937,11 @@ tseCore #(
     .rgmii_rx_ctl_HI    ( rgmii_rx_ctl_HI ),
     .rgmii_rx_ctl_LO    ( rgmii_rx_ctl_LO ),
     .rgmii_rxc          ( rgmii_rxc       ),
-    .rgmii_txc_HI       ( rgmii_txc_HI ),
-    .rgmii_txc_LO       ( rgmii_txc_LO ),
-    .rgmii_rxd_HI       ( rgmii_rxd_HI ),
-    .rgmii_rxd_LO       ( rgmii_rxd_LO ),
+    .rgmii_txc_HI       ( w_rgmii_txc_HI ),
+    .rgmii_txc_LO       ( w_rgmii_txc_LO ),
+    .rgmii_rxd_HI       ( w_rgmii_rxd_HI ),
+    .rgmii_rxd_LO       ( w_rgmii_rxd_LO ),
+
 
     // TSEMAC PHY MDIO Interface
     .phy_mdi            ( phy_mdi    ),
@@ -1218,6 +980,7 @@ tseCore #(
     .m_eth_rx_tdata          ( m_eth_rx_tdata  ),
     .m_eth_rx_tlast          ( m_eth_rx_tlast  )
 );
+
 
 /**************************************************
  *
@@ -1298,8 +1061,8 @@ gDMA u_dma (
     .dat0_i_tlast         ( m_eth_rx_tlast           )
 );
 
-`endif // ENABLE_ETHERNET
-
+`endif //ENABLE_ETHERNET
+ 
 /*********************************************Edge Vision Soc  ****************************************************/
 
 `ifdef ENABLE_EVSOC
@@ -1341,10 +1104,10 @@ wire  [3:0]   vision_dma_interrupts;
 assign  o_cam_rstn      = i_arstn;
 assign  o_cam_sda_oe    = !o_cam_sda;
 assign  o_cam_scl_oe    = !o_cam_scl;
+assign  o_hdmi_rstn     = i_arstn; 
 
 // Assignment for DMA vision Interrupt
 assign  vision_dma_ctrl_interrupt = | vision_dma_interrupts;
-
 
 /**************************************************
  *
@@ -1366,58 +1129,29 @@ efx_isg_vision_wrapper  #(
     .i_pixel_clk           ( mipi_pclk           ),
     .io_peripheralClk      ( io_peripheralClk    ),
     .io_peripheralReset    ( io_peripheralReset  ),
-    .i_hdmi_clk_148p5MHz   ( hdmi_yuv_clk ),
+    .i_hdmi_clk_148p5MHz   ( tx_slowclk   ),
     .i_sys_clk_25mhz       ( hdmi_clk     ),
     .i_arstn               ( i_arstn      ),
 
     // PLL Locked
     .pll_system_locked     ( systemClk_locked     ), 
-    .pll_hdmi_locked       ( mipi_pll_locked      ),
+    .pll_hdmi_locked       ( hdmi_pll_locked      ),
     .pll_peripheral_locked ( pll_locked ),
 
     // MIPI RX - Camera
-    .mipi_dphy_rx_inst1_WORD_CLKOUT_HS          (mipi_dphy_rx_inst1_WORD_CLKOUT_HS),
-    .mipi_dphy_rx_inst1_FORCE_RX_MODE           (mipi_dphy_rx_inst1_FORCE_RX_MODE),
-    .mipi_dphy_rx_inst1_ERR_CONTENTION_LP0      (mipi_dphy_rx_inst1_ERR_CONTENTION_LP0),
-    .mipi_dphy_rx_inst1_ERR_CONTENTION_LP1      (mipi_dphy_rx_inst1_ERR_CONTENTION_LP1),
-    .mipi_dphy_rx_inst1_ERR_CONTROL_LAN0        (mipi_dphy_rx_inst1_ERR_CONTROL_LAN0),
-    .mipi_dphy_rx_inst1_ERR_CONTROL_LAN1        (mipi_dphy_rx_inst1_ERR_CONTROL_LAN1),
-    .mipi_dphy_rx_inst1_ERR_ESC_LAN0            (mipi_dphy_rx_inst1_ERR_ESC_LAN0),
-    .mipi_dphy_rx_inst1_ERR_ESC_LAN1            (mipi_dphy_rx_inst1_ERR_ESC_LAN1),
-    .mipi_dphy_rx_inst1_ERR_SOT_HS_LAN0         (mipi_dphy_rx_inst1_ERR_SOT_HS_LAN0),
-    .mipi_dphy_rx_inst1_ERR_SOT_HS_LAN1         (mipi_dphy_rx_inst1_ERR_SOT_HS_LAN1),
-    .mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN0    (mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN0),
-    .mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN1    (mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN1),
-    .mipi_dphy_rx_inst1_LP_CLK                  (mipi_dphy_rx_inst1_LP_CLK),
-    .mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN0       (mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN0),
-    .mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN1       (mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN1),
-    .mipi_dphy_rx_inst1_RX_CLK_ACTIVE_HS        (mipi_dphy_rx_inst1_RX_CLK_ACTIVE_HS),
-    .mipi_dphy_rx_inst1_ESC_LAN0_CLK            (mipi_dphy_rx_inst1_ESC_LAN0_CLK),
-    .mipi_dphy_rx_inst1_ESC_LAN1_CLK            (mipi_dphy_rx_inst1_ESC_LAN1_CLK),
-    .mipi_dphy_rx_inst1_RX_DATA_ESC             (mipi_dphy_rx_inst1_RX_DATA_ESC),
-    .mipi_dphy_rx_inst1_RX_DATA_HS_LAN0         (mipi_dphy_rx_inst1_RX_DATA_HS_LAN0),
-    .mipi_dphy_rx_inst1_RX_DATA_HS_LAN1         (mipi_dphy_rx_inst1_RX_DATA_HS_LAN1),
-    .mipi_dphy_rx_inst1_RX_LPDT_ESC             (mipi_dphy_rx_inst1_RX_LPDT_ESC),
-    .mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN0     (mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN0),
-    .mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN1     (mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN1),
-    .mipi_dphy_rx_inst1_RX_SYNC_HS_LAN0         (mipi_dphy_rx_inst1_RX_SYNC_HS_LAN0),
-    .mipi_dphy_rx_inst1_RX_SYNC_HS_LAN1         (mipi_dphy_rx_inst1_RX_SYNC_HS_LAN1),
-    .mipi_dphy_rx_inst1_RX_TRIGGER_ESC          (mipi_dphy_rx_inst1_RX_TRIGGER_ESC),
-    .mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_CLK_NOT  (mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_CLK_NOT),
-    .mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN0 (mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN0),
-    .mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN1 (mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN1),
-    .mipi_dphy_rx_inst1_RX_ULPS_CLK_NOT         (mipi_dphy_rx_inst1_RX_ULPS_CLK_NOT),
-    .mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN0        (mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN0),
-    .mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN1        (mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN1),
-    .mipi_dphy_rx_inst1_RX_VALID_ESC            (mipi_dphy_rx_inst1_RX_VALID_ESC),
-    .mipi_dphy_rx_inst1_RX_VALID_HS_LAN0        (mipi_dphy_rx_inst1_RX_VALID_HS_LAN0),
-    .mipi_dphy_rx_inst1_RX_VALID_HS_LAN1        (mipi_dphy_rx_inst1_RX_VALID_HS_LAN1),
-    .mipi_dphy_rx_inst1_STOPSTATE_CLK           (mipi_dphy_rx_inst1_STOPSTATE_CLK),
-    .mipi_dphy_rx_inst1_STOPSTATE_LAN0          (mipi_dphy_rx_inst1_STOPSTATE_LAN0),
-    .mipi_dphy_rx_inst1_STOPSTATE_LAN1          (mipi_dphy_rx_inst1_STOPSTATE_LAN1  ),
-    .mipi_dphy_rx_inst1_RESET_N                 (mipi_dphy_rx_inst1_RESET_N),
-    .mipi_dphy_rx_inst1_RST0_N                  (mipi_dphy_rx_inst1_RST0_N ),    
-
+    .mipi_inst1_VC_ENA    ( mipi_inst1_VC_ENA    ),
+    .mipi_inst1_LANES     ( mipi_inst1_LANES     ),
+    .mipi_inst1_CLEAR     ( mipi_inst1_CLEAR     ),
+    .mipi_inst1_HSYNC     ( mipi_inst1_HSYNC     ),
+    .mipi_inst1_VSYNC     ( mipi_inst1_VSYNC     ),
+    .mipi_inst1_CNT       ( mipi_inst1_CNT       ), 
+    .mipi_inst1_VALID     ( mipi_inst1_VALID     ),
+    .mipi_inst1_TYPE      ( mipi_inst1_TYPE      ),
+    .mipi_inst1_DATA      ( mipi_inst1_DATA      ),
+    .mipi_inst1_VC        ( mipi_inst1_VC        ),
+    .mipi_inst1_ERR       ( mipi_inst1_ERR       ),
+    .mipi_inst1_DPHY_RSTN ( mipi_inst1_DPHY_RSTN ),                  
+    .mipi_inst1_RSTN      ( mipi_inst1_RSTN      ), 
     // Camera (DMA)
     .cam_dma_wready     ( cam_dma_wready  ), 
     .cam_dma_wvalid     ( cam_dma_wvalid  ), 
@@ -1430,12 +1164,16 @@ efx_isg_vision_wrapper  #(
     .i2c_sda_oe         ( hdmi_sda_writeEnable ), 
     .i2c_scl_oe         ( hdmi_scl_writeEnable ), 
 
-    // HDMI YUV Output
-    .hdmi_yuv_vs    ( hdmi_yuv_vs ), 
-    .hdmi_yuv_hs    ( hdmi_yuv_hs ), 
-    .hdmi_yuv_de    ( hdmi_yuv_de ), 
-    .hdmi_yuv_data  ( hdmi_yuv_data ),    
-
+    // LVDS 
+    .lvds_1a_DATA       ( lvds_1a_DATA        ),
+    .lvds_1b_DATA       ( lvds_1b_DATA        ),
+    .lvds_1c_DATA       ( lvds_1c_DATA        ),
+    .lvds_1d_DATA       ( lvds_1d_DATA        ),
+    .lvds_2a_DATA       ( lvds_2a_DATA        ),
+    .lvds_2b_DATA       ( lvds_2b_DATA        ),
+    .lvds_2c_DATA       ( lvds_2c_DATA        ),
+    .lvds_2d_DATA       ( lvds_2d_DATA        ),
+    .lvds_clk           ( lvds_clk            ),
     // HDMI Display (DMA)
     .display_dma_rdata  ( display_dma_rdata ), 
     .display_dma_rvalid ( display_dma_rvalid ), 
@@ -1520,42 +1258,41 @@ gDMA_vision u_dma_vision (
     .ctrl_clk           ( io_peripheralClk   ),
     .ctrl_reset         ( io_peripheralReset ),
 
-    //DMA AXI memory Interface with Upsizer
-    .read_arvalid       ( io_ddr_ar_valid_u         [UPSIZER_DMA*1+:1]   ),
-    .read_arready       ( io_ddr_ar_ready_u         [UPSIZER_DMA*1+:1]   ),
-    .read_araddr        ( io_ddr_ar_payload_addr_i  [UPSIZER_DMA*32+:32] ), //output from DMA
-    .read_arlen         ( io_ddr_ar_payload_len_u   [UPSIZER_DMA*8+:8]   ),
-    .read_arsize        ( io_ddr_ar_payload_size_u  [UPSIZER_DMA*3+:3]   ),
-    .read_arburst       ( io_ddr_ar_payload_burst_u [UPSIZER_DMA*2+:2]   ),
-    .read_arlock        ( io_ddr_ar_payload_lock_u  [UPSIZER_DMA*1+:1]   ),
-    .read_arqos         ( io_ddr_ar_payload_qos_u   [UPSIZER_DMA*4+:4]   ),
+    .read_arvalid       ( io_ddr_ar_valid         [DDR_DMA*1+:1]   ),
+    .read_arready       ( io_ddr_ar_ready         [DDR_DMA*1+:1]   ),
+    .read_araddr        ( io_ddr_ar_payload_addr  [DDR_DMA*32+:32] ), //output from DMA  
+    .read_arlen         ( io_ddr_ar_payload_len   [DDR_DMA*8+:8]   ),
+    .read_arsize        ( io_ddr_ar_payload_size  [DDR_DMA*3+:3]   ),
+    .read_arburst       ( io_ddr_ar_payload_burst [DDR_DMA*2+:2]   ),
+    .read_arlock        ( io_ddr_ar_payload_lock  [DDR_DMA*2+:2]   ),
     .read_arregion      (  ),
     .read_arcache       (  ),
+    .read_arqos         (  ),
     .read_arprot        (  ),
+    .read_rready        ( io_ddrB_r_ready        ),
+    .read_rvalid        ( io_ddrB_r_valid        ),
+    .read_rdata         ( io_ddrB_r_payload_data ),
+    .read_rlast         ( io_ddrB_r_payload_last ),
+    .read_rresp         ( io_ddrB_r_payload_resp ),   
+    .write_wvalid       ( io_ddrB_w_valid        ),
+    .write_wready       ( io_ddrB_w_ready        ),
+    .write_wdata        ( io_ddrB_w_payload_data ),
+    .write_wstrb        ( io_ddrB_w_payload_strb ),
+    .write_wlast        ( io_ddrB_w_payload_last ),  
+    .write_bvalid       ( io_ddrB_b_valid        ),
+    .write_bready       ( io_ddrB_b_ready        ), 
     .write_awregion     (  ),
-    .write_awprot       (  ),
-    .read_rready        ( io_ddr_r_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .read_rvalid        ( io_ddr_r_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .read_rdata         ( io_ddr_r_payload_data_u   [UPSIZER_DMA*256+:256] ),
-    .read_rlast         ( io_ddr_r_payload_last_u   [UPSIZER_DMA*1+:1]     ),
-    .read_rresp         ( io_ddr_r_payload_resp_u   [UPSIZER_DMA*2+:2]     ),    
-    .write_awvalid      ( io_ddr_aw_valid_u         [UPSIZER_DMA*1+:1]     ),
-    .write_awready      ( io_ddr_aw_ready_u         [UPSIZER_DMA*1+:1]     ),
-    .write_awaddr       ( io_ddr_aw_payload_addr_i  [UPSIZER_DMA*32+:32]   ),
-    .write_awlen        ( io_ddr_aw_payload_len_u   [UPSIZER_DMA*8+:8]     ),
-    .write_awsize       ( io_ddr_aw_payload_size_u  [UPSIZER_DMA*3+:3]     ),
-    .write_awburst      ( io_ddr_aw_payload_burst_u [UPSIZER_DMA*2+:2]     ),
-    .write_awlock       ( io_ddr_aw_payload_lock_u  [UPSIZER_DMA*1+:1]     ), //only 1 bit in DDR
-    .write_awcache      ( io_ddr_aw_payload_cache_u [UPSIZER_DMA*4+:4]     ),
-    .write_awqos        ( io_ddr_aw_payload_qos_u   [UPSIZER_DMA*4+:4]     ), //only 1 bit in DDR
-    .write_wvalid       ( io_ddr_w_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .write_wready       ( io_ddr_w_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .write_wdata        ( io_ddr_w_payload_data_u   [UPSIZER_DMA*256+:256] ),
-    .write_wstrb        ( io_ddr_w_payload_strb_u   [UPSIZER_DMA*32+:32]   ),
-    .write_wlast        ( io_ddr_w_payload_last_u   [UPSIZER_DMA*1+:1]     ),
-    .write_bvalid       ( io_ddr_b_valid_u          [UPSIZER_DMA*1+:1]     ),
-    .write_bready       ( io_ddr_b_ready_u          [UPSIZER_DMA*1+:1]     ),
-    .write_bresp        ( io_ddr_b_payload_resp_u   [UPSIZER_DMA*2+:2]     ),
+    .write_awcache      (  ),
+    .write_awqos        (  ), 
+    .write_awprot       (  ),  
+    .write_awvalid      ( io_ddr_aw_valid         [DDR_DMA*1+:1]   ),
+    .write_awready      ( io_ddr_aw_ready         [DDR_DMA*1+:1]   ),
+    .write_awaddr       ( io_ddr_aw_payload_addr  [DDR_DMA*32+:32] ), 
+    .write_awlen        ( io_ddr_aw_payload_len   [DDR_DMA*8+:8]   ),
+    .write_awsize       ( io_ddr_aw_payload_size  [DDR_DMA*3+:3]   ),
+    .write_awburst      ( io_ddr_aw_payload_burst [DDR_DMA*2+:2]   ),
+    .write_awlock       ( io_ddr_aw_payload_lock  [DDR_DMA*2+:2]   ), //only 1 bit in DDR
+    .write_bresp        ( io_ddr_b_payload_resp   [DDR_DMA*2+:2]   ),
 
     //64-bit Camera Video Stream In
     .dat0_i_clk         ( mipi_pclk           ),
@@ -1568,7 +1305,7 @@ gDMA_vision u_dma_vision (
     .dat0_i_tlast       ( cam_dma_wlast       ),
 
     //64-bit dma channel (MM2S - from external memory)
-    .dat1_o_clk         ( hdmi_yuv_clk        ),
+    .dat1_o_clk         ( tx_slowclk          ),
     .dat1_o_reset       ( ~i_arstn            ),
     .dat1_o_tvalid      ( display_dma_rvalid  ),
     .dat1_o_tready      ( display_dma_rready  ),
@@ -1576,10 +1313,10 @@ gDMA_vision u_dma_vision (
     .dat1_o_tkeep       ( display_dma_rkeep   ),
     .dat1_o_tdest       (  ),
     .dat1_o_tlast       (  ),
-    
+
     //32-bit dma channel (S2MM - to DDR)
-   .dat2_i_clk          ( io_peripheralClk             ),
-   .dat2_i_reset        ( io_peripheralReset           ),
+   .dat2_i_clk          ( io_peripheralClk         ),
+   .dat2_i_reset        ( io_peripheralReset       ),
    .dat2_i_tvalid       ( hw_accel_dma_wvalid      ),
    .dat2_i_tready       ( hw_accel_dma_wready      ),
    .dat2_i_tdata        ( hw_accel_dma_wdata       ),
@@ -1588,8 +1325,8 @@ gDMA_vision u_dma_vision (
    .dat2_i_tlast        ( hw_accel_dma_wlast       ),
 
    //32-bit dma channel (MM2S - from DDR)
-   .dat3_o_clk          ( io_peripheralClk             ), 
-   .dat3_o_reset        ( io_peripheralReset           ),
+   .dat3_o_clk          ( io_peripheralClk         ), 
+   .dat3_o_reset        ( io_peripheralReset       ),
    .dat3_o_tvalid       ( hw_accel_dma_rvalid      ),
    .dat3_o_tready       ( hw_accel_dma_rready      ),
    .dat3_o_tdata        ( hw_accel_dma_rdata       ),
@@ -1607,7 +1344,6 @@ gDMA_vision u_dma_vision (
    .ctrl_PRDATA        ( vision_dma_apbSlave_0_PRDATA      ),
    .ctrl_PSLVERROR     ( vision_dma_apbSlave_0_PSLVERROR   ),
    .ctrl_interrupts    ( vision_dma_interrupts             )
-   
 );
 
 `endif // ENABLE_EVSOC
@@ -1717,45 +1453,45 @@ EfxSapphireSoc soc_inst
     .system_uart_0_io_txd               ( system_uart_0_io_txd) ,
     .system_uart_0_io_rxd               ( system_uart_0_io_rxd) ,
  //DDR - AXI4 Channel 0 
-    .io_ddrA_aw_valid                   ( io_ddr_aw_valid_u         [UPSIZER_SOC*1+:1] ),
-    .io_ddrA_aw_ready                   ( io_ddr_aw_ready_u         [UPSIZER_SOC*1+:1] ),
-    .io_ddrA_aw_payload_len             ( io_ddr_aw_payload_len_u   [UPSIZER_SOC*8+:8] ),
-    .io_ddrA_aw_payload_size            ( io_ddr_aw_payload_size_u  [UPSIZER_SOC*3+:3] ),
-    .io_ddrA_aw_payload_burst           ( io_ddr_aw_payload_burst_u [UPSIZER_SOC*2+:2] ),
-    .io_ddrA_aw_payload_lock            ( io_ddr_aw_payload_lock_u  [UPSIZER_SOC*1+:1] ),
-    .io_ddrA_aw_payload_qos             ( io_ddr_aw_payload_qos_u   [UPSIZER_SOC*4+:4] ),
-    .io_ddrA_aw_payload_cache           ( io_ddr_aw_payload_cache_u [UPSIZER_SOC*4+:4] ),
+    .io_ddrA_aw_valid                   ( io_ddr_aw_valid           [DDR_SOC*1+:1]   ),
+    .io_ddrA_aw_ready                   ( io_ddr_aw_ready           [DDR_SOC*1+:1]   ),
+    .io_ddrA_aw_payload_addr            ( io_ddr_aw_payload_addr    [DDR_SOC*32+:32] ),
+    .io_ddrA_aw_payload_id              ( io_ddr_aw_payload_id      [DDR_SOC*8+:8]   ),
+    .io_ddrA_aw_payload_len             ( io_ddr_aw_payload_len     [DDR_SOC*8+:8]   ),
+    .io_ddrA_aw_payload_size            ( io_ddr_aw_payload_size    [DDR_SOC*3+:3]   ),
+    .io_ddrA_aw_payload_burst           ( io_ddr_aw_payload_burst   [DDR_SOC*2+:2]   ),
+    .io_ddrA_aw_payload_lock            ( io_ddr_aw_payload_lock    [DDR_SOC*2+:2]   ),
+    .io_ddrA_ar_valid                   ( io_ddr_ar_valid           [DDR_SOC*1+:1]   ),
+    .io_ddrA_ar_ready                   ( io_ddr_ar_ready           [DDR_SOC*1+:1]   ),
+    .io_ddrA_ar_payload_addr            ( io_ddr_ar_payload_addr    [DDR_SOC*32+:32] ),
+    .io_ddrA_ar_payload_id              ( io_ddr_ar_payload_id      [DDR_SOC*8+:8]   ),
+    .io_ddrA_ar_payload_len             ( io_ddr_ar_payload_len     [DDR_SOC*8+:8]   ),
+    .io_ddrA_ar_payload_size            ( io_ddr_ar_payload_size    [DDR_SOC*3+:3]   ),
+    .io_ddrA_ar_payload_burst           ( io_ddr_ar_payload_burst   [DDR_SOC*2+:2]   ),
+    .io_ddrA_ar_payload_lock            ( io_ddr_ar_payload_lock    [DDR_SOC*2+:2]   ),
     .io_ddrA_aw_payload_prot            (  ),
+    .io_ddrA_aw_payload_qos             (  ),
+    .io_ddrA_aw_payload_cache           (  ),
     .io_ddrA_aw_payload_region          (  ),
+    .io_ddrA_ar_payload_prot            (  ),
+    .io_ddrA_ar_payload_qos             (  ),
     .io_ddrA_ar_payload_cache           (  ),
     .io_ddrA_ar_payload_region          (  ),
-    .io_ddrA_ar_payload_prot            (  ),
-    .io_ddrA_ar_valid                   ( io_ddr_ar_valid_u         [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_ar_ready                   ( io_ddr_ar_ready_u         [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_ar_payload_len             ( io_ddr_ar_payload_len_u   [UPSIZER_SOC*8+:8]     ),
-    .io_ddrA_ar_payload_size            ( io_ddr_ar_payload_size_u  [UPSIZER_SOC*3+:3]     ),
-    .io_ddrA_ar_payload_burst           ( io_ddr_ar_payload_burst_u [UPSIZER_SOC*2+:2]     ),
-    .io_ddrA_ar_payload_lock            ( io_ddr_ar_payload_lock_u  [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_ar_payload_qos             ( io_ddr_ar_payload_qos_u   [UPSIZER_SOC*4+:4]     ),
-    .io_ddrA_w_valid                    ( io_ddr_w_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_w_ready                    ( io_ddr_w_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_w_payload_data             ( io_ddr_w_payload_data_u   [UPSIZER_SOC*256+:256] ),
-    .io_ddrA_w_payload_strb             ( io_ddr_w_payload_strb_u   [UPSIZER_SOC*32+:32]   ),
-    .io_ddrA_w_payload_last             ( io_ddr_w_payload_last_u   [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_b_valid                    ( io_ddr_b_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_b_ready                    ( io_ddr_b_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_b_payload_resp             ( io_ddr_b_payload_resp_u   [UPSIZER_SOC*2+:2]     ),
-    .io_ddrA_r_valid                    ( io_ddr_r_valid_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_r_ready                    ( io_ddr_r_ready_u          [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_r_payload_data             ( io_ddr_r_payload_data_u   [UPSIZER_SOC*256+:256] ),
-    .io_ddrA_r_payload_resp             ( io_ddr_r_payload_resp_u   [UPSIZER_SOC*2+:2]     ),
-    .io_ddrA_r_payload_last             ( io_ddr_r_payload_last_u   [UPSIZER_SOC*1+:1]     ),
-    .io_ddrA_ar_payload_addr            ( io_ddr_ar_payload_addr_i  [UPSIZER_SOC*32+:32]   ),
-    .io_ddrA_aw_payload_addr            ( io_ddr_aw_payload_addr_i  [UPSIZER_SOC*32+:32]   ),
-    .io_ddrA_ar_payload_id              ( io_ddr_ar_payload_id_i                           ),
-    .io_ddrA_aw_payload_id              ( io_ddr_aw_payload_id_i                           ),
-    .io_ddrA_b_payload_id               ( io_ddr_b_payload_id_u     [UPSIZER_SOC*8+:8]     ),
-    .io_ddrA_r_payload_id               ( io_ddr_r_payload_id_u     [UPSIZER_SOC*8+:8]     ),  
+    .io_ddrA_b_payload_resp             ( io_ddr_b_payload_resp    [DDR_SOC*2+:2]    ),
+    .io_ddrA_w_valid                    ( io_ddrA_w_valid        ),
+    .io_ddrA_w_ready                    ( io_ddrA_w_ready        ),
+    .io_ddrA_w_payload_data             ( io_ddrA_w_payload_data ),
+    .io_ddrA_w_payload_strb             ( io_ddrA_w_payload_strb ),
+    .io_ddrA_w_payload_last             ( io_ddrA_w_payload_last ),
+    .io_ddrA_b_valid                    ( io_ddrA_b_valid        ),
+    .io_ddrA_b_ready                    ( io_ddrA_b_ready        ),
+    .io_ddrA_r_valid                    ( io_ddrA_r_valid        ),
+    .io_ddrA_r_ready                    ( io_ddrA_r_ready        ),
+    .io_ddrA_r_payload_data             ( io_ddrA_r_payload_data ),
+    .io_ddrA_r_payload_resp             ( io_ddrA_r_payload_resp ),
+    .io_ddrA_r_payload_last             ( io_ddrA_r_payload_last ),
+    .io_ddrA_b_payload_id               ( io_ddrA_b_payload_id   ),
+    .io_ddrA_r_payload_id               ( io_ddrA_r_payload_id   ),
 
 `ifdef ENABLE_ETHERNET
 

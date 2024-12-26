@@ -1,5 +1,6 @@
 
 `timescale 1 ns / 1 ns
+`include "mipi_parameter.vh"
 
 module efx_isg_mipi_csi_cam_wrapper #(
    parameter FAMILY            = "TITANIUM",
@@ -32,48 +33,21 @@ module efx_isg_mipi_csi_cam_wrapper #(
    output [APB3_DATA_WIDTH-1:0]  PRDATA,
    output                        PSLVERROR,
 
-//MIPI DPHY RX0: CSI RX Interface
-   input                               mipi_dphy_rx_inst1_WORD_CLKOUT_HS,
-   output                              mipi_dphy_rx_inst1_FORCE_RX_MODE,
-   input                               mipi_dphy_rx_inst1_ERR_CONTENTION_LP0,
-   input                               mipi_dphy_rx_inst1_ERR_CONTENTION_LP1,
-   input                               mipi_dphy_rx_inst1_ERR_CONTROL_LAN0,
-   input                               mipi_dphy_rx_inst1_ERR_CONTROL_LAN1,
-   input                               mipi_dphy_rx_inst1_ERR_ESC_LAN0,
-   input                               mipi_dphy_rx_inst1_ERR_ESC_LAN1,
-   input                               mipi_dphy_rx_inst1_ERR_SOT_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_ERR_SOT_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_LP_CLK,
-   input                               mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_ACTIVE_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_RX_CLK_ACTIVE_HS,
-   input                               mipi_dphy_rx_inst1_ESC_LAN0_CLK,
-   input                               mipi_dphy_rx_inst1_ESC_LAN1_CLK,
-   input [7:0]                         mipi_dphy_rx_inst1_RX_DATA_ESC,
-   input [CSI_RX_DATA_WIDTH_LANE-1:0]  mipi_dphy_rx_inst1_RX_DATA_HS_LAN0,
-   input [CSI_RX_DATA_WIDTH_LANE-1:0]  mipi_dphy_rx_inst1_RX_DATA_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_RX_LPDT_ESC,
-   input                               mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_RX_SYNC_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_SYNC_HS_LAN1,
-   input [3:0]                         mipi_dphy_rx_inst1_RX_TRIGGER_ESC,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_CLK_NOT,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN1,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_CLK_NOT,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN1,
-   input                               mipi_dphy_rx_inst1_RX_VALID_ESC,
-   input                               mipi_dphy_rx_inst1_RX_VALID_HS_LAN0,
-   input                               mipi_dphy_rx_inst1_RX_VALID_HS_LAN1,
-   input                               mipi_dphy_rx_inst1_STOPSTATE_CLK,
-   input                               mipi_dphy_rx_inst1_STOPSTATE_LAN0,
-   input                               mipi_dphy_rx_inst1_STOPSTATE_LAN1,
-   output                              mipi_dphy_rx_inst1_RESET_N,             // Active Low Reset for MIPI Control 
-   output                              mipi_dphy_rx_inst1_RST0_N               // Active Low Reset for MIPI Control 
+   //MIPI Control
+   output [3:0]        mipi_inst1_VC_ENA,
+   output [1:0]        mipi_inst1_LANES,
+   output              mipi_inst1_CLEAR,
+   output              mipi_inst1_DPHY_RSTN,    // Active Low Reset for MIPI Control (DPHY)
+   output              mipi_inst1_RSTN,         // Active Low Reset for MIPI Control (CSI-2)
+   //MIPI Video input
+   input [3:0]         mipi_inst1_HSYNC,
+   input [3:0]         mipi_inst1_VSYNC,
+   input [3:0]         mipi_inst1_CNT,
+   input               mipi_inst1_VALID,
+   input [5:0]         mipi_inst1_TYPE,
+   input [63:0]        mipi_inst1_DATA,
+   input [1:0]         mipi_inst1_VC,
+   input [17:0]        mipi_inst1_ERR
 );
 ///////////////////////////////////////////////////////////////////
 
@@ -86,14 +60,6 @@ localparam FRAME_HEIGHT = (DISPLAY_MODE == "1920x1080_60Hz") ? 1080:
                          (DISPLAY_MODE == "1280x720_60Hz")  ? 720 :
                                                               480 ; 
 
-// CSI controllers output interface port 
-localparam  CSI_RX_NUM_DATA_LANE        = 2;
-localparam  CSI_RX_DATA_WIDTH_LANE      = 16;
-localparam  CAM_PIXEL_RX_DATAWIDTH      = 10;   //RAW10, RAW12
-localparam  CAM_PIXEL_RX_MEM_DATAWIDTH  = 8;
-localparam  CSI_RX_PIXEL_PER_CLK        = 4;
-localparam  CSI_RX_PIXEL_DATAWIDTH      = CAM_PIXEL_RX_MEM_DATAWIDTH;
-localparam  CSI_RX_TOTAL_DATAWIDTH      = CSI_RX_PIXEL_DATAWIDTH * CSI_RX_PIXEL_PER_CLK;
 
 ///////////////////////////////////////////////////////////////////
 
@@ -111,80 +77,16 @@ wire [31:0]                   debug_cam_dma_fifo_rcount;
 wire [31:0]                   debug_cam_dma_fifo_wcount;
 wire [31:0]                   debug_cam_dma_fifo_status; 
 
-// Wire for MIPI RX <=> PiCam
-//wire         w_rx_valid;
-//wire         w_rx_vs;
-//wire         w_rx_hs;
-//wire [1:0]   w_rx_vc;
-//wire [3:0]   w_rx_count;
-//wire [5:0]   w_rx_type;
-//wire [17:0]  w_rx_error;
-wire [63:0]  w_rx_data;
-wire         w_rx_out_de;
-wire         w_rx_out_vs;
-wire         w_rx_out_hs;
-wire [5:0]   rx_out_dt;
 
-wire [CAM_PIXEL_RX_MEM_DATAWIDTH-1:0] w_rx_out_data_00;
-wire [CAM_PIXEL_RX_MEM_DATAWIDTH-1:0] w_rx_out_data_01;
-wire [CAM_PIXEL_RX_MEM_DATAWIDTH-1:0] w_rx_out_data_10;
-wire [CAM_PIXEL_RX_MEM_DATAWIDTH-1:0] w_rx_out_data_11;   
-
-
-/**************************************************
- *
- * cam_csi_rx_controllers Instantiation
- * 
-**************************************************/ 
-cam_csi_rx_controllers #(
-    .NUM_CHANNEL            ( 1                          ),
-    .NUM_RX_PER_CHANNEL     ( CSI_RX_NUM_DATA_LANE       ),
-    .DATAWIDTH_PER_CHANNEL  ( CSI_RX_DATA_WIDTH_LANE     ),
-    .PIXEL_RX_DATAWIDTH     ( CAM_PIXEL_RX_DATAWIDTH     ),  // RAW10, RAW12
-    .PIXEL_OUT_DATAWIDTH    ( CAM_PIXEL_RX_MEM_DATAWIDTH )   // DATAWIDTH will be store to Memory
-) inst_csi_rx_controllersn(
-
-    .rstn                   ( rstn                    ),
-    .clk                    ( i_pixel_clk             ),
-    .clk_pixel              ( i_pixel_clk             ),
-
-    // DPHY interface port
-    .clk_byte_HS            ( mipi_dphy_rx_inst1_WORD_CLKOUT_HS   ),
-    .reset_byte_HS_n        ( mipi_dphy_rx_inst1_RST0_N           ),
-    .resetb_rx              ( mipi_dphy_rx_inst1_RESET_N          ),
-    .RxDataHS0              ( mipi_dphy_rx_inst1_RX_DATA_HS_LAN0  ),  // full 16 bit
-    .RxDataHS1              ( mipi_dphy_rx_inst1_RX_DATA_HS_LAN1  ),
-    .RxValidHS0             ( mipi_dphy_rx_inst1_RX_VALID_HS_LAN0 ),
-    .RxValidHS1             ( mipi_dphy_rx_inst1_RX_VALID_HS_LAN1 ),
-
-    .RxSyncHS               ( {mipi_dphy_rx_inst1_RX_SYNC_HS_LAN1,mipi_dphy_rx_inst1_RX_SYNC_HS_LAN0                 }),
-    .RxUlpsClkNot           ( {mipi_dphy_rx_inst1_RX_ULPS_CLK_NOT                                                    }),
-    .RxUlpsActiveClkNot     ( {mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_CLK_NOT                                             }),
-    .RxErrEsc               ( {mipi_dphy_rx_inst1_ERR_ESC_LAN1,mipi_dphy_rx_inst1_ERR_ESC_LAN0                       }),
-    .RxErrControl           ( {mipi_dphy_rx_inst1_ERR_CONTROL_LAN1,mipi_dphy_rx_inst1_ERR_CONTROL_LAN0               }),
-    .RxErrSotSyncHS         ( {mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN1,mipi_dphy_rx_inst1_ERR_SOT_SYNC_HS_LAN0       }),
-    .RxUlpsEsc              ( {mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN1,mipi_dphy_rx_inst1_RX_ULPS_ESC_LAN0               }),
-    .RxUlpsActiveNot        ( {mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN1,mipi_dphy_rx_inst1_RX_ULPS_ACTIVE_NOT_LAN0 }),
-    .RxSkewCalHS            ( {mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN1,mipi_dphy_rx_inst1_RX_SKEW_CAL_HS_LAN0         }),
-    .RxStopState            ( {mipi_dphy_rx_inst1_STOPSTATE_LAN1,mipi_dphy_rx_inst1_STOPSTATE_LAN0                   }),
-
-    // CSI controller ouptut interface port
-    .rx_out_de              ( w_rx_out_de      ),
-    .rx_out_vs              ( w_rx_out_vs      ),
-    .rx_out_hs              ( w_rx_out_hs      ),
-    .rx_out_data_00         ( w_rx_out_data_00 ),
-    .rx_out_data_01         ( w_rx_out_data_01 ),
-    .rx_out_data_10         ( w_rx_out_data_10 ),
-    .rx_out_data_11         ( w_rx_out_data_11 ),
-    .rx_out_dt              ( rx_out_dt        )
-);
-
-// Assignment for Picam data
-//assign  w_rx_valid      = w_rx_out_de;
-//assign  w_rx_vs         = w_rx_out_vs;
-//assign  w_rx_hs         = w_rx_out_hs;
-//assign  w_rx_type       = rx_out_dt;
-assign  w_rx_data       = {24'h0, w_rx_out_data_11[7:0], 2'b0, w_rx_out_data_10[7:0], 2'b0, w_rx_out_data_01[7:0], 2'b0, w_rx_out_data_00[7:0], 2'b0};                                        
+// MIPI Rx settings for Trion device
+assign mipi_inst1_DPHY_RSTN         = 1'b1;
+assign mipi_inst1_RSTN              = 1'b1;
+assign mipi_inst1_VC_ENA[`MIPI_VC0] = 1'b1;
+assign mipi_inst1_VC_ENA[`MIPI_VC1] = 1'b0;
+assign mipi_inst1_VC_ENA[`MIPI_VC2] = 1'b0;
+assign mipi_inst1_VC_ENA[`MIPI_VC3] = 1'b0;
+assign mipi_inst1_CLEAR             = 1'b0;
+assign mipi_inst1_LANES             = 2'b01;
 
 
 
@@ -202,13 +104,16 @@ cam_picam_v2 # (
    .DMA_TRANSFER_LENGTH                    ( (FRAME_WIDTH*FRAME_HEIGHT )/2 ), //2PPC
    .MIPI_PCLK_CLK_RATE                     ( 32'd100_000_000 )               // as mipi_pclk is 100MHz
  ) u_cam (
-   .mipi_pclk                              ( i_pixel_clk       ),
-   .rst_n                                  ( rstn              ),
-   .mipi_cam_data                          ( w_rx_data         ),
-   .mipi_cam_valid                         ( w_rx_out_de        ),
-   .mipi_cam_vs                            ( w_rx_out_vs           ),
-   .mipi_cam_hs                            ( w_rx_out_hs           ),
-   .mipi_cam_type                          ( rx_out_dt         ),
+   .mipi_cam_error                         ( mipi_inst1_ERR      ),
+   .mipi_cam_vc                            ( mipi_inst1_VC       ),
+   .mipi_cam_count                         ( mipi_inst1_CNT      ),
+   .mipi_pclk                              ( i_pixel_clk         ),
+   .rst_n                                  ( rstn                ),
+   .mipi_cam_data                          ( mipi_inst1_DATA     ),
+   .mipi_cam_valid                         ( mipi_inst1_VALID    ),
+   .mipi_cam_vs                            ( mipi_inst1_VSYNC[0] ),
+   .mipi_cam_hs                            ( mipi_inst1_HSYNC[0] ),
+   .mipi_cam_type                          ( mipi_inst1_TYPE     ),
 
    .cam_dma_wready                         ( cam_dma_wready ),
    .cam_dma_wvalid                         ( cam_dma_wvalid ),

@@ -3,7 +3,7 @@
         "-o",
         "gSDHC",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -19,12 +19,12 @@
     "output": {
         "external_script_reference_design": [],
         "external_source_source": [
-            "gSDHC/gSDHC_tmpl.v",
             "gSDHC/gSDHC.v",
             "gSDHC/gSDHC_define.vh",
-            "gSDHC/gSDHC_tmpl.vhd"
+            "gSDHC/gSDHC_tmpl.vhd",
+            "gSDHC/gSDHC_tmpl.v"
         ]
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:59:23.788583+00:00"
+    "generated_date": "2024-11-29T07:02:18.821063+00:00"
 }

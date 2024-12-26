@@ -2,10 +2,10 @@ io_systemClk sampled by
 io_asyncReset sampled by 
 io_memoryClk sampled by 
 io_peripheralClk sampled by 
-userInterruptD sampled by 
-userInterruptC sampled by 
 userInterruptA sampled by 
 userInterruptB sampled by 
+userInterruptC sampled by 
+userInterruptD sampled by 
 io_memoryReset clocked by io_memoryClk
 io_peripheralReset clocked by io_peripheralClk
 jtagCtrl_tck sampled by 
@@ -193,14 +193,14 @@ system_i2c_2_io_sda_write clocked by io_peripheralClk
 system_i2c_2_io_sda_read sampled by 
 system_i2c_2_io_scl_write clocked by io_peripheralClk
 system_i2c_2_io_scl_read sampled by 
-system_i2c_1_io_sda_write clocked by io_peripheralClk
-system_i2c_1_io_sda_read sampled by 
-system_i2c_1_io_scl_write clocked by io_peripheralClk
-system_i2c_1_io_scl_read sampled by 
 system_i2c_0_io_sda_write clocked by io_peripheralClk
 system_i2c_0_io_sda_read sampled by 
 system_i2c_0_io_scl_write clocked by io_peripheralClk
 system_i2c_0_io_scl_read sampled by 
+system_i2c_1_io_sda_write clocked by io_peripheralClk
+system_i2c_1_io_sda_read sampled by 
+system_i2c_1_io_scl_write clocked by io_peripheralClk
+system_i2c_1_io_scl_read sampled by 
 system_gpio_0_io_read sampled by io_peripheralClk
 system_gpio_0_io_write clocked by io_peripheralClk
 system_gpio_0_io_writeEnable clocked by io_peripheralClk

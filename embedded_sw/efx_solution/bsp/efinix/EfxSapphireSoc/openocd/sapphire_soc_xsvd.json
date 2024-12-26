@@ -31,7 +31,7 @@
             "cores": {
                 "VexRiscv": {
                     "harts": "2",
-                    "isa": "RV32IMAFD",
+                    "isa": "RV32IAFD",
                     "isaVersion": "2.2",
                     "mpu": "none",
                     "mmu": "true",

@@ -5,6 +5,5 @@ hw_accel/hw_accel_line_buffer.v
 hw_accel/hw_accel_sobel_edge_detection.v
 hw_accel/hw_accel_true_dual_port_ram.v
 hw_accel/hw_accel_wrapper.v
-hw_accel/hw_accel.v
 hw_accel/efx_isg_hw_accel_wrapper.sv
-
+hw_accel/hw_accel.v
