@@ -86,11 +86,11 @@ void program_descriptor()
 
 	descriptors0[FRAME_PACKET-1].next = (u32) (descriptors0);	//last descriptors point to first descriptors
 
-	dmasg_interrupt_pending_clear(TSEMAC_DMASG_BASE,TSE_DMASG_TX_CH,0xFFFFFFFF);
-	dmasg_output_memory (TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH,  (u32)mem, 64);
-	dmasg_input_stream(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, 0, 1, 1);
-	dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
-	dmasg_linked_list_start(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, (u32) descriptors0);
+	dmasg_interrupt_pending_clear(TSEMAC_DMASG_BASE,TSE_DMASG_RX_CH,0xFFFFFFFF);
+	dmasg_output_memory (TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH,  (u32)mem, 64);
+	dmasg_input_stream(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, 0, 1, 1);
+	dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
+	dmasg_linked_list_start(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, (u32) descriptors0);
 
 	cur_des=0;
 }
@@ -177,11 +177,11 @@ static void SendData(uint32_t *pucEthernetBuffer,size_t xDataLength){
 	int n;
 
   //write_u32(xDataLength,IO_APB_SLAVE_2_APB+4);	//workaround for tkeep tlast handle with module tkeep_ctrl with abp3
-  dmasg_input_memory(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, ((u32)pucEthernetBuffer), 64);
-  dmasg_output_stream(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, 0, 0, 0, 1);
-  dmasg_direct_start(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, xDataLength, 0);
+  dmasg_input_memory(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, ((u32)pucEthernetBuffer), 64);
+  dmasg_output_stream(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, 0, 0, 0, 1);
+  dmasg_direct_start(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, xDataLength, 0);
 
-  while(dmasg_busy(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH));
+  while(dmasg_busy(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH));
 }
 
 static err_t

@@ -48,7 +48,6 @@
 #include <FreeRTOS.h>
 #include "task.h"
 #include "bsp.h"
-#include "device_config.h"
 #include "riscv.h"
 #include "gpio.h"
 
@@ -113,8 +112,9 @@ void vSendString( const char * const pcString )
 
 int main( void )
 {
-	bsp_init();
 	const uint32_t ulLongTime_ms = pdMS_TO_TICKS( 1000UL );
+	
+	bsp_init();
 
 	/*
 	 * Instructions for using this project are provided on:

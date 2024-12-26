@@ -28,7 +28,6 @@
 #define FREERTOS_CONFIG_H
 
 #include "bsp.h"
-#include "device_config.h"
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -47,7 +46,7 @@
 #define configMAX_PRIORITIES					( 7 )
 #define configTICK_RATE_HZ						( 1000 ) /* In this non-real time simulated environment the tick frequency has to be at least a multiple of the Win32 tick frequency, and therefore very slow. */
 #define configMINIMAL_STACK_SIZE				( ( uint32_t ) 256 ) /* In this simulated case, the stack only has to hold one small structure as the real stack is part of the Win32 thread. */
-#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 512 * 1024 ) )
+#define configTOTAL_HEAP_SIZE					( ( size_t ) ( 15 * 1024 * 1024 ) )
 #define configMAX_TASK_NAME_LEN					( 16 )
 #define configUSE_TRACE_FACILITY				0
 #define configUSE_16_BIT_TICKS					0
@@ -83,11 +82,6 @@
 #define configMTIME_BASE_ADDRESS        (BSP_CLINT + 0xBFF8)
 #define configMTIMECMP_BASE_ADDRESS     (BSP_CLINT + 0x4000)
 #define configCPU_CLOCK_HZ              ( ( uint32_t ) ( BSP_CLINT_HZ ) )
-
-/* Task priorities.  Allow these to be overridden. */
-#ifndef uartPRIMARY_PRIORITY
-    #define uartPRIMARY_PRIORITY        ( configMAX_PRIORITIES - 3 )
-#endif
 
 /* Event group related definitions. */
 #define configUSE_EVENT_GROUPS			1

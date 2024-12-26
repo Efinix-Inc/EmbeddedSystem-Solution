@@ -4,8 +4,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /*
- * FreeRTOS Kernel V10.2.1
- * Copyright (C) 2019 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS V202212.01
+ * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -24,10 +24,9 @@
  * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- * http://www.FreeRTOS.org
- * http://aws.amazon.com/freertos
+ * https://www.FreeRTOS.org
+ * https://github.com/FreeRTOS
  *
- * 1 tab == 4 spaces!
  */
 
 /* FreeRTOS kernel includes. */
@@ -35,11 +34,9 @@
 #include <task.h>
 
 #include "bsp.h"
-#include "device_config.h"
 #include "riscv.h"
 #include "hal.h"
 #include "gpio.h"
-
 
 /******************************************************************************
  * This project provides two demo applications.  A simple blinky style project,
@@ -86,8 +83,8 @@ static void prvSetupHardware( void )
     extern void freertos_risc_v_trap_handler();
     csr_write(mtvec, freertos_risc_v_trap_handler);
 
-    gpio_setOutputEnable(BSP_LED_GPIO, BSP_LED_MASK);
-    gpio_setOutput(BSP_LED_GPIO, 0x00000000);
+    gpio_setOutputEnable(SYSTEM_GPIO_0_IO_CTRL, 0x0E);
+    gpio_setOutput(SYSTEM_GPIO_0_IO_CTRL, 0x00000000);
 
     vSendString( "Hello world, this is FreeRTOS\r\n" );
 }
@@ -96,7 +93,7 @@ static void prvSetupHardware( void )
 void vToggleLED( void )
 {
 static uint32_t ulLEDState = 0;
-    gpio_setOutput(BSP_LED_GPIO, gpio_getOutput(BSP_LED_GPIO) ^ BSP_LED_MASK);
+    gpio_setOutput(SYSTEM_GPIO_0_IO_CTRL, gpio_getOutput(SYSTEM_GPIO_0_IO_CTRL) ^ 0x0E);
 }
 /*-----------------------------------------------------------*/
 

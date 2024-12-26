@@ -73,6 +73,9 @@
 
 #include "iperf_task.h"
 
+#define ipconfigIPERF_MULT_RX							3
+#define ipconfigIPERF_MULT_TX							5
+
 /* Put the TCP server at this port number: */
 #ifndef ipconfigIPERF_TCP_ECHO_PORT
 	/* 5001 seems to be the standard TCP server port number. */
@@ -93,7 +96,7 @@
 #ifndef ipconfigIPERF_PRIORITY_IPERF_TASK
 	/* The priority of vIPerfTask(). Should be lower than the IP-task
 	and the task running in NetworkInterface.c. */
-	#define	ipconfigIPERF_PRIORITY_IPERF_TASK		3
+	#define	ipconfigIPERF_PRIORITY_IPERF_TASK		( configMAX_PRIORITIES - 3 )
 #endif
 
 #ifndef ipconfigIPERF_RECV_BUFFER_SIZE
@@ -127,10 +130,10 @@
 #endif
 
 #ifndef ipconfigIPERF_TX_BUFSIZE
-	#define ipconfigIPERF_TX_BUFSIZE				( 24 * ipconfigTCP_MSS )	/* Units of bytes. */
-	#define ipconfigIPERF_TX_WINSIZE				( 12 )			/* Size in units of MSS */
-	#define ipconfigIPERF_RX_BUFSIZE				( 24 * ipconfigTCP_MSS )	/* Units of bytes. */
-	#define ipconfigIPERF_RX_WINSIZE				( 12 )			/* Size in units of MSS */
+	#define ipconfigIPERF_TX_BUFSIZE				( ipconfigIPERF_MULT_TX * 24 * ipconfigTCP_MSS )	/* Units of bytes. */
+	#define ipconfigIPERF_TX_WINSIZE				( 6 )							/* Size in units of MSS */
+	#define ipconfigIPERF_RX_BUFSIZE				( ipconfigIPERF_MULT_RX * 24 * ipconfigTCP_MSS )	/* Units of bytes. */
+	#define ipconfigIPERF_RX_WINSIZE				( 24 )							/* Size in units of MSS */
 #endif
 
 #ifndef ARRAY_SIZE
@@ -861,6 +864,7 @@ void vIPerfTask( void *pvParameter )
 	int8_t cIPAddressString[ 16 ];
 	FreeRTOS_inet_ntoa( FreeRTOS_GetIPAddress(), ( char * ) cIPAddressString );
 
+	FreeRTOS_printf( ( "IMPORTANT: Please test with iPerf3 v3.1.3\r\n" ) );
 	FreeRTOS_printf( ( "Use for example:\r\n" ) );
 	FreeRTOS_printf( ( "FreeRTOS receive: iperf3 -c %s -p %d -n 100M \r\n",
 			cIPAddressString, ipconfigIPERF_UDP_ECHO_PORT ) );
