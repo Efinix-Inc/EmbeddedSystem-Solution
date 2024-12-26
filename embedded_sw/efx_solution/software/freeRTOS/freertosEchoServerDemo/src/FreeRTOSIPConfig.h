@@ -58,7 +58,6 @@ messages. */
 on).  Valid options are pdFREERTOS_BIG_ENDIAN and pdFREERTOS_LITTLE_ENDIAN. */
 #define ipconfigBYTE_ORDER pdFREERTOS_LITTLE_ENDIAN
 
-/* The checksums will be checked and calculated by the STM32F4x ETH peripheral. */
 #define ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM		( 0 )
 #define ipconfigDRIVER_INCLUDED_RX_IP_CHECKSUM		( 1 )
 
@@ -69,8 +68,8 @@ used as defaults. */
 #define ipconfigSOCK_DEFAULT_RECEIVE_BLOCK_TIME	( 5000 )
 #define	ipconfigSOCK_DEFAULT_SEND_BLOCK_TIME	( 5000 )
 
-#define ipconfigZERO_COPY_RX_DRIVER			( 0 )
-#define ipconfigZERO_COPY_TX_DRIVER			( 0 )
+#define ipconfigZERO_COPY_RX_DRIVER			( 1 )
+#define ipconfigZERO_COPY_TX_DRIVER			( 1 )
 
 /* Include support for LLMNR: Link-local Multicast Name Resolution
 (non-Microsoft) */
@@ -343,12 +342,6 @@ configNETWORK_INTERFACE_TO_USE to 2 results in the wireless network being
 used. */
 #define configNETWORK_INTERFACE_TO_USE 4L
 
-
-//#define configECHO_SERVER_ADDR0	192
-//#define configECHO_SERVER_ADDR1 168
-//#define configECHO_SERVER_ADDR2 0
-//#define configECHO_SERVER_ADDR3 222
-
 /* Default MAC address configuration.  The demo creates a virtual network
 connection that uses this MAC address by accessing the raw Ethernet/WiFi data
 to and from a real network connection on the host PC.  See the
@@ -396,28 +389,6 @@ ipconfigUSE_DNS is set to 1 but a DNS server cannot be contacted. */
 #define Speed_1000Mhz		0x04
 #define Speed_100Mhz		0x02
 #define Speed_10Mhz			0x01
-
-/* The maximum time to wait for a closing socket to close. */
-#define tcpechoSHUTDOWN_DELAY	( pdMS_TO_TICKS( 5000 ) )
-
-/* The standard echo port number. */
-#define tcpechoPORT_NUMBER		7
-
-/* The example IP trace macros are included here so the definitions are
-available in all the FreeRTOS+TCP source files. */
-//#include "DemoIPTrace.h"
-
-/* Simple UDP client and server task parameters. */
-#define mainSIMPLE_UDP_CLIENT_SERVER_TASK_PRIORITY		( tskIDLE_PRIORITY )
-#define mainSIMPLE_UDP_CLIENT_SERVER_PORT				( 7 )
-
-/* Echo client task parameters - used for both TCP and UDP echo clients. */
-#define mainECHO_CLIENT_TASK_STACK_SIZE 				( configMINIMAL_STACK_SIZE * 2 )	/* Not used in the Windows port. */
-#define mainECHO_CLIENT_TASK_PRIORITY					( tskIDLE_PRIORITY + 1 )
-
-/* Echo server task parameters. */
-#define mainECHO_SERVER_TASK_STACK_SIZE					( configMINIMAL_STACK_SIZE * 2 )	/* Not used in the Windows port. */
-#define mainECHO_SERVER_TASK_PRIORITY					( tskIDLE_PRIORITY + 1 )
 
 /* Define a name that will be used for LLMNR and NBNS searches. */
 #define mainHOST_NAME			"Efinix"
