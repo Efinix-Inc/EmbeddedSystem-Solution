@@ -524,12 +524,16 @@ wire        vision_dma_ctrl_interrupt;
 wire        w_axiAInterrupt; 
 wire        axi4Interrupt_or; 
 wire        axiAInterrupt_slb; 
-wire        i_arstn;  
 
+//reset
+wire        io_asyncReset_soc;
+wire        watchdog_reset;
+wire        i_arstn;  
  ////////////////////////////////////////////////////////////////////////////
  
 //Reset 
-assign o_cam_rstn       = ~io_asyncReset;
+assign o_cam_rstn       = ~io_asyncReset_soc;
+assign io_asyncReset    = io_asyncReset_soc | watchdog_reset; 
 assign axiAInterrupt    = axi4Interrupt_or; 
 assign axi4Interrupt_or = w_axiAInterrupt | axiAInterrupt_slb;
 assign vision_dma_ctrl_interrupt    = | vision_dma_interrupts; // changed
@@ -1573,9 +1577,10 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .cfg_start                              ( cfg_start ),
     .cfg_sel                                ( cfg_sel ),
     .cfg_reset                              ( cfg_reset ),
+    .system_watchdog_hardPanic_reset        ( watchdog_reset ),
     .io_peripheralClk                       ( io_peripheralClk ),
     .io_peripheralReset                     ( io_peripheralReset ),
-    .io_asyncReset                          ( io_asyncReset ),
+    .io_asyncReset                          ( io_asyncReset_soc ),
     .io_gpio_sw_n                           ( io_gpio_sw_n ), 
     .pll_peripheral_locked                  ( pll_peripheral_locked ),
     .pll_system_locked                      ( pll_system_locked )
