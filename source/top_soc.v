@@ -518,6 +518,7 @@ wire        userInterrupt_i2c0;
 wire        userInterrupt_i2c1;
 wire        userInterrupt_spi0;
 wire        userInterrupt_spi1;
+wire        userInterrupt_watchdog;
 wire  [3:0] vision_dma_interrupts;
 wire        vision_dma_ctrl_interrupt; 
 wire        w_axiAInterrupt; 
@@ -541,7 +542,7 @@ assign userInterruptD = sd_int;
 assign userInterruptE = 1'b0; 
 assign userInterruptF = 1'b0; 
 assign userInterruptG = 1'b0; 
-assign userInterruptH = 1'b0;  
+assign userInterruptH = userInterrupt_watchdog; 
 assign userInterruptI = userInterrupt_uart;                     
 assign userInterruptJ = userInterrupt_i2c0;
 assign userInterruptK = userInterrupt_i2c1; 
@@ -1537,6 +1538,7 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .userInterruptE                         ( userInterrupt_i2c1 ),
     .userInterruptF                         ( userInterrupt_gpio0 ),
     .userInterruptG                         ( userInterrupt_gpio1 ),
+    .userInterruptH                         ( userInterrupt_watchdog ),
     .axiA_awvalid                           ( gAXIS_m_awvalid[SLB*1 +: 1] ),
     .axiA_awready                           ( gAXIS_m_awready[SLB*1 +: 1] ),
     .axiA_awaddr                            ( gAXIS_m_awaddr[SLB*32 +: 32] ),

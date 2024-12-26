@@ -145,6 +145,7 @@ port (
     userInterruptE : out std_logic;
     userInterruptF : out std_logic;
     userInterruptG : out std_logic;
+    userInterruptH : out std_logic;
     io_apbSlave_0_PADDR : out std_logic_vector(31 downto 0);
     io_apbSlave_0_PENABLE : out std_logic;
     io_apbSlave_0_PRDATA : in std_logic_vector(31 downto 0);
@@ -174,7 +175,8 @@ port (
     system_i2c_1_io_scl_writeEnable : out std_logic;
     system_i2c_0_io_sda_write : out std_logic;
     system_i2c_0_io_sda_writeEnable : out std_logic;
-    system_i2c_0_io_scl_writeEnable : out std_logic
+    system_i2c_0_io_scl_writeEnable : out std_logic;
+    system_watchdog_hardPanic_reset : out std_logic
 );
 end component EfxSapphireHpSoc_slb;
 
@@ -288,6 +290,7 @@ port map (
     userInterruptE => userInterruptE,
     userInterruptF => userInterruptF,
     userInterruptG => userInterruptG,
+    userInterruptH => userInterruptH,
     io_apbSlave_0_PADDR => io_apbSlave_0_PADDR,
     io_apbSlave_0_PENABLE => io_apbSlave_0_PENABLE,
     io_apbSlave_0_PRDATA => io_apbSlave_0_PRDATA,
@@ -317,7 +320,8 @@ port map (
     system_i2c_1_io_scl_writeEnable => system_i2c_1_io_scl_writeEnable,
     system_i2c_0_io_sda_write => system_i2c_0_io_sda_write,
     system_i2c_0_io_sda_writeEnable => system_i2c_0_io_sda_writeEnable,
-    system_i2c_0_io_scl_writeEnable => system_i2c_0_io_scl_writeEnable
+    system_i2c_0_io_scl_writeEnable => system_i2c_0_io_scl_writeEnable,
+    system_watchdog_hardPanic_reset => system_watchdog_hardPanic_reset
 );
 
 ------------------------ End INSTANTIATION Template ---------

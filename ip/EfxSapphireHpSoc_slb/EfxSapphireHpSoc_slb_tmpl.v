@@ -151,6 +151,7 @@ EfxSapphireHpSoc_slb u_EfxSapphireHpSoc_slb
     .userInterruptE ( userInterruptE ),
     .userInterruptF ( userInterruptF ),
     .userInterruptG ( userInterruptG ),
+    .userInterruptH ( userInterruptH ),
     .io_apbSlave_0_PADDR ( io_apbSlave_0_PADDR ),
     .io_apbSlave_0_PENABLE ( io_apbSlave_0_PENABLE ),
     .io_apbSlave_0_PRDATA ( io_apbSlave_0_PRDATA ),
@@ -180,5 +181,6 @@ EfxSapphireHpSoc_slb u_EfxSapphireHpSoc_slb
     .system_i2c_1_io_scl_writeEnable ( system_i2c_1_io_scl_writeEnable ),
     .system_i2c_0_io_sda_write ( system_i2c_0_io_sda_write ),
     .system_i2c_0_io_sda_writeEnable ( system_i2c_0_io_sda_writeEnable ),
-    .system_i2c_0_io_scl_writeEnable ( system_i2c_0_io_scl_writeEnable )
+    .system_i2c_0_io_scl_writeEnable ( system_i2c_0_io_scl_writeEnable ),
+    .system_watchdog_hardPanic_reset ( system_watchdog_hardPanic_reset )
 );
