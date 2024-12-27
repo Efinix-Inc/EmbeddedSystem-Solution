@@ -316,6 +316,7 @@ wire 		reset;
 wire		io_systemReset;
 wire 	    io_memoryReset;				
 wire        io_peripheralReset;
+wire        w_system_watchdog_hardPanic;
 wire        pll_locked;
 
 // Custom Instruction 
@@ -379,7 +380,7 @@ assign hdmi_pll_rstn    = 1'b1;
 
 //Assignment for pll and reset
 assign pll_locked = w_master_rstn & systemClk_locked & my_ddr_pll_locked & mipi_pll_locked & lvds_pll_locked & hdmi_pll_locked & tse_pll_locked;        
-assign reset      = ~pll_locked;
+assign reset      = ~pll_locked | w_system_watchdog_hardPanic;
 
 assign  o_sensor_sda_oe    = !o_sensor_sda;
 assign  o_sensor_scl_oe    = !o_sensor_scl;
@@ -1400,7 +1401,7 @@ EfxSapphireSoc soc_inst
     .io_systemReset                     ( io_systemReset           ),
     .io_peripheralClk                   ( io_peripheralClk         ),
     .io_peripheralReset                 ( io_peripheralReset       ),
-
+    .system_watchdog_hardPanic          ( w_system_watchdog_hardPanic        ),
     .cpu0_customInstruction_cmd_valid   ( cpu0_customInstruction_cmd_valid   ),
     .cpu0_customInstruction_cmd_ready   ( cpu0_customInstruction_cmd_ready   ),
     .cpu0_customInstruction_function_id ( cpu0_customInstruction_function_id ),

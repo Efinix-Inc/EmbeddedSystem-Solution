@@ -27,18 +27,18 @@ void patWatchdog();
 
 u32 softPanicCounter = 0;
 u32 software_gone_wrong = 0;
-u32 random_x = 3;
+u32 random_x = 5;
 u32 random_y = 3;
 
 void main() {
 	u32 i;
-	bsp_init();
-	bsp_printf("hello from Sapphire High Performance Soc!\n\r");
+
+	bsp_printf("Hello from Sapphire Soc!\n\r");
     init();
 
-    bsp_printf("watchdog timer timeout = %ds .. \n\r", WATCHDOG_TIMEOUT_MS/1000);
-    bsp_printf("pat the watchdog every %dms for %d times then wait for soft panic trigger .. \n\r", WAIT_TIME_MS, random_x);
-    bsp_printf("watchdog patting will stop after %d soft panic trigger.. \n\n\r", random_y);
+    bsp_printf("Watchdog timer timeout = %dms\n\r", WATCHDOG_TIMEOUT_MS);
+    bsp_printf("Will pat the watchdog every %dms for %d times then wait for soft panic\n\r", WAIT_TIME_MS, random_x);
+    bsp_printf("Will stop patting watchdog after %d soft panic\n\n\r", random_y);
 
     while(1){
     	for(i=0; i<random_x; i++){
@@ -49,7 +49,7 @@ void main() {
     	software_gone_wrong = 1;
     	while(software_gone_wrong == 1){
     		bsp_uDelay(1000*1000);
-    		bsp_printf("assume software gone wrong here .. \n\r");
+    		bsp_printf("assume software gone wrong here\n\r");
     	};
     	bsp_printf("\n\r");
     }; //Idle
@@ -61,8 +61,8 @@ void init(){
     plic_set_threshold(BSP_PLIC, BSP_PLIC_CPU_0, 0); //cpu 0 accept all interrupts with priority above 0
 
     //enable the watchdog soft panic interrupt on the PLIC
-    plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, SYSTEM_PLIC_SYSTEM_WATCHDOG_SOFT_PANIC_INTERRUPT, 1);
-    plic_set_priority(BSP_PLIC, SYSTEM_PLIC_SYSTEM_WATCHDOG_SOFT_PANIC_INTERRUPT, 1);
+    plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, SYSTEM_PLIC_SYSTEM_WATCHDOG_LOGIC_PANICS_0, 1);
+    plic_set_priority(BSP_PLIC, SYSTEM_PLIC_SYSTEM_WATCHDOG_LOGIC_PANICS_0, 1);
 
     initWatchdog();
 
@@ -108,7 +108,7 @@ void externalInterrupt(){
     //While there is pending interrupts
     while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
         switch(claim){
-        case SYSTEM_PLIC_SYSTEM_WATCHDOG_SOFT_PANIC_INTERRUPT: watchdogSoftPanic(); break;
+        case SYSTEM_PLIC_SYSTEM_WATCHDOG_LOGIC_PANICS_0: watchdogSoftPanic(); break;
         default: crash(); break;
         }
         plic_release(BSP_PLIC, BSP_PLIC_CPU_0, claim); //unmask the claimed interrupt
@@ -121,7 +121,7 @@ void watchdogSoftPanic(){
     softPanicCounter += 1;
 
     if(softPanicCounter > random_y){
-    	bsp_printf("soft panic count=%d \n\rstop pat the watchdog this time and watchdog will reset system after %ds ..\n\n\r", softPanicCounter, WATCHDOG_TIMEOUT_MS/1000);
+    	bsp_printf("Soft panic count %d \n\rNope not gonna pat it anymore, let the hardPanic pin assert\n\n\r", softPanicCounter);
     	while(1);
     }
 
@@ -130,11 +130,11 @@ void watchdogSoftPanic(){
     patWatchdog();
     software_gone_wrong = 0;
 
-    bsp_printf("soft panic count=%d \n\r", softPanicCounter);
+    bsp_printf("Soft panic count %d \n\r", softPanicCounter);
 }
 
 void patWatchdog(){
-	bsp_printf("pat the watchdog .. \n\r");
+	bsp_printf("Pat the watchdog..\n\r");
 	watchdog_heartbeat(SYSTEM_WATCHDOG_LOGIC_CTRL); // This will clear all the timeout counters and the soft panic
 }
 
@@ -149,7 +149,7 @@ void trap(){
 }
 
 void main() {
-	bsp_printf("Hello from Sapphire High Performance Soc!\n\r");
+	bsp_printf("Hello from Sapphire Soc!\n\r");
 	bsp_printf("Watchdog timer is not enabled, unable to run this demo...\n\r");
 	while(1);
 }
