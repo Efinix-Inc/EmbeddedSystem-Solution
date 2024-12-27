@@ -3,21 +3,21 @@
         "-o",
         "gDMA",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\T120F576\\T120F576_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "bridges_and_adaptors",
             "name": "efx_dma",
-            "version": "6.3"
+            "version": "6.4"
         }
     ],
     "conf": {
         "PriorityEncode": "1'b0",
-        "WrQueue": "1'b0",
+        "WrQueue": "1'b1",
         "CTRL_ASYNC_MODE": "1'b1",
         "EfinixDDR": "1'b0",
-        "RdQueue": "1'b0",
+        "RdQueue": "1'b1",
         "BufferWidth": "32",
         "BufferWords": "4096",
         "MemExtWidth": "64",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA\\gDMA.v",
-            "gDMA\\gDMA_define.vh",
-            "gDMA\\gDMA_tmpl.vhd",
-            "gDMA\\gDMA_tmpl.v"
+            "gDMA/gDMA.v",
+            "gDMA/gDMA_define.vh",
+            "gDMA/gDMA_tmpl.vhd",
+            "gDMA/gDMA_tmpl.v"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:38:29.724241+00:00"
+    "generated_date": "2024-12-27T05:13:05.986891+00:00"
 }

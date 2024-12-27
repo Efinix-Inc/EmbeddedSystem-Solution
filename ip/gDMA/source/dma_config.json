@@ -2,8 +2,8 @@
     "name": "EfxDMA",
     "efinix_ddr": false,
     "with_sg_bus": false,
-    "with_ddr_write_queue": false,
-    "with_ddr_read_queue": false,
+    "with_ddr_write_queue": true,
+    "with_ddr_read_queue": true,
     "ctrl": {
         "asynchronous": true
     },

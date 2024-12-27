@@ -1,5 +1,6 @@
 // Generator : SpinalHDL dev    git head : 81793df2c4f55a20f7eff1130c4bb74a4b11319f
 // Component : EfxDMA
+// Git hash  : d635fcee4db89d9fa3a753360d674063a0460437
 
 `timescale 1ns/1ps
 
@@ -50,8 +51,8 @@ module EfxDMA (
   input  wire [1:0]    write_bresp,
   input  wire          dat0_i_tvalid,
   output wire          dat0_i_tready,
-  input  wire [63:0]   dat0_i_tdata,
-  input  wire [7:0]    dat0_i_tkeep,
+  input  wire [7:0]    dat0_i_tdata,
+  input  wire [0:0]    dat0_i_tkeep,
   input  wire [3:0]    dat0_i_tdest,
   input  wire          dat0_i_tlast,
   input  wire          dat2_i_tvalid,
@@ -865,8 +866,8 @@ module EfxDMA (
   EfxDMA_BsbUpSizerDense inputsAdapter_0_upsizer_logic (
     .io_input_valid         (dat0_i_tvalid                                              ), //i
     .io_input_ready         (inputsAdapter_0_upsizer_logic_io_input_ready               ), //o
-    .io_input_payload_data  (dat0_i_tdata[63:0]                                         ), //i
-    .io_input_payload_mask  (dat0_i_tkeep[7:0]                                          ), //i
+    .io_input_payload_data  (dat0_i_tdata[7:0]                                          ), //i
+    .io_input_payload_mask  (dat0_i_tkeep                                               ), //i
     .io_input_payload_sink  (dat0_i_tdest[3:0]                                          ), //i
     .io_input_payload_last  (dat0_i_tlast                                               ), //i
     .io_output_valid        (inputsAdapter_0_upsizer_logic_io_output_valid              ), //o
@@ -2704,8 +2705,8 @@ endmodule
 module EfxDMA_BsbUpSizerDense (
   input  wire          io_input_valid,
   output wire          io_input_ready,
-  input  wire [63:0]   io_input_payload_data,
-  input  wire [7:0]    io_input_payload_mask,
+  input  wire [7:0]    io_input_payload_data,
+  input  wire [0:0]    io_input_payload_mask,
   input  wire [3:0]    io_input_payload_sink,
   input  wire          io_input_payload_last,
   output wire          io_output_valid,
@@ -2719,7 +2720,7 @@ module EfxDMA_BsbUpSizerDense (
 );
 
   reg                 valid;
-  reg        [0:0]    counter;
+  reg        [3:0]    counter;
   reg        [127:0]  buffer_data;
   reg        [15:0]   buffer_mask;
   reg        [3:0]    buffer_sink;
@@ -2727,19 +2728,19 @@ module EfxDMA_BsbUpSizerDense (
   wire                full;
   wire                canAggregate;
   wire                onOutput;
-  wire       [0:0]    counterSample;
+  wire       [3:0]    counterSample;
   wire                io_output_fire;
   wire                io_input_fire;
-  wire       [1:0]    _zz_1;
-  wire       [1:0]    _zz_2;
+  wire       [15:0]   _zz_1;
+  wire       [15:0]   _zz_2;
 
-  assign full = ((counter == 1'b0) || buffer_last);
+  assign full = ((counter == 4'b0000) || buffer_last);
   assign canAggregate = ((((valid && (! buffer_last)) && (! full)) && 1'b1) && (buffer_sink == io_input_payload_sink));
-  assign counterSample = (canAggregate ? counter : 1'b0);
+  assign counterSample = (canAggregate ? counter : 4'b0000);
   assign io_output_fire = (io_output_valid && io_output_ready);
   assign io_input_fire = (io_input_valid && io_input_ready);
-  assign _zz_1 = ({1'd0,1'b1} <<< counterSample);
-  assign _zz_2 = ({1'd0,1'b1} <<< counterSample);
+  assign _zz_1 = ({15'd0,1'b1} <<< counterSample);
+  assign _zz_2 = ({15'd0,1'b1} <<< counterSample);
   assign io_output_valid = (valid && ((valid && full) || (io_input_valid && (! canAggregate))));
   assign io_output_payload_data = buffer_data;
   assign io_output_payload_mask = buffer_mask;
@@ -2749,7 +2750,7 @@ module EfxDMA_BsbUpSizerDense (
   always @(posedge dat0_i_clk) begin
     if(dat0_i_reset) begin
       valid <= 1'b0;
-      counter <= 1'b0;
+      counter <= 4'b0000;
       buffer_last <= 1'b0;
       buffer_mask <= 16'h0;
     end else begin
@@ -2760,13 +2761,55 @@ module EfxDMA_BsbUpSizerDense (
       if(io_input_fire) begin
         valid <= 1'b1;
         if(_zz_2[0]) begin
-          buffer_mask[7 : 0] <= io_input_payload_mask;
+          buffer_mask[0 : 0] <= io_input_payload_mask;
         end
         if(_zz_2[1]) begin
-          buffer_mask[15 : 8] <= io_input_payload_mask;
+          buffer_mask[1 : 1] <= io_input_payload_mask;
+        end
+        if(_zz_2[2]) begin
+          buffer_mask[2 : 2] <= io_input_payload_mask;
+        end
+        if(_zz_2[3]) begin
+          buffer_mask[3 : 3] <= io_input_payload_mask;
+        end
+        if(_zz_2[4]) begin
+          buffer_mask[4 : 4] <= io_input_payload_mask;
+        end
+        if(_zz_2[5]) begin
+          buffer_mask[5 : 5] <= io_input_payload_mask;
+        end
+        if(_zz_2[6]) begin
+          buffer_mask[6 : 6] <= io_input_payload_mask;
+        end
+        if(_zz_2[7]) begin
+          buffer_mask[7 : 7] <= io_input_payload_mask;
+        end
+        if(_zz_2[8]) begin
+          buffer_mask[8 : 8] <= io_input_payload_mask;
+        end
+        if(_zz_2[9]) begin
+          buffer_mask[9 : 9] <= io_input_payload_mask;
+        end
+        if(_zz_2[10]) begin
+          buffer_mask[10 : 10] <= io_input_payload_mask;
+        end
+        if(_zz_2[11]) begin
+          buffer_mask[11 : 11] <= io_input_payload_mask;
+        end
+        if(_zz_2[12]) begin
+          buffer_mask[12 : 12] <= io_input_payload_mask;
+        end
+        if(_zz_2[13]) begin
+          buffer_mask[13 : 13] <= io_input_payload_mask;
+        end
+        if(_zz_2[14]) begin
+          buffer_mask[14 : 14] <= io_input_payload_mask;
+        end
+        if(_zz_2[15]) begin
+          buffer_mask[15 : 15] <= io_input_payload_mask;
         end
         buffer_last <= io_input_payload_last;
-        counter <= (counterSample + 1'b1);
+        counter <= (counterSample + 4'b0001);
       end
     end
   end
@@ -2775,10 +2818,52 @@ module EfxDMA_BsbUpSizerDense (
     if(io_input_fire) begin
       buffer_sink <= io_input_payload_sink;
       if(_zz_1[0]) begin
-        buffer_data[63 : 0] <= io_input_payload_data;
+        buffer_data[7 : 0] <= io_input_payload_data;
       end
       if(_zz_1[1]) begin
-        buffer_data[127 : 64] <= io_input_payload_data;
+        buffer_data[15 : 8] <= io_input_payload_data;
+      end
+      if(_zz_1[2]) begin
+        buffer_data[23 : 16] <= io_input_payload_data;
+      end
+      if(_zz_1[3]) begin
+        buffer_data[31 : 24] <= io_input_payload_data;
+      end
+      if(_zz_1[4]) begin
+        buffer_data[39 : 32] <= io_input_payload_data;
+      end
+      if(_zz_1[5]) begin
+        buffer_data[47 : 40] <= io_input_payload_data;
+      end
+      if(_zz_1[6]) begin
+        buffer_data[55 : 48] <= io_input_payload_data;
+      end
+      if(_zz_1[7]) begin
+        buffer_data[63 : 56] <= io_input_payload_data;
+      end
+      if(_zz_1[8]) begin
+        buffer_data[71 : 64] <= io_input_payload_data;
+      end
+      if(_zz_1[9]) begin
+        buffer_data[79 : 72] <= io_input_payload_data;
+      end
+      if(_zz_1[10]) begin
+        buffer_data[87 : 80] <= io_input_payload_data;
+      end
+      if(_zz_1[11]) begin
+        buffer_data[95 : 88] <= io_input_payload_data;
+      end
+      if(_zz_1[12]) begin
+        buffer_data[103 : 96] <= io_input_payload_data;
+      end
+      if(_zz_1[13]) begin
+        buffer_data[111 : 104] <= io_input_payload_data;
+      end
+      if(_zz_1[14]) begin
+        buffer_data[119 : 112] <= io_input_payload_data;
+      end
+      if(_zz_1[15]) begin
+        buffer_data[127 : 120] <= io_input_payload_data;
       end
     end
   end

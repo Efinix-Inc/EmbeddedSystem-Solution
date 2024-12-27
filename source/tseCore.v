@@ -790,7 +790,7 @@ common_efx_fifo_wrapper  #(
    .SYNC_STAGE (2),
    .DATA_WIDTH (16),
    .MODE ("FWFT"),
-   .OUTPUT_REG (0),
+   .OUTPUT_REG (1),
    .PROG_FULL_ASSERT (510),
    .PROGRAMMABLE_FULL ("NONE"),
    .PROG_FULL_NEGATE (510),

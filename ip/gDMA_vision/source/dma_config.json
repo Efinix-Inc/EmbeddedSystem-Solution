@@ -82,7 +82,7 @@
     },
     "inputs": {
         "dat0_i": {
-            "data_width": 64,
+            "data_width": 8,
             "tid_width": 0,
             "tdest_width": 4,
             "asynchronous": true

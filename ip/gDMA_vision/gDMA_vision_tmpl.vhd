@@ -114,8 +114,8 @@ port (
     dat2_i_tlast : in std_logic;
     dat0_i_tvalid : in std_logic;
     dat0_i_tready : out std_logic;
-    dat0_i_tdata : in std_logic_vector(63 downto 0);
-    dat0_i_tkeep : in std_logic_vector(7 downto 0);
+    dat0_i_tdata : in std_logic_vector(7 downto 0);
+    dat0_i_tkeep : in std_logic_vector(0 to 0);
     dat0_i_tdest : in std_logic_vector(3 downto 0);
     dat0_i_tlast : in std_logic;
     read_rresp : in std_logic_vector(1 downto 0)
