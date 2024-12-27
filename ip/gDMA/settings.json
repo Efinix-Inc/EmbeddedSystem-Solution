@@ -3,13 +3,13 @@
         "-o",
         "gDMA",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti180/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "bridges_and_adaptors",
             "name": "efx_dma",
-            "version": "6.3"
+            "version": "6.4"
         }
     ],
     "conf": {
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
+            "gDMA/gDMA_tmpl.vhd",
             "gDMA/gDMA_tmpl.v",
             "gDMA/gDMA.v",
-            "gDMA/gDMA_define.vh",
-            "gDMA/gDMA_tmpl.vhd"
+            "gDMA/gDMA_define.vh"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:02:48.421389+00:00"
+    "generated_date": "2024-12-27T02:57:33.249158+00:00"
 }
