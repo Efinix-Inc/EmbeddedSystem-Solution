@@ -325,5 +325,6 @@ EfxSapphireSoc u_EfxSapphireSoc
     .cpu1_customInstruction_rsp_valid ( cpu1_customInstruction_rsp_valid ),
     .cpu1_customInstruction_rsp_ready ( cpu1_customInstruction_rsp_ready ),
     .cpu1_customInstruction_outputs_0 ( cpu1_customInstruction_outputs_0 ),
-    .system_spi_0_io_ss ( system_spi_0_io_ss )
+    .system_spi_0_io_ss ( system_spi_0_io_ss ),
+    .system_watchdog_hardPanic ( system_watchdog_hardPanic )
 );

@@ -35,7 +35,7 @@
 
 //Camera
 //Define the picam version. By default is set to Picam V2.
-#define PICAM_VERSION 		3
+#define PICAM_VERSION 		2
 
 //Resolution of Display
 #define FRAME_WIDTH         1280

@@ -319,7 +319,8 @@ port (
     cpu1_customInstruction_rsp_valid : in std_logic;
     cpu1_customInstruction_rsp_ready : out std_logic;
     cpu1_customInstruction_outputs_0 : in std_logic_vector(31 downto 0);
-    system_spi_0_io_ss : out std_logic_vector(0 to 0)
+    system_spi_0_io_ss : out std_logic_vector(0 to 0);
+    system_watchdog_hardPanic : out std_logic
 );
 end component EfxSapphireSoc;
 
@@ -607,7 +608,8 @@ port map (
     cpu1_customInstruction_rsp_valid => cpu1_customInstruction_rsp_valid,
     cpu1_customInstruction_rsp_ready => cpu1_customInstruction_rsp_ready,
     cpu1_customInstruction_outputs_0 => cpu1_customInstruction_outputs_0,
-    system_spi_0_io_ss => system_spi_0_io_ss
+    system_spi_0_io_ss => system_spi_0_io_ss,
+    system_watchdog_hardPanic => system_watchdog_hardPanic
 );
 
 ------------------------ End INSTANTIATION Template ---------

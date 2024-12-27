@@ -3,7 +3,7 @@
         "-o",
         "EfxSapphireSoc",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti180/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -151,7 +151,7 @@
         "USER_TIMER2_PS_WIDTH": "8",
         "USER_TIMER2_INT_ID": "21",
         "USER_TIMER2_M_Addr": "32'd69632",
-        "WDT0": "1'b0",
+        "WDT0": "1'b1",
         "WDT0_PS_WIDTH": "24",
         "WDT0_TIMER_WIDTH": "16",
         "WDT0_M_Addr": "32'd73728",
@@ -167,14 +167,14 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v",
             "EfxSapphireSoc/EfxSapphireSoc.v",
             "EfxSapphireSoc/EfxSapphireSoc_define.vh",
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd"
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd",
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v"
         ],
         "external_script_script": [],
         "external_script_embedded_sw": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:00:45.429085+00:00"
+    "generated_date": "2024-12-26T08:20:45.411970+00:00"
 }
