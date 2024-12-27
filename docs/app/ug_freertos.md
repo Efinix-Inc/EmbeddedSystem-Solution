@@ -62,7 +62,7 @@ This demo shows the MQTT protocol in action.
 
 ## freertosFatDemo
 ### Preparation
-- Configure the DS3231 RTC module to the correct time by running the rtcDemo-DS3231
+- Configure the DS3231 RTC module to the correct time by running the sensor_DS3231_rtc
 
 - Format the SD card to FAT32\
 ![Format SD card](../images/format-sd-card.PNG)
