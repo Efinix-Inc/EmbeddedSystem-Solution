@@ -20,6 +20,22 @@
 // SOFTWARE.
 ///////////////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////
+//           _____       
+//          / _______    Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+//         / /       \   
+//        / /  ..    /   top_soc.v
+//       / / .'     /    
+//    __/ /.'      /     Description:
+//   __   \       /      Top module for unified hardware
+//  /_/ /\ \_____/ /     
+// ____/  \_______/      
+//
+// ***********************************************************************
+// Revisions:
+// 1.0 Initial rev
+// ***********************************************************************
+
 
 `timescale 1ns / 1ps
 // To enable RiscV soft tap connection (for debugger).
@@ -254,6 +270,15 @@ module top_soc (
     input                   i_sensor_scl,
     output                  o_sensor_scl,
     output                  o_sensor_scl_oe,
+    
+// I2C_2 EEPROM
+    output                  o_eeprom_sda,
+    output                  o_eeprom_sda_oe,
+    input                   i_eeprom_sda,
+    output                  o_eeprom_scl,
+    output                  o_eeprom_scl_oe,
+    input                   i_eeprom_scl,
+
 //UART_0
     output		            system_uart_0_io_txd,
     input		            system_uart_0_io_rxd
@@ -384,7 +409,8 @@ assign reset      = ~pll_locked | w_system_watchdog_hardPanic;
 
 assign  o_sensor_sda_oe    = !o_sensor_sda;
 assign  o_sensor_scl_oe    = !o_sensor_scl;
-
+assign  o_eeprom_sda_oe    = !o_eeprom_sda;
+assign  o_eeprom_scl_oe    = !o_eeprom_scl;
 
 /*********************************************LPDDR3 Configuration (Trion)*********************************************/
 
@@ -1419,7 +1445,11 @@ EfxSapphireSoc soc_inst
     .cpu1_customInstruction_rsp_valid   ( cpu1_customInstruction_rsp_valid   ),
     .cpu1_customInstruction_rsp_ready   ( cpu1_customInstruction_rsp_ready   ),
     .cpu1_customInstruction_outputs_0   ( cpu1_customInstruction_outputs_0   ),
-
+    
+    .system_i2c_2_io_sda_write          ( o_eeprom_sda ),
+    .system_i2c_2_io_sda_read           ( i_eeprom_sda ),
+    .system_i2c_2_io_scl_write          ( o_eeprom_scl ),
+    .system_i2c_2_io_scl_read           ( i_eeprom_scl ),
 `ifdef ENABLE_EVSOC
     //I2C_0
     .system_i2c_0_io_sda_write          ( o_cam_sda ),
