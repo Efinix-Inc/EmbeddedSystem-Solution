@@ -5404,8 +5404,8 @@ module EfxDMA_Core (
   assign channels_1_fifo_pop_bytesIncr_value = _zz_channels_1_fifo_pop_bytesIncr_value_1;
   assign channels_1_fifo_pop_bytesDecr_value = 16'h0;
   assign channels_1_fifo_pop_ptrIncr_value = _zz_channels_1_fifo_pop_ptrIncr_value;
-  assign ll_0_descriptorUpdate = (channels_0_ll_descriptorUpdated && channels_0_ll_gotDescriptorStall);
-  assign ll_1_descriptorUpdate = (channels_1_ll_descriptorUpdated && channels_1_ll_gotDescriptorStall);
+  assign ll_0_descriptorUpdate = (channels_0_ll_descriptorUpdated && (! channels_0_ll_gotDescriptorStall));
+  assign ll_1_descriptorUpdate = (channels_1_ll_descriptorUpdated && (! channels_1_ll_gotDescriptorStall));
   always @(posedge clk) begin
     if(reset) begin
       channels_0_channelValid <= 1'b0;

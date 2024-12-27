@@ -3,13 +3,13 @@
         "-o",
         "csi2_mipi_rx",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "mipi",
             "name": "efx_csi2_rx",
-            "version": "5.7"
+            "version": "5.8"
         }
     ],
     "conf": {
@@ -32,16 +32,17 @@
         "Pack_56": "1'b1",
         "Pack_64": "1'b1",
         "FRAME_MODE": "\"GENERIC\"",
-        "ENABLE_VCX": "1'b0"
+        "ENABLE_VCX": "1'b0",
+        "MIPI_CSI2_RX_DEBUG": "1'b0"
     },
     "output": {
         "external_source_source": [
-            "csi2_mipi_rx\\csi2_mipi_rx.sv",
-            "csi2_mipi_rx\\csi2_mipi_rx_tmpl.vhd",
-            "csi2_mipi_rx\\csi2_mipi_rx_tmpl.sv",
-            "csi2_mipi_rx\\csi2_mipi_rx_define.svh"
+            "csi2_mipi_rx/csi2_mipi_rx.sv",
+            "csi2_mipi_rx/csi2_mipi_rx_define.svh",
+            "csi2_mipi_rx/csi2_mipi_rx_tmpl.sv",
+            "csi2_mipi_rx/csi2_mipi_rx_tmpl.vhd"
         ]
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:46:46.692877+00:00"
+    "generated_date": "2024-12-27T02:56:48.732212+00:00"
 }

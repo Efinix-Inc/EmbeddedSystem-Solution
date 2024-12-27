@@ -3,13 +3,13 @@
         "-o",
         "gDMA_vision",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "bridges_and_adaptors",
             "name": "efx_dma",
-            "version": "6.3"
+            "version": "6.4"
         }
     ],
     "conf": {
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA_vision\\gDMA_vision.v",
-            "gDMA_vision\\gDMA_vision_define.vh",
-            "gDMA_vision\\gDMA_vision_tmpl.vhd",
-            "gDMA_vision\\gDMA_vision_tmpl.v"
+            "gDMA_vision/gDMA_vision_tmpl.v",
+            "gDMA_vision/gDMA_vision.v",
+            "gDMA_vision/gDMA_vision_define.vh",
+            "gDMA_vision/gDMA_vision_tmpl.vhd"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:45:43.757717+00:00"
+    "generated_date": "2024-12-27T02:56:45.195905+00:00"
 }
