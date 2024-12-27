@@ -8,16 +8,14 @@ Welcome to the Sapphire SoC Embedded Solution repo.
 - [Software Requirements](#software-requirements)
 - [Getting Start](#getting-start)
     - [Installing USB Drivers](docs/hardware/setup_drivers.md)
-    - [Setting up the development kit](#setting-up-the-development-kit)
     - [Setup Development Board: Titanium Ti375C529](docs/hardware/setup_devkit_Ti375C529.md)
     - [Setup Development Board: Titanium Ti180J484](docs/hardware/setup_devkit_Ti180J484.md)
     - [Setup Development Board: Trion T120F576](docs/hardware/setup_devkit_T120F576.md)
-    - [Setting up software folder](#setting-up-software-folder-for-each-devices)
+    - [Setting up firmware folder](#setting-up-firmware-folder)
 - [Embedded Solution Platform - RTL](#embedded-solution-platform---rtl)
-    - [RTL: Design Description](docs/rtl/rtl-design-description.md)
+    - [RTL: How to disable exisiting IP](docs/rtl/rtl-disable-ip.md)
     - [RTL: How to expand the platform](docs/rtl/platform-expansion.md)
 - [Embedded Solution Platform - SW](#embedded-solution-platform---sw)
-    - [SW: Regenerate Soc](docs/soc/regenerate_soc.md)
     - [SW: Address Mapping](docs/soc/addr_mapping_soc.md)
     - [SW: Supported App List](docs/app/ug_supported_app.md)
 - [Linux Boot Up](https://github.com/Efinix-Inc/br2-efinix)
@@ -50,21 +48,16 @@ Key Features:
 
 
 Available Embedded Software Demo:
-- [Ethernet](docs/app/ug_ethernet.md)
-  - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Filesystem](docs/app/ug_filesystem.md)
   - [x] [FatFsdemo](docs/app/ug_filesystem.md#fatfsdemo)
+- [Tsemac](docs/app/ug_ethernet.md)
+  - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
-  - [x] [rtcDemo-DS3231](docs/app/ug_sensors.md#rtcdemo-ds3231)
-  - [x] [rtcDemo-PCF8523](docs/app/ug_sensors.md#rtcdemo-rtcDemo-pcf8523)
-  - [x] [temperatureSensorDemo-EMC1413](docs/app/ug_sensors.md#temperatureSensorDemo-emc1413)
+  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_DS3231_rtc)
+  - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
+  - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
 - [Vision](docs/app/ug_vision.md)
-  - [x] [cam_display_demo](docs/app/ug_vision.md#cam_display_demo)
-  - [x] [cam_display_uart_control_demo](docs/app/ug_vision.md#cam_display_uart_control_demo)
-  - [x] [cam_display_sw_control_demo](docs/app/ug_vision.md#cam_display_sw_control_demo)
-  - [x] [cam_display_simulation](docs/app/ug_vision.md#cam_display_simulation)
-  - [x] [cam_display_profiling](docs/app/ug_vision.md#cam_display_profiling)
-  - [x] [cam_display_iperf_demo](docs/app/ug_vision.md#_cam_display_iperf_demo)
+  - [x] [cameraStreaming_HDMI](docs/app/ug_vision.md#cameraStreaming_HDMI)
 - [FreeRTOS](docs/app/ug_freertos.md)
   - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
   - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
@@ -134,145 +127,86 @@ Available Embedded Software Demo:
 ## Directory structure of Sapphire Soc Embedded Solution
 
 ```
-  +---common
-  ¦   +---embedded_sw
+  +---embedded_sw
+  ¦     +---embedded_solution
+  ¦       +---bsp
+  ¦       ¦    +---efinix
+  ¦       ¦        +---EfxSapphireSoc
+  ¦       ¦            +---app
+  ¦       ¦            ¦   +---fatfs
+  ¦       ¦            ¦   +---lwip
+  ¦       ¦            +---include
+  ¦       ¦            +---lauterbach_trace32
+  ¦       ¦            +---linker
+  ¦       ¦            +---openocd
   ¦       +---software
-  ¦           +---ethernet
-  ¦           ¦   +---lwipIperfServer
-  ¦           +---filesystem
-  ¦           ¦   +---fatFSDemo
   ¦           +---freeRTOS
   ¦           ¦   +---common
   ¦           ¦   +---driver
   ¦           ¦   +---freertosDemo
-  ¦           ¦   +---freertosDemo2
   ¦           ¦   +---freertosEchoServerDemo
   ¦           ¦   +---freertosFatDemo
   ¦           ¦   +---freertosIperfDemo
   ¦           ¦   +---freertosMqttPlainTextDemo
-  ¦           ¦   +---freertosUartInterruptDemo
-  ¦           +---sensors
-  ¦           ¦   +---rtcDemo-DS3231
-  ¦           ¦   +---rtcDemo-PCF8523
-  ¦           ¦   +---temperatureSensorDemo-EMC1413
-  ¦           +---standalone
-  ¦           ¦   +---apb3
-  ¦           ¦   ¦   +---apb3Demo
-  ¦           ¦   +---application
-  ¦           ¦   ¦   +---coremark
-  ¦           ¦   ¦   +---dhrystone
-  ¦           ¦   ¦   +---memTest
+  ¦           +---standalone 
   ¦           ¦   +---bootloader
   ¦           ¦   +---common
-  ¦           ¦   +---compatibilityDemo
   ¦           ¦   +---customInstruction
   ¦           ¦   ¦   +---customInstructionDemo
   ¦           ¦   +---driver
-  ¦           ¦   ¦   +---device
   ¦           ¦   +---fpu
   ¦           ¦   ¦   +---fpuDemo
   ¦           ¦   +---gpio
   ¦           ¦   ¦   +---gpioDemo
   ¦           ¦   +---i2c
-  ¦           ¦   ¦   +---i2cDemo
-  ¦           ¦   ¦   +---i2cMasterDemo
-  ¦           ¦   ¦   +---i2cSlaveDemo
-  ¦           ¦   +---inlineAsmDemo
-  ¦           ¦   +---openocdServer
-  ¦           ¦   +---sdhc
-  ¦           ¦   ¦   +---sdhcDemo
+  ¦           ¦   ¦   +---eeprom_AT24C01
+  ¦           ¦   ¦   +---sensor_DS3231_rtc
+  ¦           ¦   ¦   +---sensor_PCF8523_rtc
+  ¦           ¦   ¦   +---sensor_EMC1413_temp
+  ¦           ¦   +---perf
+  ¦           ¦   ¦   +---coremark
+  ¦           ¦   ¦   +---dhrystone
+  ¦           ¦   ¦   +---memTest
+  ¦           ¦   +---sd
+  ¦           ¦   ¦   +---sdThroughputTest
+  ¦           ¦   ¦   +---fatFSDemo
   ¦           ¦   +---smp
   ¦           ¦   ¦   +---smpDemo
   ¦           ¦   +---spi
   ¦           ¦   ¦   +---spiDemo
   ¦           ¦   +---timer
-  ¦           ¦   ¦   +---coreTimerInterruptDemo
-  ¦           ¦   ¦   +---nestedInterruptDemo
+  ¦           ¦   ¦   +---clintTimerInterruptDemo
   ¦           ¦   ¦   +---userTimerDemo
+  ¦           ¦   ¦   +---watchdogDemo
   ¦           ¦   +---uart
   ¦           ¦   ¦   +---uartEchoDemo
   ¦           ¦   ¦   +---uartInterruptDemo
-  ¦           ¦   +---vexriscv
-  ¦           ¦       +---dCacheFlushDemo
-  ¦           ¦       +---iCacheFlushDemo
-  ¦           ¦       +---semihostingDemo
-  ¦           +---vision
-  ¦               +---cam_display_demo
-  ¦               +---cam_display_uart_control_demo
-  ¦               +---cam_display_sw_control_demo
-  ¦               +---cam_display_simulation
-  ¦               +---cam_display_profiling
-  ¦               +---cam_display_iperf_demo
-  +---hps_soc
-  ¦   +---common
-  ¦   ¦   +---submodules
-  ¦   ¦       +---common
-  ¦   ¦       +---hdmi_display
-  ¦   ¦       ¦   +---common
-  ¦   ¦       ¦   +---display
-  ¦   ¦       ¦   ¦   +---box_annotator
-  ¦   ¦       ¦   ¦   +---hdmi
-  ¦   ¦       ¦   +---display_dma_fifo
-  ¦   ¦       +---hw_accel
-  ¦   ¦       ¦   +---hw_accel
-  ¦   ¦       ¦   +---hw_accel_dma_in_fifo
-  ¦   ¦       ¦   +---hw_accel_dma_out_fifo
-  ¦   ¦       +---mipi_csi_cam
-  ¦   ¦           +---cam_dma_fifo
-  ¦   ¦           +---cam_pixel_remap_fifo
-  ¦   ¦           +---common
-  ¦   +---Ti375C529_devkit
-  ¦       +---embedded_sw
-  ¦       ¦   +---efx_hard_soc
-  ¦       ¦       +---bsp
-  ¦       ¦           +---efinix
-  ¦       ¦               +---EfxSapphireSoc
-  ¦       ¦                   +---app
-  ¦       ¦                   ¦   +---fatfs
-  ¦       ¦                   ¦   +---lwip
-  ¦       ¦                   ¦   +---vision
-  ¦       ¦                   +---include
-  ¦       ¦                   +---lauterbach_trace32
-  ¦       ¦                   +---linker
-  ¦       ¦                   +---openocd
-  +---sapphire_soc
-      +---common
-      ¦   +---submodules
-      ¦       +---cam
-      ¦       +---common
-      ¦       +---hdmi_display
-      ¦       +---hw_accel
-      +---T120F576_devkit
-      ¦   +---embedded_sw
-      ¦   ¦   +---EfxSapphireSoc
-      ¦   ¦       +---bsp
-      ¦   ¦       +---config
-      ¦   ¦       +---config_linux
-      ¦   ¦       +---tool
-      +---Ti180J484_devkit
-          +---embedded_sw
-          ¦   +---EfxSapphireSoc
-          ¦       +---bsp
-          ¦       +---config
-          ¦       +---config_linux
-          ¦       +---tool
+  ¦           +---tsemac
+  ¦           ¦   +---lwipIperfServer
+  ¦           +---solution
+  ¦               +---cameraStreaming_HDMI
+  +---source
+  ¦   +---submodules
+  ¦        +---cam
+  ¦        +---common               
+  ¦        +---hdmi_display
+  ¦        ¦   +---display
+  ¦        ¦       +---mif_yuv
+  ¦        +---hw_accel         
+
 ```
 
 ## Software Requirements
 
 ### Efinity Software Version 
 
-- [Efinity v2024.1.163](https://www.efinixinc.com/support/efinity.php) 
+- [Efinity 2024.2.294.1.19](https://www.efinixinc.com/support/efinity.php) [v2024.2 Patch 1]
 
 - Follow the official [documentation](https://www.efinixinc.com/docs/efinity-installation-v3.3.pdf) on installation process.
 
-### Efinity Patch Version
-
-- Tested with [Efinity Patch v2024.1.163.3.13](https://www.efinixinc.com/support/efinity.php) (Released on 9th September 2024)
-
 ### Efinity RISC-V Embedded Software IDE
 
-- [v2024.1](https://www.efinixinc.com/support/efinity.php) and above
+- [v2024.2](https://www.efinixinc.com/support/efinity.php) and above
 
 - Follow the official [documentation](https://www.efinixinc.com/docs/riscv-sapphire-ug-v6.1.pdf) on installation process 
 
@@ -295,27 +229,42 @@ Available Embedded Software Demo:
 * [Setup Development Board: Titanium Ti375C529](docs/hardware/setup_devkit_Ti375C529.md)
 
 
-### Setting up software folder 
+### Setting up firmware folder 
 
 1. Git clone / download from the release.
-2. Users are required to run the [setup.py](setup.py) once in the terminal to copy over the application to the device specific BSP folder. 
-3. Type the command:
+2. Type command on terminal to switch branch :
 
-    `` python3 setup.py  ``
+    Ti375C529:
 
-Users should see output similar to the following in the terminal:
+    ```
+    git checkout Ti375C529
+    ```
+    Ti180J484:
 
-![setup.py-output](docs/images/setup.py-output.png)
+    ```
+    git checkout Ti180J484
+    ```
+    T120F576:
+
+    ```
+    git checkout T120F576
+    ```
+    
+2. By launching [Efinity RISC-V Embedded Software IDE](https://www.efinixinc.com/support/efinity.php), users are required to import the [bsp](embedded_sw/efx_solution/bsp) shown below:
+<img src="docs/images/import_bsp_0.png" alt="Description" width="800" height="420">
+
+3. Once the BSP is selected, available BSP project can be imported to the workspace. 
+<img src="docs/images/import_bsp_1.png" alt="Description" width="700" height="500">
+
 
 Note: Please refer [List of supported app](docs/app/ug_supported_app.md) for different devices. 
 
 ## Embedded Solution Platform - RTL
 
-* [RTL: Design Description](docs/rtl/rtl-design-description.md)
+* [RTL: How to disable exisiting IP](docs/rtl/rtl-disable-ip.md)
 * [RTL: How to expand the platform](docs/rtl/platform-expansion.md)
 
 ## Embedded Solution Platform - SW
-* [SW: Regenerate Soc](docs/soc/regenerate_soc.md)
 * [SW: Address Mapping](docs/soc/addr_mapping_soc.md)
 * [SW: Supported App List](docs/app/ug_supported_app.md)
 
