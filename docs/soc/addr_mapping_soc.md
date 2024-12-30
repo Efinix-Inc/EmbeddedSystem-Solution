@@ -1,6 +1,6 @@
 # Embedded Solution Platform - Address Mapping
 
-This guide show the address mapping for the example design of the Soft Sapphire Soc and High Performance Sapphire Soc.
+This guide show the address mapping for the example design of the High Performance Sapphire Soc.
 
 ## Address Mapping for High Performance Sapphire Soc
 This is an example design to showcase the Efinix Sapphire High Performance SoC integrate with triple speed ethernet, SD host Controller, MIPI Picam and HDMI Display for Ti375C529 devices.
