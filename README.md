@@ -9,9 +9,7 @@ Welcome to the Sapphire SoC Embedded Solution repo.
 - [Getting Start](#getting-start)
     - [Installing USB Drivers](docs/hardware/setup_drivers.md)
     - [Setup Development Board: Titanium Ti375C529](docs/hardware/setup_devkit_Ti375C529.md)
-    - [Setup Development Board: Titanium Ti180J484](docs/hardware/setup_devkit_Ti180J484.md)
-    - [Setup Development Board: Trion T120F576](docs/hardware/setup_devkit_T120F576.md)
-    - [Setting up firmware folder](#setting-up-firmware-folder)
+     - [Setting up firmware folder](#setting-up-firmware-folder)
 - [Embedded Solution Platform - RTL](#embedded-solution-platform---rtl)
     - [RTL: How to disable exisiting IP](docs/rtl/rtl-disable-ip.md)
     - [RTL: How to expand the platform](docs/rtl/platform-expansion.md)
@@ -27,10 +25,6 @@ Welcome to the Sapphire SoC Embedded Solution repo.
 
 The Sapphire Soc Embedded Solution platform is designed to support a diverse range of applications, particularly focusing on vision applications with integrated camera and display design. 
 It is compatible with both Titanium and Trion devices, ensuring flexibility and high performance. Key features include support Triple-Speed Ethernet MAC, providing high-speed Ethernet support. This platform offers a comprehensive suite of applications for embedded software, making it suitable for various use cases. This platform supports both Sapphire SoC as well as High-Performance Sapphire SoC. 
-
-#### Sapphire SoC Top Module Block Diagram
-
-![Sapphire SoC block-diagram](docs/images/sapphire-top-block-diagram.png)
 
 
 #### High-Performance Sapphire SoC Top Module Block Diagram
@@ -67,14 +61,6 @@ Available Embedded Software Demo:
 
 ## Sapphire Soc Embedded Solution Hardware Settings
 
-### Sapphire SoC CPU setting:
-- 2 Cores
-- IMACFD enabled
-- Hard standard debug tap
-- 128 bits EMIF
-- 2KB OCR
-- Custom Instruction
-
 ### High-Performance Sapphire SoC CPU setting:
 - Quad 32-bit 6 stages pipelines RISC-V cores
 - support RISC-V WIACFD extenstion
@@ -96,13 +82,9 @@ Available Embedded Software Demo:
 - 1 Ethernet
 - 2\*SPI + 3\*I2C + UART + 4 pins GPIO + 2\*user timers
 
-### Supported boards:
-- Efinix Trion T120F576 Development Board
-- Efinix Titanium Ti180J484 Development Board
-- Efinix Titanium Ti375C529 Development Board - High-Performance SoC
-
 
 **Note:**
+- The resolution of the display is set to 1080p for Ti375C529 device.
 - Below are some difference in terms of cpu setting between supported devices.
 
 | Device       | System Clk (MHz) | Peripheral Clk (MHz)| Memory Clk (MHz) |      Cache Setting     |
@@ -111,9 +93,7 @@ Available Embedded Software Demo:
 | Ti180J484    |      200         |         200         |       125        |8 ways 32kb I & D caches|
 | T120F576     |       50         |          50         |        50        |2 ways 8kb I & D caches |
 
-- Linux Memory Management Unit (MMU) is disabled for Trion T120F576. 
-- Both the Ti180J484 & Ti375C529 devices support Linux Boot-up.
-- The resolution of the display is set to 720p for the soft sapphire soc devices (Ti180J484 & T120F576) while 1080p for Ti375C529 (High Performance Sapphire Soc Device) .
+
 
 
 ### Resource Consumption
@@ -159,8 +139,6 @@ Available Embedded Software Demo:
   ¦           ¦   +---gpio
   ¦           ¦   ¦   +---gpioDemo
   ¦           ¦   +---i2c
-  ¦           ¦   ¦   +---eeprom_AT24C01
-  ¦           ¦   ¦   +---sensor_DS3231_rtc
   ¦           ¦   ¦   +---sensor_PCF8523_rtc
   ¦           ¦   ¦   +---sensor_EMC1413_temp
   ¦           ¦   +---perf
@@ -222,10 +200,6 @@ Available Embedded Software Demo:
 
 ### Setting up the development kit
 
-* [Setup Development Board: Titanium Ti180J484](docs/hardware/setup_devkit_Ti180J484.md)
-
-* [Setup Development Board: Trion T120F576](docs/hardware/setup_devkit_T120F576.md)
-
 * [Setup Development Board: Titanium Ti375C529](docs/hardware/setup_devkit_Ti375C529.md)
 
 
@@ -234,20 +208,8 @@ Available Embedded Software Demo:
 1. Git clone / download from the release.
 2. Type command on terminal to switch branch :
 
-    Ti375C529:
-
     ```
     git checkout Ti375C529
-    ```
-    Ti180J484:
-
-    ```
-    git checkout Ti180J484
-    ```
-    T120F576:
-
-    ```
-    git checkout T120F576
     ```
     
 2. By launching [Efinity RISC-V Embedded Software IDE](https://www.efinixinc.com/support/efinity.php), users are required to import the [bsp](embedded_sw/efx_solution/bsp) shown below:
@@ -270,11 +232,7 @@ Note: Please refer [List of supported app](docs/app/ug_supported_app.md) for dif
 
 ## Documentation
 - [Efinity Programmer User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=UG-EFN-PGM)
-- [Sapphire RISC-V SoC Datasheet](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREDS)
-- [Sapphire RISC-V SoC Hardware and Software User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREUG)
 - [HPS RISC-V SoC Datasheet](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREHPBDS)
 - [HPS RISC-V SoC Hardware and Software User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREHPBUG)
-- [Trion T120 BGA576 Development Kit User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=T120F576-DK-UG)
-- [Titanium Ti180 J484 Development Kit User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=Ti180J484-DK-UG)
 - [Titanium Ti375C529 Development Kit User Guide](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=Ti375C529-DK-UG)
 - [Titanium Ti375C529 Development Kit Schematics](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=TI375C529-BRD-SCHM)
