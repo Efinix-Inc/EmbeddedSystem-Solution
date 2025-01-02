@@ -23,6 +23,8 @@
 
 #if PICAM_VERSION == 3
    #include "vision/PiCamV3Driver.h"
+#else
+	#include "vision/PiCamDriver.h"
 #endif
 
 //Start address to be divided evenly by 8. Otherwise DMA tkeep might be shifted, not handled in display and hw_accel blocks.
@@ -194,7 +196,12 @@ void main() {
    PiCamV3_Init();
    //SET camera pre-processing RGB gain value
    Set_RGBGain(1,5,3,7);
+#else
+   PiCam_init();
+   //SET camera pre-processing RGB gain value
+   Set_RGBGain(1,5,3,4);
 #endif
+
     
     /******************************************************SETUP DMA & UART********************************************************/
     
