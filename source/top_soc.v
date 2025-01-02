@@ -205,10 +205,12 @@ module top_soc (
     input [63:0]        mipi_inst1_DATA,
     input [1:0]         mipi_inst1_VC,
     input [17:0]        mipi_inst1_ERR,
+
+`endif // ENABLE_EVSOC_CAMERA
+    
     output              mipi_inst1_DPHY_RSTN,   // Active Low Reset for MIPI Control (DPHY)
     output              mipi_inst1_RSTN,        // Active Low Reset for MIPI Control (CSI-2)
 
-`endif // ENABLE_EVSOC_CAMERA
 
 `ifdef ENABLE_EVSOC_DISPLAY
 // Common Evsoc I2C Configuration for HDMI
@@ -1372,6 +1374,10 @@ gDMA_vision u_dma_vision (
    .ctrl_PSLVERROR     ( vision_dma_apbSlave_0_PSLVERROR   ),
    .ctrl_interrupts    ( vision_dma_interrupts             )
 );
+`else
+
+    assign mipi_inst1_DPHY_RSTN = 1'b0;   // Active Low Reset for MIPI Control (DPHY)
+    assign mipi_inst1_RSTN      = 1'b0;   // Active Low Reset for MIPI Control (CSI-2)
 
 `endif // ENABLE_EVSOC
 
