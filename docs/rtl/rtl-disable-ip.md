@@ -27,7 +27,25 @@ This guide demonstrates how to correctly disable an existing IP and recompile th
 1. To disable the existing IP for the Vision Hardware Accelerator, uncomment the `ENABLE_EVSOC` line in the Verilog file:  
    ![Verilog Configuration](../images/hps/hps_custom_module_axi4_6.png)
 
-2. Recompile the project to apply the changes.
+2. Make sure the number/depth of the axi interconnect `gAXIS_1to4_switch` is set correctly. At default, the AXIS_DEV is set to 4.
+
+   | AXIS_DEV of the ``gAXIS_1to4_switch`` | Module| localparam |
+   |--------------|------------------|------------------|
+   | AXIS_S0 | Soft Logic Block|SLB |
+   | AXIS_S1 | SD host Controller|SDHC|
+   | AXIS_S2 | TSEMAC|TSE|
+   | AXIS_S3 | Vision Hardware Accelerator| HW_ACCEL|
+   
+   <br> <img src="../images/hps/hps_remove_ip_0.png" alt="Description" width="480" height="200">
+
+3. Make sure to change ``AXIM_DEV`` if user want to disable ethernet or sdhc IP.
+
+   | AXIM_DEV of the ``gAXIS_1to2_switch`` | Module|localparam|
+   |--------------|------------------|------------------|
+   | AXIS_M0 | SD host Controller|MSDHC|
+   | AXIS_M1 | TSEMAC|MTSE|
+
+3. Recompile the project to apply the changes.
 
 ---
 
