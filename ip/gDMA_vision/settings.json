@@ -18,7 +18,7 @@
         "CTRL_ASYNC_MODE": "1'b1",
         "EfinixDDR": "1'b0",
         "RdQueue": "1'b0",
-        "BufferWidth": "128",
+        "BufferWidth": "32",
         "BufferWords": "4096",
         "MemExtWidth": "256",
         "CH0_SGMode": "1'b0",
@@ -57,7 +57,7 @@
         "CH3_Output": "1'b1",
         "CH3_Width": "32",
         "CH3_Input": "1'b0",
-        "CH3_BufferSize": "2048",
+        "CH3_BufferSize": "8192",
         "CH3_BurstSize": "512",
         "BufferCount": "2",
         "CH0_Enable": "1'b1",
@@ -70,7 +70,7 @@
         "CH3_AsyncMode": "1'b1",
         "CH2_AsyncMode": "1'b1",
         "CH4_AsyncMode": "1'b0",
-        "CH0_BufferSize": "2048",
+        "CH0_BufferSize": "8192",
         "CH0_BurstSize": "512",
         "CH0_SR": "1'b1",
         "CH0_Width": "64",
@@ -79,14 +79,14 @@
         "CH1_Output": "1'b1",
         "CH1_SGMode": "1'b0",
         "CH1_SR": "1'b1",
-        "CH2_BufferSize": "2048",
+        "CH2_BufferSize": "8192",
         "CH2_BurstSize": "512",
         "CH2_Width": "32",
         "CH2_SR": "1'b1",
         "CH2_SGMode": "1'b0",
         "CH2_Output": "1'b0",
         "CH2_Input": "1'b1",
-        "CH1_BufferSize": "2048",
+        "CH1_BufferSize": "8192",
         "CH1_BurstSize": "1024",
         "CH2_Enable_user": "1'b1",
         "CH2_Enable_default": "1'b0",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA_vision/gDMA_vision_tmpl.vhd",
+            "gDMA_vision/gDMA_vision_define.vh",
             "gDMA_vision/gDMA_vision_tmpl.v",
-            "gDMA_vision/gDMA_vision.v",
-            "gDMA_vision/gDMA_vision_define.vh"
+            "gDMA_vision/gDMA_vision_tmpl.vhd",
+            "gDMA_vision/gDMA_vision.v"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-12-27T02:56:12.050578+00:00"
+    "generated_date": "2025-01-03T08:09:44.103906+00:00"
 }
