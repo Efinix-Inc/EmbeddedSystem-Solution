@@ -20,7 +20,7 @@ create_clock -period 20.0000 io_memoryClk
 create_clock -period 100.000 jtag_inst1_TCK
 
 ### Clock for Picam and HDMI
-create_clock -period 13.3333 mipi_pclk
+create_clock -period 10.0000 mipi_pclk
 create_clock -period 10.0000 mipi_cal_clk
 create_clock -period 33.3333 hdmi_clk
 create_clock -period 26.9360 tx_slowclk

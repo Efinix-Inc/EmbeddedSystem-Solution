@@ -3,7 +3,7 @@
         "-o",
         "gDMA_vision",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120_disabled_eth/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -13,7 +13,7 @@
         }
     ],
     "conf": {
-        "PriorityEncode": "1'b0",
+        "PriorityEncode": "1'b1",
         "WrQueue": "1'b0",
         "CTRL_ASYNC_MODE": "1'b1",
         "EfinixDDR": "1'b0",
@@ -30,7 +30,7 @@
         "CH4_SGMode": "1'b0",
         "CH4_SR": "1'b0",
         "CH5_BurstSize": "64",
-        "CH5_BufferSize": "4096",
+        "CH5_BufferSize": "1024",
         "CH5_SR": "1'b0",
         "CH6_Output": "1'b1",
         "CH6_SGMode": "1'b0",
@@ -41,17 +41,17 @@
         "CH7_Input": "1'b1",
         "CH7_Width": "32",
         "CH7_BurstSize": "64",
-        "CH7_BufferSize": "4096",
+        "CH7_BufferSize": "1024",
         "CH6_Width": "32",
         "CH6_Input": "1'b1",
         "CH6_BurstSize": "64",
-        "CH6_BufferSize": "4096",
+        "CH6_BufferSize": "1024",
         "CH5_Width": "32",
         "CH5_Output": "1'b1",
         "CH5_SGMode": "1'b0",
         "CH5_Input": "1'b1",
         "CH4_BurstSize": "64",
-        "CH4_BufferSize": "4096",
+        "CH4_BufferSize": "1024",
         "CH3_SR": "1'b1",
         "CH3_SGMode": "1'b0",
         "CH3_Output": "1'b1",
@@ -73,7 +73,7 @@
         "CH0_BufferSize": "2048",
         "CH0_BurstSize": "512",
         "CH0_SR": "1'b1",
-        "CH0_Width": "8",
+        "CH0_Width": "64",
         "CH1_Input": "1'b0",
         "CH1_Width": "64",
         "CH1_Output": "1'b1",
@@ -113,13 +113,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA_vision/gDMA_vision.v",
+            "gDMA_vision/gDMA_vision_tmpl.v",
             "gDMA_vision/gDMA_vision_define.vh",
             "gDMA_vision/gDMA_vision_tmpl.vhd",
-            "gDMA_vision/gDMA_vision_tmpl.v"
+            "gDMA_vision/gDMA_vision.v"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-12-27T06:38:20.893397+00:00"
+    "generated_date": "2025-01-03T05:16:41.781640+00:00"
 }

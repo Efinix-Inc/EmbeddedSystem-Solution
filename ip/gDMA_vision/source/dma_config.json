@@ -4,6 +4,8 @@
     "with_sg_bus": false,
     "with_ddr_write_queue": false,
     "with_ddr_read_queue": false,
+    "PriorityWidth": 2,
+    "weightWidth": 2,
     "ctrl": {
         "asynchronous": true
     },
@@ -82,7 +84,7 @@
     },
     "inputs": {
         "dat0_i": {
-            "data_width": 8,
+            "data_width": 64,
             "tid_width": 0,
             "tdest_width": 4,
             "asynchronous": true
