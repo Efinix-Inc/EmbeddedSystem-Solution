@@ -35,7 +35,7 @@
             "self_restart_capable": false,
             "bytes_per_burst": 1024,
             "buffer_address": 0,
-            "buffer_size": 4096
+            "buffer_size": 16384
         },
         "c1": {
             "progress_probe": true,
@@ -48,8 +48,8 @@
             "half_completion_interrupt": false,
             "self_restart_capable": false,
             "bytes_per_burst": 1024,
-            "buffer_address": 4096,
-            "buffer_size": 4096
+            "buffer_address": 16384,
+            "buffer_size": 16384
         }
     },
     "inputs": {
