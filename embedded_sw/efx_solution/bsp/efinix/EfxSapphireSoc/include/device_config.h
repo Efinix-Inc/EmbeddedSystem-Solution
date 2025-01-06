@@ -43,7 +43,8 @@
 #define FRAME_HEIGHT        1080
 
 //Camera
-//Define the picam version. By default is set to Picam V2.
+//Define the picam version. By default is set to Picam V3.
+//Ti375C529 do not support PicamV2.
 #define PICAM_VERSION 		3
 
 //For BSP Compatibility
