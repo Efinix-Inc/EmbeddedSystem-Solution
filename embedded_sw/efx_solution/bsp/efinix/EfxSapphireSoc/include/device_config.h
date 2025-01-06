@@ -39,7 +39,6 @@
 
 //Camera
 //Define the picam version. By default is set to Picam V2.
-//PicamV3 do not support in Trion T120F576.
 #define PICAM_VERSION 		2
 
 //Resolution of Display
