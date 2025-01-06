@@ -3,7 +3,7 @@
         "-o",
         "gDMA",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120_optimized_dma/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -70,7 +70,7 @@
         "CH3_AsyncMode": "1'b0",
         "CH2_AsyncMode": "1'b0",
         "CH4_AsyncMode": "1'b0",
-        "CH0_BufferSize": "4096",
+        "CH0_BufferSize": "16384",
         "CH0_BurstSize": "64",
         "CH0_SR": "1'b0",
         "CH0_Width": "8",
@@ -86,7 +86,7 @@
         "CH2_SGMode": "1'b0",
         "CH2_Output": "1'b1",
         "CH2_Input": "1'b1",
-        "CH1_BufferSize": "4096",
+        "CH1_BufferSize": "16384",
         "CH1_BurstSize": "64",
         "CH2_Enable_user": "1'b0",
         "CH2_Enable_default": "1'b0",
@@ -114,12 +114,12 @@
         "external_script_generator": [],
         "external_source_source": [
             "gDMA/gDMA.v",
-            "gDMA/gDMA_define.vh",
             "gDMA/gDMA_tmpl.vhd",
+            "gDMA/gDMA_define.vh",
             "gDMA/gDMA_tmpl.v"
         ],
         "external_script_script": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-12-27T05:13:05.986891+00:00"
+    "generated_date": "2025-01-06T06:18:20.403693+00:00"
 }

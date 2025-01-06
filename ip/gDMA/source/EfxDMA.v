@@ -1,6 +1,6 @@
 // Generator : SpinalHDL dev    git head : 81793df2c4f55a20f7eff1130c4bb74a4b11319f
 // Component : EfxDMA
-// Git hash  : d635fcee4db89d9fa3a753360d674063a0460437
+// Git hash  : 1fff23d245ee8893ed1b08c1a1256e9d23da5f72
 
 `timescale 1ns/1ps
 
@@ -4782,7 +4782,7 @@ module EfxDMA_Core (
   assign when_DmaSg_l322 = (! channels_0_ll_gotDescriptorStall);
   assign when_DmaSg_l328 = (! channels_0_ll_head);
   assign channels_0_fifo_base = 14'h0;
-  assign channels_0_fifo_words = 14'h03ff;
+  assign channels_0_fifo_words = 14'h0fff;
   assign channels_0_fifo_push_availableDecr = 14'h0;
   assign channels_0_fifo_push_ptrWithBase = ((channels_0_fifo_base & (~ channels_0_fifo_words)) | (channels_0_fifo_push_ptr & channels_0_fifo_words));
   assign channels_0_fifo_pop_ptrWithBase = ((channels_0_fifo_base & (~ channels_0_fifo_words)) | (channels_0_fifo_pop_ptr & channels_0_fifo_words));
@@ -4995,8 +4995,8 @@ module EfxDMA_Core (
   assign when_DmaSg_l320_1 = (! channels_1_ll_justASync);
   assign when_DmaSg_l322_1 = (! channels_1_ll_gotDescriptorStall);
   assign when_DmaSg_l328_1 = (! channels_1_ll_head);
-  assign channels_1_fifo_base = 14'h0400;
-  assign channels_1_fifo_words = 14'h03ff;
+  assign channels_1_fifo_base = 14'h1000;
+  assign channels_1_fifo_words = 14'h0fff;
   always @(*) begin
     channels_1_fifo_push_availableDecr = 14'h0;
     if(m2b_cmd_s1_valid) begin
