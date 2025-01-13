@@ -40,16 +40,13 @@ Key Features:
 
 
 Available Embedded Software Demo:
-- [Filesystem](docs/app/ug_filesystem.md)
-  - [x] [FatFsdemo](docs/app/ug_filesystem.md#fatfsdemo)
 - [Tsemac](docs/app/ug_ethernet.md)
   - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
-  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_DS3231_rtc)
-  - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
-  - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
-- [Vision](docs/app/ug_vision.md)
-  - [x] [cameraStreaming_HDMI](docs/app/ug_vision.md#cameraStreaming_HDMI)
+  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_ds3231_rtc)
+- [Solution](docs/app/ug_solution.md)
+  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
+  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
 - [FreeRTOS](docs/app/ug_freertos.md)
   - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
   - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
@@ -202,9 +199,9 @@ Available Embedded Software Demo:
     ```
     
 2. By launching [Efinity RISC-V Embedded Software IDE](https://www.efinixinc.com/support/efinity.php), users are required to import the [bsp](embedded_sw/efx_solution/bsp) shown below:
-<img src="docs/images/import_bsp_0.png" alt="Description" width="800" height="420">
+<br> <img src="docs/images/import_bsp_0.png" alt="Description" width="800" height="420">
 
-3. Once the BSP is selected, available BSP project can be imported to the workspace. 
+3. Once the BSP is selected, available BSP project can be imported to the workspace. <br>
 <img src="docs/images/import_bsp_1.png" alt="Description" width="700" height="500">
 
 
