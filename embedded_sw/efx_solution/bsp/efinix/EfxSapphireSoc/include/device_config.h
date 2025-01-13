@@ -41,7 +41,9 @@
 #define FRAME_WIDTH         1280
 #define FRAME_HEIGHT        720
 
-
+// Use to convert bmp to ppm (printed on terminal)
+#define PPM_PRINT			0
+#define IMG_POS_CENTER		1 // Image is printed on the center of display
 
 
 
