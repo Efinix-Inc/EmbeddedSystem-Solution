@@ -43,12 +43,10 @@ Available Embedded Software Demo:
 - [Tsemac](docs/app/ug_ethernet.md)
   - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
-  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_DS3231_rtc)
-  - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
-  - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
+  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_ds3231_rtc)
 - [Solution](docs/app/ug_solution.md)
-  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#cameraStreaming_HDMI)
-  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpStreaming_HDMI)
+  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
+  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
 - [FreeRTOS](docs/app/ug_freertos.md)
   - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
   - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
@@ -133,7 +131,6 @@ Available Embedded Software Demo:
   ¦           ¦   ¦   +---memTest
   ¦           ¦   +---sd
   ¦           ¦   ¦   +---sdThroughputTest
-  ¦           ¦   ¦   +---fatFSDemo
   ¦           ¦   +---smp
   ¦           ¦   ¦   +---smpDemo
   ¦           ¦   +---spi
@@ -149,6 +146,7 @@ Available Embedded Software Demo:
   ¦           ¦   +---lwipIperfServer
   ¦           +---solution
   ¦               +---cameraStreaming_HDMI
+  ¦               +---sd_bmpStreaming_HDMI
   +---source
   ¦   +---submodules
   ¦        +---cam

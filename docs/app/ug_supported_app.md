@@ -10,11 +10,11 @@ Here are the list of application that supported across different devices.
 | customInstructionDemo         |     ✓      |     ✓    |     ✓     |
 | dhrystone                     |     ✓      |     ✓    |     ✓     |
 | eeprom_AT24C01                       |           |         |     ✓     |
-| fatFSDemo                     |     ✓      |     ✓    |     ✓     |
 | fpuDemo                       |     ✓      |     ✓    |     ✓     |
 | gpioDemo                      |     ✓      |     ✓    |     ✓     |
 | lwipIperfServer               |     ✓      |     ✓    |     ✓     |
 | memTest                       |     ✓      |     ✓    |     ✓     |
+| sd_bmpStreaming_HDMI          |     ✓      |     ✓    |     ✓     |
 | sdThroughputTest                      |     ✓      |     ✓    |     ✓     |
 | sensor_DS3231_rtc                |            |     ✓    |     ✓     |
 | sensor_PCF8523_rtc               |     ✓      |          |           |
