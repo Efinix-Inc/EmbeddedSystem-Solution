@@ -32,7 +32,6 @@ Here are the list of application that supported across different devices.
 
 | FreeRTOS Application         | Ti375C529  | Ti180J484 | T120F576  |
 |-------------------------------|------------|-----------|-----------|
-| fatFSDemo                     |     ✓      |     ✓    |     ✓     |
 | freertosDemo                  |     ✓      |     ✓    |     ✓     |
 | freertosEchoServerDemo        |     ✓      |     ✓    |     ✓     |
 | freertosFatdemo               |     ✓      |     ✓    |     ✓     |

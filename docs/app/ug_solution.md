@@ -6,7 +6,7 @@ Below are the solution-related application:
   - [sd_bmpStreaming_HDMI](ug_solution.md#sd_bmpstreaming_hdmi)
 
 ## cameraStreaming_HDMI
-The cameraStreaming_HDMI example design demonstrates a use case of hardware/software co-design for video processing within a camera and display system. This design showcases how users can control the FPGA hardware via software, enabling different hardware acceleration functions by modifying the firmware on the RISC-V processor.
+The ``cameraStreaming_HDMI`` example design demonstrates a use case of hardware/software co-design for video processing within a camera and display system. This design showcases how users can control the FPGA hardware via software, enabling different hardware acceleration functions by modifying the firmware on the RISC-V processor.
 
 Though the example focuses on video filtering functions, users can replace these with their own hardware acceleration blocks. This design provides an effective framework for accelerating computationally intensive functions in hardware, while using RISC-V software to manage and control the acceleration.
 
@@ -19,7 +19,7 @@ List of implemented ISP algorithms (available for both SW functions and HW modul
 ![evsoc-demo-output.png](../images/evsoc-demo-output.png)
 
 ## sd_bmpStreaming_HDMI
-This example design (sd_bmpStreaming_HDMI) demonstrates the implementation of the FatFS FileSystem with a Command Line Interface (CLI) for interaction. The disk IO layer is ported to the SD Host Controller. Upon execution, the example initializes the SD Host Controller and the FAT File System automatically. Additionally, the FatFSDemo is integrated with the Real-Time Clock (RTC) available on board. User can configure the RTC using the rtcDemo provided within the BSP. In addition, User able to read BMP file and stream the image file to HDMI Display.
+This example design ``sd_bmpStreaming_HDMI`` demonstrates the implementation of the FatFS FileSystem with a Command Line Interface (CLI) for interaction. The disk IO layer is ported to the SD Host Controller. Upon execution, the example initializes the SD Host Controller and the FAT File System automatically. Additionally, the FatFSDemo is integrated with the Real-Time Clock (RTC) available on board. User can configure the RTC using the rtcDemo provided within the BSP. In addition, User able to read BMP file and stream the image file to HDMI Display.
 
 ### Introduction of FatFs
 FAT File System, commonly known as FatFs, is a lightweight and versatile file system module designed for embedded systems and small microcontrollers. In this demo, it support both SPI and SD interface thru command line where APB3 Port 1 used for configuring the interface, 0: SPI Interface; 1: SD Interface. This demo require a micro sd card and pmod micoSd for Trion T120F576 Development kit. 
@@ -143,7 +143,7 @@ FAT File System, commonly known as FatFs, is a lightweight and versatile file sy
 
 ### Stream BMP file to HDMI Display
 
-1. To stream a BMP file to the display, type fi 0 1 in the terminal to initialize the volume after launching the app.
+1. To stream a BMP file to the display, type ``fi 0 1`` in the terminal to initialize the volume after launching the app.
 
 2. Ensure that there is a BMP-format file on the SD card.
 
