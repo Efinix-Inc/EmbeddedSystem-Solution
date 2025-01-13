@@ -22,6 +22,7 @@
 #include <string.h>
 #include "ff.h"			/* Declarations of FatFs API */
 #include "diskio.h"		/* Declarations of device I/O functions */
+#include "bsp.h"
 
 /*--------------------------------------------------------------------------
 
@@ -5713,8 +5714,13 @@ FRESULT f_forward (
 		fp->sect = sect;
 		rcnt = SS(fs) - (UINT)fp->fptr % SS(fs);	/* Number of bytes remains in the sector */
 		if (rcnt > btf) rcnt = btf;					/* Clip it by btr if needed */
+		//bsp_printf("Reading %u bytes from sector, current position: %lu\n", rcnt, fp->fptr);
 		rcnt = (*func)(dbuf + ((UINT)fp->fptr % SS(fs)), rcnt);	/* Forward the file data */
-		if (rcnt == 0) ABORT(fs, FR_INT_ERR);
+    	if (rcnt == 0) {
+        bsp_printf("Error: Function returned 0\n");
+        ABORT(fs, FR_INT_ERR);
+    }
+		bsp_printf("Processed %u bytes\n", rcnt);
 	}
 
 	LEAVE_FF(fs, FR_OK);

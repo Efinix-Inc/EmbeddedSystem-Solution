@@ -38,6 +38,8 @@
 *
 ******************************************************************************/
 
+
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,18 +55,28 @@
 #include "fatfs/diskio.h"
 #include "fatfs/xprintf.h"
 #include "vexriscv.h"
-
+#include "bmp.h"
+#include "userDef.h"
+#include "clint.h"
+#include "dmasg.h"
+#include "vision/common.h"
+#include "vision/apb3_cam.h"
+#include "vision/dmasg_config.h"
+#include "vision/isp.h"
 
 struct mmc *mmc;
 struct mmc_cmd *xmmc_cmd;
 struct mmc_data *data;
 struct mmc_config *cfg;
 struct mmc_ops *ops;
-
 void put_rc (FRESULT rc);
 void putChar(char c);
 
-char Buff[BLOCK_SIZE*MAX_BLK_BUF] __attribute__ ((aligned (4))) ;
+// Define buffer size based on your BMP file maximum expected size
+#define BMP_MAX_FILE_SIZE (FRAME_WIDTH*FRAME_HEIGHT*3 + 54)  // Header + Pixel Data
+
+// Allocate a buffer for BMP data
+static uint8_t Buff[BMP_MAX_FILE_SIZE] __attribute__ ((aligned (4))) ;
 
 char Line[256];
 FATFS FatFs;				/* File system object for each logical drive */
@@ -77,10 +89,19 @@ volatile UINT Timer;
 	time_data myConfig; //Initialize timedata struct
 #endif
 
+	// Initialize the BMP structure
+BMP bmp_data = {
+	.file_byte_number = BMP_MAX_FILE_SIZE,
+	.file_byte_contents = Buff,  // Buffer to hold the BMP data
+	.pixel_array_start = 0,      // Will be populated by bmp_read()
+    .width = 0,                  // Will be populated by bmp_read()
+    .height = 0,                 // Will be populated by bmp_read()
+    .depth = 0                   // Will be populated by bmp_read()
+};
+
 void init(){
 	
 	bsp_init();
-
     I2c_Config i2c;
     i2c.samplingClockDivider    = 3;
     i2c.timeout = I2C_CTRL_HZ/1000;
@@ -90,8 +111,23 @@ void init(){
     i2c.tHigh = I2C_CTRL_HZ/(I2C_FREQ*2);
 	i2c.tBuf  = I2C_CTRL_HZ/(I2C_FREQ);
     i2c_applyConfig(I2C_CTRL, &i2c);
-
 }
+
+void vision_init(){
+
+
+	   uart_writeStr(BSP_UART_TERMINAL, "Initial Image to Display...\r\n");
+	   dma_init();
+	   dmasg_priority(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL,  0, 0);
+	   //Trigger display DMA once then the rest handled by DMA self restart
+	   uart_writeStr(BSP_UART_TERMINAL, "Trigger display DMA..\r\n");
+	   //SELECT start address of to be displayed data accordingly
+	   dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
+	   dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
+	   dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 1);
+	   uart_writeStr(BSP_UART_TERMINAL, "Done!!\n\r");
+
+	}
 
 void putChar(char c) {
 	bsp_printf("%c", c);
@@ -433,6 +469,7 @@ void main() {
 	//time_data myConfig; //Initialize timedata struct
 	static const char *ft[] = {"", "FAT12", "FAT16", "FAT32", "exFAT"};
 	char *ptr, *ptr2;
+	unsigned char v = 0;
 	long p1, p2, p3;
 	BYTE res, b, drv = 0;
 	UINT s1, s2, cnt, blen = sizeof Buff, acc_files, acc_dirs;
@@ -448,7 +485,7 @@ void main() {
 	xmmc_cmd=malloc(sizeof(struct mmc_cmd));
 	data=malloc(sizeof(struct mmc_data));
 
-	bsp_printf("\n\r***FatFs File System Demo***\n\r");
+	bsp_printf("\n\r***Welcome to SD BMP stream to HDMI Display***\n\r");
 	bsp_printf("Initialize...\r\n");
 
 	//Allocation Struct Space
@@ -548,7 +585,8 @@ for (;;) {
 			switch (*ptr++) {
 			case 'd' :	/* bd <ofs> - Dump R/W buffer */
 				if (!xatoi(&ptr, &p1)) break;
-				for (ptr=(char*)&Buff[p1], ofs = p1, cnt = 32; cnt; cnt--, ptr+=16, ofs+=16)
+				xprintf("Address of Buff: %u\r\n", (void *)Buff);
+				for (ptr=(char*)&Buff[p1], ofs = p1, cnt = 32*2; cnt; cnt--, ptr+=16, ofs+=16)
 					put_dump((BYTE*)ptr, ofs, 16, 1);
 				break;
 
@@ -597,6 +635,34 @@ for (;;) {
 
 			}
 			break;
+		case 'v': //vision
+
+				if (v == 0){
+					vision_init();
+					v =1;
+				}
+				else {
+					xprintf("DMA vision is enabled, please proceed to x <file> to display image.\r\n");
+				}
+
+
+				break;
+		case 'x':  /* x <file> - Open and read BMP */
+			    while (*ptr == ' ') ptr++;  // Skip spaces
+			    res = f_open(&File[0], ptr, FA_READ);  // Use proper read-only mode
+			    bsp_uDelay(10000);
+			    res = bmp_read(&File[0],&bmp_data, Buff, &cnt);
+			    if (res == FR_OK) {
+			        xprintf("%lu bytes read from BMP file.\n", cnt);
+			    } else {
+			        put_rc(res);
+			    }
+
+			    f_close(&File[0]);  // Close the file after reading
+			    break;
+		case 'z':  /* x <file> - Open and read BMP */
+				img_flush();
+			    break;
 
 		case 'f' :	/* FatFS API controls */
 			switch (*ptr++) {
@@ -862,4 +928,3 @@ for (;;) {
 		}
 	}
 }
-

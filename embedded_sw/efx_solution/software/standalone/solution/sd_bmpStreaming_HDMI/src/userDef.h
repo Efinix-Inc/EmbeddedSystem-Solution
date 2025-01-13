@@ -130,6 +130,8 @@ const char HelpMsg[] =
 	" t [<hour> <min> <sec> <dayOfTheWeek> <day> <month> <year>] - Set/Show RTC\r\n"
 		"    <dayOfTheWeek> = 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, "
 		"5: Thursday, 6: Friday, 7: Saturday \r\n"
+	" x <file> - Read BMP format file\r\n"
+	" v - Enable HDMI Display to display bmp format file \r\n"
 	"\r\n";
 
 #endif

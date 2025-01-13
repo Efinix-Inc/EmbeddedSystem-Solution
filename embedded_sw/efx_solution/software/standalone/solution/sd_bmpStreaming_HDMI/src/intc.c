@@ -4,6 +4,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "intc.h"
+#include "vision/dmasg_config.h"
+
 
 IntStruct IntPtr;
 struct sd_ctrl_dev *dev;
@@ -126,11 +128,6 @@ void externalInterrupt()
 
 
 /********************************* Function **********************************/
-//Used on unexpected trap/interrupt codes
-void crash(){
-	bsp_printf("\n*** CRASH ***\n");
-	while(1);
-}
 
 void userInterrupt(){
 	uint32_t claim;
@@ -138,6 +135,13 @@ void userInterrupt(){
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
 		switch(claim){
 		case SDHC_INTERRUPT:externalInterrupt(); break;
+	    case PLIC_DMASG_CHANNEL:
+	         if(display_mm2s_active && !(dmasg_busy(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL))) {
+	            dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, 0);       //Disable dmasg channel interrupt
+	            display_mm2s_active = 0;
+	            //interrupt_service_routine();
+	         }
+	         break;
 		default: crash(); break;
 		}
 		//unmask the claimed interrupt
@@ -160,6 +164,8 @@ void trap(){
 		crash();
 	}
 }
+
+
 
 void IntcInitialize(struct mmc *mmc)
 {
