@@ -146,7 +146,6 @@ Available Embedded Software Demo:
   ¦           ¦   ¦   +---memTest
   ¦           ¦   +---sd
   ¦           ¦   ¦   +---sdThroughputTest
-  ¦           ¦   ¦   +---fatFSDemo
   ¦           ¦   +---smp
   ¦           ¦   ¦   +---smpDemo
   ¦           ¦   +---spi
@@ -162,6 +161,7 @@ Available Embedded Software Demo:
   ¦           ¦   +---lwipIperfServer
   ¦           +---solution
   ¦               +---cameraStreaming_HDMI
+  ¦               +---sd_bmpStreaming_HDMI
   +---source
   ¦   +---submodules
   ¦        +---cam
