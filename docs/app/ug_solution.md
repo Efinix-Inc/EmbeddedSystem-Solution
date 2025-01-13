@@ -148,7 +148,7 @@ FAT File System, commonly known as FatFs, is a lightweight and versatile file sy
 2. Ensure that there is a BMP-format file on the SD card.
 
 3. Type ``x <file>`` to read the BMP file.
-
+    - ``Do not display an image where its resolution is larger than the display (1920x1080).``
 4. Type ``v`` to copy the pixel data from the BMP file to the HDMI display.
 
 5. The image will be displayed on the HDMI screen. <br> <img src="../images/sd_bmp_HDMI_0.png" alt="Description" width="1080" height="480"> <br>
