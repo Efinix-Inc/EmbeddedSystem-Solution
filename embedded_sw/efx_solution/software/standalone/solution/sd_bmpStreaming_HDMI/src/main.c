@@ -5,7 +5,7 @@
 
 /*******************************************************************************
 *
-* @file main.c: fatFSDemo
+* @file main.c: sd_bmpStreaming_HDMI
 *
 * @brief This demo implements the FatFS File System along with a Command Line Interface (CLI)
 * 		 for user interaction. It utilizes the SD Host Controller for disk layer I/O to communicate
@@ -25,9 +25,10 @@
 *			6: Friday
 *			7: Saturday
 *		If the arguments are incorrect, the system will prompt you to enter the parameters line by line.
+*		In addition, you can read BMP file and display it on HDMI Display.
 *
 * @note To run this example design, please make sure the following requirements are fulfilled:
-* 		1. Ti375C529 Dev Board
+* 		1. Supported Dev Board
 * 		2. FAT32 Formatted SD Card inserted to SD1 slot
 *
 *		User are allowed to configure certain parameters in userDef.h (User defined Section)
