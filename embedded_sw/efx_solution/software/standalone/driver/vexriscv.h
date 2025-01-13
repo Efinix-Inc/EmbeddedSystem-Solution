@@ -20,5 +20,19 @@
     );                                         \
 })
 
+//Write buffer flush
+#define soc_write_buffer_flush()     \
+({                                   \
+    csr_write(0x810, 1);             \
+	asm volatile ( 					\
+        "1: csrr t0, 0x810      \n\t"	\
+        "   andi t0, t0, 1  \n\t" \
+        "   bnez t0, 1b         \n\t" \
+        :							\
+        :                            \
+        :"t0"                           \
+    ); \
+})
+
 //Invalidate the whole instruction cache
 #define instruction_cache_invalidate() asm("fence.i");

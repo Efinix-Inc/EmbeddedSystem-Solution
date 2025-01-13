@@ -47,6 +47,11 @@
 //Ti375C529 do not support PicamV2.
 #define PICAM_VERSION 		3
 
+// Use to convert bmp to ppm (printed on terminal)
+#define PPM_PRINT			0
+#define IMG_POS_CENTER		1 // Image is printed on the center of display
+
+
 //For BSP Compatibility
 #ifndef BSP_PLIC_CPU_1
 #define BSP_PLIC_CPU_1      SYSTEM_PLIC_SYSTEM_CORES_1_EXTERNAL_INTERRUPT
