@@ -139,7 +139,6 @@ FAT File System, commonly known as FatFs, is a lightweight and versatile file sy
 - Read BMP format image file
 	- ` x <file> ` - Read BMP format file
 	- ` v ` - Display bmp format file to HDMI Display
-  - ` z ` - Flush Image Buffer
 
 ### Stream BMP file to HDMI Display
 

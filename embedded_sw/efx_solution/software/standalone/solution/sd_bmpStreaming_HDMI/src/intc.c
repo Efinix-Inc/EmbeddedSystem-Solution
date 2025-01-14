@@ -137,9 +137,10 @@ void userInterrupt(){
 		case SDHC_INTERRUPT:externalInterrupt(); break;
 	    case PLIC_DMASG_CHANNEL:
 	         if(display_mm2s_active && !(dmasg_busy(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL))) {
-	            dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, 0);       //Disable dmasg channel interrupt
-	            display_mm2s_active = 0;
-	            //interrupt_service_routine();
+	            dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
+	            dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
+	            dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_CHANNEL_INTERRUPT_CHANNEL_COMPLETION_MASK);
+	            dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 0);  //Without self restart
 	         }
 	         break;
 		default: crash(); break;
