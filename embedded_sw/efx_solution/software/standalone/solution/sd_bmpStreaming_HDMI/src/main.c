@@ -663,9 +663,6 @@ for (;;) {
 
 			    f_close(&File[0]);  // Close the file after reading
 			    break;
-		case 'z':  /* z Flush Image Buffer */
-				img_flush();
-			    break;
 
 		case 'f' :	/* FatFS API controls */
 			switch (*ptr++) {

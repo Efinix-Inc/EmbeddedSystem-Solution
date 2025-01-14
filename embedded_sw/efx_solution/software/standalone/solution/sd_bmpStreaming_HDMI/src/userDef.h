@@ -140,7 +140,6 @@ const char HelpMsg[] =
 		"5: Thursday, 6: Friday, 7: Saturday \r\n"
 	" x <file> - Read BMP format file\r\n"
 	" v - Enable HDMI Display to display bmp format file \r\n"
-	" z - Flush Image Buffer\r\n"
 	"\r\n";
 
 #endif
