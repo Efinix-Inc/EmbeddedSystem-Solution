@@ -14,14 +14,8 @@
 #include "fatfs/diskio.h"
 #include "fatfs/xprintf.h"
 #include "vexriscv.h"
-
-#define BMP_HEADER_SIZE 54
-#define IMG_START_ADDR        	0x01000000
-#define DDR_START_ADDRESS  		0x01000000
-#define img_array       		((uint32_t*)IMG_START_ADDR)
-#define DDR_SIZE           		(FRAME_WIDTH*FRAME_WIDTH + FRAME_HEIGHT)
-
-
+#include "vision/apb3_cam.h"
+#include "userDef.h"
 
 typedef struct {
     unsigned int file_byte_number;
@@ -38,7 +32,8 @@ void clear_ddr_memory();
 FRESULT bmp_read(FIL *fp, BMP *bmp_data, uint8_t *buffer, UINT *bytes_read) {
     FRESULT res;
 
-    clear_ddr_memory();
+    //clear_ddr_memory();
+
     // Read BMP file in one go
     res = f_read(fp, buffer, bmp_data->file_byte_number, bytes_read);
     if (res != FR_OK) {
@@ -115,14 +110,16 @@ FRESULT bmp_read(FIL *fp, BMP *bmp_data, uint8_t *buffer, UINT *bytes_read) {
 
 FRESULT img_flush (){
 
+    Set_MipiRst(1);
+    Set_MipiRst(0);
 	xprintf("Flushing Image buffer\r\n");
-    for (unsigned int y = 0; y < FRAME_HEIGHT; y++) {
-        for (unsigned int x = 0; x < FRAME_WIDTH; x++) {
-            unsigned int index = y * FRAME_WIDTH + x;
-
-                img_array[index] = 0x00FFFFFF;  // Fill remaining with white
-            }
-    }
+//    for (unsigned int y = 0; y < FRAME_HEIGHT; y++) {
+//        for (unsigned int x = 0; x < FRAME_WIDTH; x++) {
+//            unsigned int index = y * FRAME_WIDTH + x;
+//
+//                img_array[index] = 0x00FFFFFF;  // Fill remaining with white
+//            }
+//    }
     return FR_OK;
 
 

@@ -20,6 +20,14 @@
 #define I2C_CTRL_HZ		SYSTEM_CLINT_HZ
 #define CORE_HZ			BSP_CLINT_HZ
 
+/************************** BMP Reader Setting ***************************/
+
+#define BMP_HEADER_SIZE 54
+#define IMG_START_ADDR        	0x01000000
+#define DDR_START_ADDRESS  		0x01000000
+#define img_array       		((uint32_t*)IMG_START_ADDR)
+#define DDR_SIZE           		(FRAME_WIDTH*FRAME_WIDTH*3 + 0x100)
+
 /************************** Main Header File ***************************/
 
 //RTC - PCF8523

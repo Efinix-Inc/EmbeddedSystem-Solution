@@ -47,6 +47,7 @@
 #include "bsp.h"
 #include "device_config.h"
 #include "userDef.h"
+#include "bmp.h"
 #include "intc.h"
 #include "mmc.h"
 #include "uart.h"
@@ -56,7 +57,6 @@
 #include "fatfs/diskio.h"
 #include "fatfs/xprintf.h"
 #include "vexriscv.h"
-#include "bmp.h"
 #include "userDef.h"
 #include "clint.h"
 #include "dmasg.h"
@@ -116,17 +116,19 @@ void init(){
 
 void vision_init(){
 
-
-	   uart_writeStr(BSP_UART_TERMINAL, "Initial Image to Display...\r\n");
-	   dma_init();
-	   dmasg_priority(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL,  0, 0);
-	   //Trigger display DMA once then the rest handled by DMA self restart
-	   uart_writeStr(BSP_UART_TERMINAL, "Trigger display DMA..\r\n");
-	   //SELECT start address of to be displayed data accordingly
-	   dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
-	   dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
-	   dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 1);
-	   uart_writeStr(BSP_UART_TERMINAL, "Done!!\n\r");
+    Set_MipiRst(1);
+    Set_MipiRst(0);
+	uart_writeStr(BSP_UART_TERMINAL, "Initial Image to Display...\r\n");
+	dma_init();
+	dmasg_priority(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL,  0, 0);
+	uart_writeStr(BSP_UART_TERMINAL, "Trigger display DMA..\r\n");
+	//SELECT start address of to be displayed data accordingly
+	dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
+	dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
+	dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_CHANNEL_INTERRUPT_CHANNEL_COMPLETION_MASK);
+	dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 0);
+	uart_writeStr(BSP_UART_TERMINAL, "Done!!\n\r");
+	display_mm2s_active = 1;
 
 	}
 
@@ -661,7 +663,7 @@ for (;;) {
 
 			    f_close(&File[0]);  // Close the file after reading
 			    break;
-		case 'z':  /* x <file> - Open and read BMP */
+		case 'z':  /* z Flush Image Buffer */
 				img_flush();
 			    break;
 

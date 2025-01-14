@@ -14,7 +14,6 @@
 #include "efx_mmc_driver.h"
 #include "userDef.h"
 
-
 void IntcInitialize();
 
 #endif
