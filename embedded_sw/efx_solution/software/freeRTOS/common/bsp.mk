@@ -4,4 +4,4 @@ CFLAGS += -I${BSP_PATH}/app
 
 include ${BSP_PATH}/include/soc.mk
 
-LDSCRIPT ?= ${BSP_PATH}/linker/default.ld
+#LDSCRIPT ?= ${BSP_PATH}/linker/default.ld
