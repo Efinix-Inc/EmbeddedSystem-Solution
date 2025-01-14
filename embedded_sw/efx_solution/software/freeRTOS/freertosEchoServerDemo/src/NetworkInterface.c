@@ -40,7 +40,7 @@
 /* Efinix includes. */
 #include "userDef.h"
 #include "dmasg.h"
-#include "rtl8211fd.h"
+#include "efx_tse_phy.h"
 #include "efx_tse_mac.h"
 #include "plic.h"
 #include "riscv.h"
@@ -158,14 +158,20 @@ BaseType_t xGetPhyLinkStatus( void )
 static BaseType_t InitialiseNetwork( void )
 {
     int speed,Value,reg;
+    int drv_sel,link_speed;
     BaseType_t xReturn = pdFAIL;
 
 	ulPHYLinkStatus=0;
 
 	MacRst(1, 1);
 
-	rtl8211_drv_init();
-	speed=rtl8211_drv_linkup();
+    drv_sel = Phy_identification();
+  	if (drv_sel)
+  	{
+  		rtl8211_drv_init();
+  		speed=rtl8211_drv_linkup();
+  	}
+  	else speed = PhyNormalInit();
 
 	if((speed == Speed_1000Mhz) || (speed == Speed_100Mhz) || (speed == Speed_10Mhz)) {
 		MacNormalInit(speed);
