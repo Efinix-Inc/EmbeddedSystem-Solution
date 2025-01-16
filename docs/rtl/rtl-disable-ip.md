@@ -6,7 +6,7 @@ This guide demonstrates how to correctly disable an existing IP and recompile th
 ## Disable Vision Hardware Accelerator in High-Performance SoC (HPS)
 
 ### AXI Interconnect IP Configuration
-1. Based on the [Address Mapping](../../../soc/addr_mapping_soc.md), the Vision Hardware Accelerator is connected to the master interface of the AXI Interconnect `gAXIS_1to4_switch` at the address `SYSTEM_AXI_A_BMB + 0xe1200000`, where `SYSTEM_AXI_A_BMB = 0xe8000000`.
+1. Based on the [Address Mapping](../soc/addr_mapping_soc.md), the Vision Hardware Accelerator is connected to the master interface of the AXI Interconnect `gAXIS_1to4_switch` at the address `SYSTEM_AXI_A_BMB + 0xe1200000`, where `SYSTEM_AXI_A_BMB = 0xe8000000`.
 
 2. Configure `gAXIS_1to4_switch` by reducing the number of master interfaces.  
    ![AXI Interconnect Configuration](../images/hps/hps_custom_module_axi4_1.png)

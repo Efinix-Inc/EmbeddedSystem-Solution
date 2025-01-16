@@ -26,9 +26,24 @@ This guide showcase how user can integrate their own module into Embedded Soluti
 1. For the top SoC Verilog file, you are required to redefine the depth of the AXI Interconnect and define the CM for the AXI Interconnect.  
    <br> <img src="../images/hps/hps_custom_module_axi4_3.png" alt="Description" width="480" height="200">
 
-2. Add the custom module to the top SoC Verilog file. Below is an example of adding a custom module into the top SoC module:  
-   <br> <img src="../images/custom_module_axi4_4.png" alt="Description" width="480" height="560">
-
+2. Add the custom module to the top SoC Verilog file. Below is an example of adding a custom module into the top SoC module:  <br> 
+   ```verilog
+   custom_module u0 (
+       .clk                     ( io_ddrMasters_0_clk ),
+       .reset                   ( io_ddrMasters_0_reset ),
+       .ctrl_clk                ( io_peripheralClk ),
+       .ctrl_reset              ( io_peripheralReset ),
+       .ctrl_PADDR              ( custom_module_paddr ),
+       .ctrl_PREADY             ( custom_module_pready ),
+       .ctrl_PENABLE            ( custom_module_penable ),
+       .ctrl_PSEL               ( custom_module_psel ),
+       .ctrl_PWRITE             ( custom_module_pwrite ),
+       .ctrl_PWDATA             ( custom_module_pwdata ),
+       .ctrl_PRDATA             ( custom_module_prdata ),
+       .ctrl_PSLVERROR          ( custom_module_pslverror ),
+       .ctrl_interrupts         ( dma_interrupts ),
+       ...
+   );
 ### Embedded Software
 
 1. To access the specific AXI slave in the embedded software, you must access the correct base address. Add the base address in the `include/device_config.h`.  
@@ -37,8 +52,6 @@ This guide showcase how user can integrate their own module into Embedded Soluti
 2. You can now access the AXI slave similar to how the TSE slave is accessed. Modify the argument from `TSEMAC_BASE` to `CM_AXI4_SLAVE_BASE`.
 
 ---
-
-
 
 ## Workflow to expand AXI Master interface with additional Custom Module (HPS)
 
@@ -53,29 +66,6 @@ This guide showcase how user can integrate their own module into Embedded Soluti
     ![](../images/hps/hps_custom_module_axi4_master.png)
 
 ---
-
-### Top Soc Verilog File
-
-In the top module, user are required to redefine the depth of the AXI Interconnect and define the MCM for AXI Interconnect.
-
-```verilog
-custom_module u0 (
-    .clk                     ( io_ddrMasters_0_clk ),
-    .reset                   ( io_ddrMasters_0_reset ),
-    .ctrl_clk                ( io_peripheralClk ),
-    .ctrl_reset              ( io_peripheralReset ),
-    .ctrl_PADDR              ( custom_module_paddr ),
-    .ctrl_PREADY             ( custom_module_pready ),
-    .ctrl_PENABLE            ( custom_module_penable ),
-    .ctrl_PSEL               ( custom_module_psel ),
-    .ctrl_PWRITE             ( custom_module_pwrite ),
-    .ctrl_PWDATA             ( custom_module_pwdata ),
-    .ctrl_PRDATA             ( custom_module_prdata ),
-    .ctrl_PSLVERROR          ( custom_module_pslverror ),
-    .ctrl_interrupts         ( dma_interrupts ),
-    ...
-);
-```
 
 ### Embedded Software
 

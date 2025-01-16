@@ -45,7 +45,6 @@ Available Embedded Software Demo:
 - [Tsemac](docs/app/ug_ethernet.md)
   - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
-  - [x] [sensor_DS3231_rtc](docs/app/ug_sensors.md#sensor_DS3231_rtc)
   - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
   - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
 - [Solution](docs/app/ug_solution.md)
@@ -89,7 +88,7 @@ Available Embedded Software Demo:
 | Device       | System Clk (MHz) | Peripheral Clk (MHz)| Memory Clk (MHz) |      Cache Setting     |
 |--------------|------------------|---------------------|------------------|------------------------|
 | Ti375C529    |      1000         |         200         |       200        |4 ways 16kb I & D caches|
-| Ti180J484    |      200         |         200         |       125        |8 ways 32kb I & D caches|
+| Ti180J484    |      200         |         100         |       125        |8 ways 32kb I & D caches|
 | T120F576     |       50         |          50         |        50        |2 ways 8kb I & D caches |
 
 
