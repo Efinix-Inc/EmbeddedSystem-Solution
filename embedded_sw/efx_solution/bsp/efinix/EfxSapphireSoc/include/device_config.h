@@ -34,8 +34,9 @@
 #define I2C_CTRL_HZ         SYSTEM_CLINT_HZ
 
 //Camera
-//Define the picam version. By default is set to Picam V2.
-#define PICAM_VERSION 		2
+//Define the picam version. By default is set to Picam V3.
+//Recomended to use PicamV3 for better visual and performance.
+#define PICAM_VERSION 		3
 
 //Resolution of Display
 #define FRAME_WIDTH         1280
