@@ -5,7 +5,7 @@ This guide demonstrates how to correctly disable an existing IP and recompile th
 ## Disable Vision Hardware Accelerator in Sapphire Soc
 
 ### AXI Interconnect IP Configuration
-1. Based on the [Address Mapping](../../../soc/addr_mapping_soc.md), the Vision Hardware Accelerator is connected to the master interface of the AXI Interconnect `gAXIS_1to3_switch` at the address `SYSTEM_AXI_A_BMB + 0xe1200000`, where `SYSTEM_AXI_A_BMB = 0xe1000000`.
+1. Based on the [Address Mapping](../soc/addr_mapping_soc.md), the Vision Hardware Accelerator is connected to the master interface of the AXI Interconnect `gAXIS_1to3_switch` at the address `SYSTEM_AXI_A_BMB + 0xe1200000`, where `SYSTEM_AXI_A_BMB = 0xe1000000`.
 
 2. Configure `gAXIS_1to3_switch` by reducing the number of master interfaces.  <br>
    ![AXI Interconnect Configuration](../images/custom_module_axi4_1.png)

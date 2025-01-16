@@ -1,10 +1,10 @@
-# Sapphire SoC Embedded Solution
+# Embedded System Solution Hub
 
-Welcome to the Sapphire SoC Embedded Solution repo.
+Welcome to the Embedded System Solution Hub.
 
 - [Overview](#overview)
-- [Sapphire Soc Embedded Solution Hardware Settings](#sapphire-soc-embedded-solution-hardware-settings)
-- [Directory structure of Sapphire Soc Embedded Solution](#directory-structure-of-sapphire-soc-embedded-solution)
+- [Embedded System Solution Hardware Settings](#embedded-system-solution-hardware-settings)
+- [Directory structure of Embedded System Solution](#directory-structure-of-embedded-system-solution)
 - [Software Requirements](#software-requirements)
 - [Getting Start](#getting-start)
     - [Installing USB Drivers](docs/hardware/setup_drivers.md)
@@ -21,9 +21,9 @@ Welcome to the Sapphire SoC Embedded Solution repo.
 
 ## Overview
 
-### Sapphire Soc Embedded Solution Platform
+### Embedded System Solution Platform
 
-The Sapphire Soc Embedded Solution platform is designed to support a diverse range of applications, particularly focusing on vision applications with integrated camera and display design. 
+The Embedded Solution platform is designed to support a diverse range of applications, particularly focusing on vision applications with integrated camera and display design. 
 It is compatible with both Titanium and Trion devices, ensuring flexibility and high performance. Key features include support Triple-Speed Ethernet MAC, providing high-speed Ethernet support. This platform offers a comprehensive suite of applications for embedded software, making it suitable for various use cases. This platform supports both Sapphire SoC as well as High-Performance Sapphire SoC. 
 
 #### Sapphire SoC Top Module Block Diagram
@@ -54,7 +54,7 @@ Available Embedded Software Demo:
   - [x] [freertosFatDemo](docs/app/ug_freertos.md#freertosfatdemo)
 
 
-## Sapphire Soc Embedded Solution Hardware Settings
+## Embedded System Solution Hardware Settings
 
 ### Sapphire SoC CPU setting:
 - 2 Cores
@@ -91,7 +91,7 @@ Available Embedded Software Demo:
 | Ti180J484    |      87314/172800         |        729/1280         |       17/640       |
 | Ti375C529     |       48967/ 362880         |          228/2688         |        0/1344       |
 
-## Directory structure of Sapphire Soc Embedded Solution
+## Directory structure of Embedded System Solution
 
 ```
   +---embedded_sw
