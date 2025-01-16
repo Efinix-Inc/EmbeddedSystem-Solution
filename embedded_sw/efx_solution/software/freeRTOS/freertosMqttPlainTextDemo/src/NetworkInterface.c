@@ -40,7 +40,7 @@
 /* Efinix includes. */
 #include "userDef.h"
 #include "dmasg.h"
-#include "rtl8211fd.h"
+#include "efx_tse_phy.h"
 #include "efx_tse_mac.h"
 #include "plic.h"
 #include "riscv.h"
@@ -126,7 +126,7 @@ BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxDescript
 	newBuffer.status  = 0;
 
 	*pxTransmitBuffer = newBuffer;
-
+	while(dmasg_busy(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH));
 	dmasg_input_memory (TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH,  pxTransmitBuffer->from, 64);
 	dmasg_output_stream(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, 0, 0, 0, 1);
 	dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, DMASG_CHANNEL_INTERRUPT_DESCRIPTOR_COMPLETION_MASK);
@@ -157,15 +157,21 @@ BaseType_t xGetPhyLinkStatus( void )
 
 static BaseType_t InitialiseNetwork( void )
 {
-    int speed,Value,reg;
+    int speed,Value,reg,drv_sel;
     BaseType_t xReturn = pdFAIL;
 
 	ulPHYLinkStatus=0;
 
 	MacRst(1, 1);
+	drv_sel = Phy_identification();
 
-	rtl8211_drv_init();
-	speed=rtl8211_drv_linkup();
+  	if (drv_sel)
+  	{
+  		rtl8211_drv_init();
+  		speed=rtl8211_drv_linkup();
+  	}
+  	else speed = PhyNormalInit();
+
 
 	if((speed == Speed_1000Mhz) || (speed == Speed_100Mhz) || (speed == Speed_10Mhz)) {
 		MacNormalInit(speed);
@@ -253,6 +259,7 @@ static void userInterrupt()
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)) {
 		switch(claim){
 		case TSE_RX_INTR:
+			data_cache_invalidate_all();
 			if( xRxTaskHandle != NULL ) {
 		        xTaskNotifyFromISR( xRxTaskHandle, EMAC_IF_RX_EVENT, eSetBits, &( xHigherPriorityTaskWoken ) );
 		        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
