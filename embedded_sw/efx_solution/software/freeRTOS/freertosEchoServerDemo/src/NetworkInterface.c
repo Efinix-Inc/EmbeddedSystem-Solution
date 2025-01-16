@@ -164,7 +164,6 @@ static BaseType_t InitialiseNetwork( void )
 	ulPHYLinkStatus=0;
 
 	MacRst(1, 1);
-
     drv_sel = Phy_identification();
   	if (drv_sel)
   	{
@@ -259,6 +258,7 @@ static void userInterrupt()
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)) {
 		switch(claim){
 		case TSE_RX_INTR:
+			data_cache_invalidate_all();
 			if( xRxTaskHandle != NULL ) {
 		        xTaskNotifyFromISR( xRxTaskHandle, EMAC_IF_RX_EVENT, eSetBits, &( xHigherPriorityTaskWoken ) );
 		        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
