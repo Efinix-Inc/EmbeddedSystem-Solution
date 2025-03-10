@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "soc",
             "name": "efx_hard_soc",
-            "version": "1.15"
+            "version": "1.17"
         }
     ],
     "conf": {
@@ -53,6 +53,8 @@
         "PERI_APB_0": "1'b1",
         "PERI_APB_1": "1'b1",
         "PERI_APB_2": "1'b1",
+        "PERI_APB_3": "1'b0",
+        "PERI_APB_4": "1'b0",
         "PERI_GEN": "1'b1",
         "PERI_UART_0": "1'b1",
         "PERI_UART_1": "1'b0",
@@ -62,6 +64,8 @@
         "PERI_APB_0_SIZE": "4096",
         "PERI_APB_1_SIZE": "4096",
         "PERI_APB_2_SIZE": "4096",
+        "PERI_APB_3_SIZE": "4096",
+        "PERI_APB_4_SIZE": "4096",
         "PERI_FREQ": "200",
         "APP_OVERWRITE": "1'b0",
         "APP_OVERWRITE_PATH": "\"''\"",
@@ -123,5 +127,5 @@
         "external_script_Embedded_SW": []
     },
     "sw_version": "2024.2.294",
-    "generated_date": "2024-12-26T09:49:55.497199+00:00"
+    "generated_date": "2025-03-06T09:08:21.514992+00:00"
 }

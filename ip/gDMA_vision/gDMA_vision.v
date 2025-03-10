@@ -43,7 +43,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-`define IP_UUID _cdb5ea15dd2e4fa5952d6b2dfdf0d5bd
+`define IP_UUID _9bdfdf1cb95c4a7d8530357860e1bb9e
 `define IP_NAME_CONCAT(a,b) a``b
 `define IP_MODULE_NAME(name) `IP_NAME_CONCAT(name,`IP_UUID)
 module gDMA_vision
@@ -107,6 +107,7 @@ module gDMA_vision
     output [7:0] dat1_o_tkeep,
     output [3:0] dat1_o_tdest,
     output dat1_o_tlast,
+    output io_0_descriptorUpdate,
     input dat3_o_clk,
     input dat3_o_reset,
     input dat2_i_clk,
@@ -127,7 +128,8 @@ module gDMA_vision
     input [7:0] dat0_i_tkeep,
     input [3:0] dat0_i_tdest,
     input dat0_i_tlast,
-    input [1:0] read_rresp
+    input [1:0] read_rresp,
+    output io_1_descriptorUpdate
 );
 `IP_MODULE_NAME(EfxDMA)u_EfxDMA
 (
@@ -190,6 +192,7 @@ module gDMA_vision
     .dat1_o_tkeep ( dat1_o_tkeep ),
     .dat1_o_tdest ( dat1_o_tdest ),
     .dat1_o_tlast ( dat1_o_tlast ),
+    .io_0_descriptorUpdate ( io_0_descriptorUpdate ),
     .dat3_o_clk ( dat3_o_clk ),
     .dat3_o_reset ( dat3_o_reset ),
     .dat2_i_clk ( dat2_i_clk ),
@@ -210,17 +213,18 @@ module gDMA_vision
     .dat0_i_tkeep ( dat0_i_tkeep ),
     .dat0_i_tdest ( dat0_i_tdest ),
     .dat0_i_tlast ( dat0_i_tlast ),
-    .read_rresp ( read_rresp )
+    .read_rresp ( read_rresp ),
+    .io_1_descriptorUpdate ( io_1_descriptorUpdate )
 );
 endmodule
 
 // Generator : SpinalHDL dev    git head : 81793df2c4f55a20f7eff1130c4bb74a4b11319f
-// Component : EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd
-// Git hash  : e917d6be5646132ad134037516cbcc85625c2942
+// Component : EfxDMA_9bdfdf1cb95c4a7d8530357860e1bb9e
+// Git hash  : 29a8fc176c1dba2fab07baf1905d284c71592aa2
 
 `timescale 1ns/1ps
 
-module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [13:0]   ctrl_PADDR,
   input  wire [0:0]    ctrl_PSEL,
   input  wire          ctrl_PENABLE,
@@ -289,6 +293,8 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire [3:0]    dat3_o_tkeep,
   output wire [3:0]    dat3_o_tdest,
   output wire          dat3_o_tlast,
+  output wire          io_0_descriptorUpdate,
+  output wire          io_1_descriptorUpdate,
   input  wire          clk,
   input  wire          reset,
   input  wire          ctrl_clk,
@@ -303,6 +309,22 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire          dat3_o_reset
 );
 
+  wire                core_io_sgRead_cmd_valid;
+  wire                core_io_sgRead_cmd_payload_last;
+  wire       [0:0]    core_io_sgRead_cmd_payload_fragment_opcode;
+  wire       [31:0]   core_io_sgRead_cmd_payload_fragment_address;
+  wire       [4:0]    core_io_sgRead_cmd_payload_fragment_length;
+  wire       [0:0]    core_io_sgRead_cmd_payload_fragment_context;
+  wire                core_io_sgRead_rsp_ready;
+  wire                core_io_sgWrite_cmd_valid;
+  wire                core_io_sgWrite_cmd_payload_last;
+  wire       [0:0]    core_io_sgWrite_cmd_payload_fragment_opcode;
+  wire       [31:0]   core_io_sgWrite_cmd_payload_fragment_address;
+  wire       [1:0]    core_io_sgWrite_cmd_payload_fragment_length;
+  wire       [255:0]  core_io_sgWrite_cmd_payload_fragment_data;
+  wire       [31:0]   core_io_sgWrite_cmd_payload_fragment_mask;
+  wire       [0:0]    core_io_sgWrite_cmd_payload_fragment_context;
+  wire                core_io_sgWrite_rsp_ready;
   wire                core_io_read_cmd_valid;
   wire                core_io_read_cmd_payload_last;
   wire       [0:0]    core_io_read_cmd_payload_fragment_source;
@@ -337,6 +359,8 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                core_io_ctrl_PREADY;
   wire       [31:0]   core_io_ctrl_PRDATA;
   wire                core_io_ctrl_PSLVERROR;
+  wire                core_ll_0_descriptorUpdate;
+  wire                core_ll_1_descriptorUpdate;
   wire                withCtrlCc_apbCc_io_input_PREADY;
   wire       [31:0]   withCtrlCc_apbCc_io_input_PRDATA;
   wire                withCtrlCc_apbCc_io_input_PSLVERROR;
@@ -349,13 +373,13 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                bmbUpSizerBridge_io_input_cmd_ready;
   wire                bmbUpSizerBridge_io_input_rsp_valid;
   wire                bmbUpSizerBridge_io_input_rsp_payload_last;
-  wire       [0:0]    bmbUpSizerBridge_io_input_rsp_payload_fragment_source;
+  wire       [1:0]    bmbUpSizerBridge_io_input_rsp_payload_fragment_source;
   wire       [0:0]    bmbUpSizerBridge_io_input_rsp_payload_fragment_opcode;
   wire       [255:0]  bmbUpSizerBridge_io_input_rsp_payload_fragment_data;
   wire       [24:0]   bmbUpSizerBridge_io_input_rsp_payload_fragment_context;
   wire                bmbUpSizerBridge_io_output_cmd_valid;
   wire                bmbUpSizerBridge_io_output_cmd_payload_last;
-  wire       [0:0]    bmbUpSizerBridge_io_output_cmd_payload_fragment_source;
+  wire       [1:0]    bmbUpSizerBridge_io_output_cmd_payload_fragment_source;
   wire       [0:0]    bmbUpSizerBridge_io_output_cmd_payload_fragment_opcode;
   wire       [31:0]   bmbUpSizerBridge_io_output_cmd_payload_fragment_address;
   wire       [12:0]   bmbUpSizerBridge_io_output_cmd_payload_fragment_length;
@@ -364,7 +388,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                readLogic_sourceRemover_io_input_cmd_ready;
   wire                readLogic_sourceRemover_io_input_rsp_valid;
   wire                readLogic_sourceRemover_io_input_rsp_payload_last;
-  wire       [0:0]    readLogic_sourceRemover_io_input_rsp_payload_fragment_source;
+  wire       [1:0]    readLogic_sourceRemover_io_input_rsp_payload_fragment_source;
   wire       [0:0]    readLogic_sourceRemover_io_input_rsp_payload_fragment_opcode;
   wire       [511:0]  readLogic_sourceRemover_io_input_rsp_payload_fragment_data;
   wire       [26:0]   readLogic_sourceRemover_io_input_rsp_payload_fragment_context;
@@ -373,14 +397,14 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [0:0]    readLogic_sourceRemover_io_output_cmd_payload_fragment_opcode;
   wire       [31:0]   readLogic_sourceRemover_io_output_cmd_payload_fragment_address;
   wire       [12:0]   readLogic_sourceRemover_io_output_cmd_payload_fragment_length;
-  wire       [27:0]   readLogic_sourceRemover_io_output_cmd_payload_fragment_context;
+  wire       [28:0]   readLogic_sourceRemover_io_output_cmd_payload_fragment_context;
   wire                readLogic_sourceRemover_io_output_rsp_ready;
   wire                readLogic_bridge_io_input_cmd_ready;
   wire                readLogic_bridge_io_input_rsp_valid;
   wire                readLogic_bridge_io_input_rsp_payload_last;
   wire       [0:0]    readLogic_bridge_io_input_rsp_payload_fragment_opcode;
   wire       [511:0]  readLogic_bridge_io_input_rsp_payload_fragment_data;
-  wire       [27:0]   readLogic_bridge_io_input_rsp_payload_fragment_context;
+  wire       [28:0]   readLogic_bridge_io_input_rsp_payload_fragment_context;
   wire                readLogic_bridge_io_output_ar_valid;
   wire       [31:0]   readLogic_bridge_io_output_ar_payload_addr;
   wire       [7:0]    readLogic_bridge_io_output_ar_payload_len;
@@ -391,12 +415,12 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                bmbUpSizerBridge_1_io_input_cmd_ready;
   wire                bmbUpSizerBridge_1_io_input_rsp_valid;
   wire                bmbUpSizerBridge_1_io_input_rsp_payload_last;
-  wire       [0:0]    bmbUpSizerBridge_1_io_input_rsp_payload_fragment_source;
+  wire       [1:0]    bmbUpSizerBridge_1_io_input_rsp_payload_fragment_source;
   wire       [0:0]    bmbUpSizerBridge_1_io_input_rsp_payload_fragment_opcode;
   wire       [14:0]   bmbUpSizerBridge_1_io_input_rsp_payload_fragment_context;
   wire                bmbUpSizerBridge_1_io_output_cmd_valid;
   wire                bmbUpSizerBridge_1_io_output_cmd_payload_last;
-  wire       [0:0]    bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source;
+  wire       [1:0]    bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source;
   wire       [0:0]    bmbUpSizerBridge_1_io_output_cmd_payload_fragment_opcode;
   wire       [31:0]   bmbUpSizerBridge_1_io_output_cmd_payload_fragment_address;
   wire       [12:0]   bmbUpSizerBridge_1_io_output_cmd_payload_fragment_length;
@@ -407,7 +431,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                writeLogic_sourceRemover_io_input_cmd_ready;
   wire                writeLogic_sourceRemover_io_input_rsp_valid;
   wire                writeLogic_sourceRemover_io_input_rsp_payload_last;
-  wire       [0:0]    writeLogic_sourceRemover_io_input_rsp_payload_fragment_source;
+  wire       [1:0]    writeLogic_sourceRemover_io_input_rsp_payload_fragment_source;
   wire       [0:0]    writeLogic_sourceRemover_io_input_rsp_payload_fragment_opcode;
   wire       [14:0]   writeLogic_sourceRemover_io_input_rsp_payload_fragment_context;
   wire                writeLogic_sourceRemover_io_output_cmd_valid;
@@ -417,13 +441,13 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [12:0]   writeLogic_sourceRemover_io_output_cmd_payload_fragment_length;
   wire       [511:0]  writeLogic_sourceRemover_io_output_cmd_payload_fragment_data;
   wire       [63:0]   writeLogic_sourceRemover_io_output_cmd_payload_fragment_mask;
-  wire       [15:0]   writeLogic_sourceRemover_io_output_cmd_payload_fragment_context;
+  wire       [16:0]   writeLogic_sourceRemover_io_output_cmd_payload_fragment_context;
   wire                writeLogic_sourceRemover_io_output_rsp_ready;
   wire                writeLogic_bridge_io_input_cmd_ready;
   wire                writeLogic_bridge_io_input_rsp_valid;
   wire                writeLogic_bridge_io_input_rsp_payload_last;
   wire       [0:0]    writeLogic_bridge_io_input_rsp_payload_fragment_opcode;
-  wire       [15:0]   writeLogic_bridge_io_input_rsp_payload_fragment_context;
+  wire       [16:0]   writeLogic_bridge_io_input_rsp_payload_fragment_context;
   wire                writeLogic_bridge_io_output_aw_valid;
   wire       [31:0]   writeLogic_bridge_io_output_aw_payload_addr;
   wire       [7:0]    writeLogic_bridge_io_output_aw_payload_len;
@@ -491,6 +515,92 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [3:0]    outputsAdapter_1_sparseDownsizer_logic_io_output_payload_mask;
   wire       [3:0]    outputsAdapter_1_sparseDownsizer_logic_io_output_payload_sink;
   wire                outputsAdapter_1_sparseDownsizer_logic_io_output_payload_last;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_0_cmd_ready;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_0_rsp_valid;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode;
+  wire       [255:0]  interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_data;
+  wire       [0:0]    interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_1_cmd_ready;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_1_rsp_valid;
+  wire                interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source;
+  wire       [0:0]    interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode;
+  wire       [255:0]  interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_data;
+  wire       [24:0]   interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context;
+  wire                interconnect_read_aggregated_arbiter_io_output_cmd_valid;
+  wire                interconnect_read_aggregated_arbiter_io_output_cmd_payload_last;
+  wire       [1:0]    interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_source;
+  wire       [0:0]    interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_address;
+  wire       [12:0]   interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_length;
+  wire       [24:0]   interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_context;
+  wire                interconnect_read_aggregated_arbiter_io_output_rsp_ready;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_0_cmd_ready;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_0_rsp_valid;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode;
+  wire       [0:0]    interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_1_cmd_ready;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_1_rsp_valid;
+  wire                interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source;
+  wire       [0:0]    interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode;
+  wire       [14:0]   interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context;
+  wire                interconnect_write_aggregated_arbiter_io_output_cmd_valid;
+  wire                interconnect_write_aggregated_arbiter_io_output_cmd_payload_last;
+  wire       [1:0]    interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_source;
+  wire       [0:0]    interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_address;
+  wire       [12:0]   interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_length;
+  wire       [255:0]  interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_data;
+  wire       [31:0]   interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_mask;
+  wire       [14:0]   interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_context;
+  wire                interconnect_write_aggregated_arbiter_io_output_rsp_ready;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address;
+  wire       [12:0]   interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length;
+  wire       [24:0]   interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode;
+  wire       [255:0]  interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_data;
+  wire       [24:0]   interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address;
+  wire       [4:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready;
+  wire                interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode;
+  wire       [255:0]  interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_data;
+  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address;
+  wire       [12:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length;
+  wire       [255:0]  interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_data;
+  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_mask;
+  wire       [14:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode;
+  wire       [14:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context;
   wire                io_write_cmd_s2mPipe_valid;
   reg                 io_write_cmd_s2mPipe_ready;
   wire                io_write_cmd_s2mPipe_payload_last;
@@ -530,10 +640,24 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg        [31:0]   io_write_cmd_s2mPipe_rData_fragment_mask;
   reg        [14:0]   io_write_cmd_s2mPipe_rData_fragment_context;
   wire                when_Stream_l375;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode;
+  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address;
+  wire       [1:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length;
+  wire       [255:0]  interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_data;
+  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_mask;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready;
+  wire                interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode;
+  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context;
   wire                interconnect_read_aggregated_cmd_valid;
   wire                interconnect_read_aggregated_cmd_ready;
   wire                interconnect_read_aggregated_cmd_payload_last;
-  wire       [0:0]    interconnect_read_aggregated_cmd_payload_fragment_source;
+  wire       [1:0]    interconnect_read_aggregated_cmd_payload_fragment_source;
   wire       [0:0]    interconnect_read_aggregated_cmd_payload_fragment_opcode;
   wire       [31:0]   interconnect_read_aggregated_cmd_payload_fragment_address;
   wire       [12:0]   interconnect_read_aggregated_cmd_payload_fragment_length;
@@ -541,14 +665,14 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                interconnect_read_aggregated_rsp_valid;
   wire                interconnect_read_aggregated_rsp_ready;
   wire                interconnect_read_aggregated_rsp_payload_last;
-  wire       [0:0]    interconnect_read_aggregated_rsp_payload_fragment_source;
+  wire       [1:0]    interconnect_read_aggregated_rsp_payload_fragment_source;
   wire       [0:0]    interconnect_read_aggregated_rsp_payload_fragment_opcode;
   wire       [255:0]  interconnect_read_aggregated_rsp_payload_fragment_data;
   wire       [24:0]   interconnect_read_aggregated_rsp_payload_fragment_context;
   wire                interconnect_write_aggregated_cmd_valid;
   reg                 interconnect_write_aggregated_cmd_ready;
   wire                interconnect_write_aggregated_cmd_payload_last;
-  wire       [0:0]    interconnect_write_aggregated_cmd_payload_fragment_source;
+  wire       [1:0]    interconnect_write_aggregated_cmd_payload_fragment_source;
   wire       [0:0]    interconnect_write_aggregated_cmd_payload_fragment_opcode;
   wire       [31:0]   interconnect_write_aggregated_cmd_payload_fragment_address;
   wire       [12:0]   interconnect_write_aggregated_cmd_payload_fragment_length;
@@ -558,13 +682,13 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                interconnect_write_aggregated_rsp_valid;
   wire                interconnect_write_aggregated_rsp_ready;
   wire                interconnect_write_aggregated_rsp_payload_last;
-  wire       [0:0]    interconnect_write_aggregated_rsp_payload_fragment_source;
+  wire       [1:0]    interconnect_write_aggregated_rsp_payload_fragment_source;
   wire       [0:0]    interconnect_write_aggregated_rsp_payload_fragment_opcode;
   wire       [14:0]   interconnect_write_aggregated_rsp_payload_fragment_context;
   wire                interconnect_read_aggregated_cmd_halfPipe_valid;
   wire                interconnect_read_aggregated_cmd_halfPipe_ready;
   wire                interconnect_read_aggregated_cmd_halfPipe_payload_last;
-  wire       [0:0]    interconnect_read_aggregated_cmd_halfPipe_payload_fragment_source;
+  wire       [1:0]    interconnect_read_aggregated_cmd_halfPipe_payload_fragment_source;
   wire       [0:0]    interconnect_read_aggregated_cmd_halfPipe_payload_fragment_opcode;
   wire       [31:0]   interconnect_read_aggregated_cmd_halfPipe_payload_fragment_address;
   wire       [12:0]   interconnect_read_aggregated_cmd_halfPipe_payload_fragment_length;
@@ -572,7 +696,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg                 interconnect_read_aggregated_cmd_rValid;
   wire                interconnect_read_aggregated_cmd_halfPipe_fire;
   reg                 interconnect_read_aggregated_cmd_rData_last;
-  reg        [0:0]    interconnect_read_aggregated_cmd_rData_fragment_source;
+  reg        [1:0]    interconnect_read_aggregated_cmd_rData_fragment_source;
   reg        [0:0]    interconnect_read_aggregated_cmd_rData_fragment_opcode;
   reg        [31:0]   interconnect_read_aggregated_cmd_rData_fragment_address;
   reg        [12:0]   interconnect_read_aggregated_cmd_rData_fragment_length;
@@ -638,7 +762,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                interconnect_write_aggregated_cmd_m2sPipe_valid;
   wire                interconnect_write_aggregated_cmd_m2sPipe_ready;
   wire                interconnect_write_aggregated_cmd_m2sPipe_payload_last;
-  wire       [0:0]    interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_source;
+  wire       [1:0]    interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_source;
   wire       [0:0]    interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_opcode;
   wire       [31:0]   interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_address;
   wire       [12:0]   interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_length;
@@ -647,7 +771,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [14:0]   interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_context;
   reg                 interconnect_write_aggregated_cmd_rValid;
   reg                 interconnect_write_aggregated_cmd_rData_last;
-  reg        [0:0]    interconnect_write_aggregated_cmd_rData_fragment_source;
+  reg        [1:0]    interconnect_write_aggregated_cmd_rData_fragment_source;
   reg        [0:0]    interconnect_write_aggregated_cmd_rData_fragment_opcode;
   reg        [31:0]   interconnect_write_aggregated_cmd_rData_fragment_address;
   reg        [12:0]   interconnect_write_aggregated_cmd_rData_fragment_length;
@@ -814,107 +938,105 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg        [3:0]    io_outputs_1_s2mPipe_rData_sink;
   reg                 io_outputs_1_s2mPipe_rData_last;
   wire                when_Stream_l375_7;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source;
-  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  wire       [31:0]   interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  wire       [12:0]   interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  wire       [24:0]   interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  wire                interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source;
-  wire       [0:0]    interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  wire       [255:0]  interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  wire       [24:0]   interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source;
-  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  wire       [12:0]   interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  wire       [255:0]  interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
-  wire       [31:0]   interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_mask;
-  wire       [14:0]   interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  wire                interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source;
-  wire       [0:0]    interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  wire       [14:0]   interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
 
-  EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd core (
-    .io_read_cmd_valid                     (core_io_read_cmd_valid                                                                                 ), //o
-    .io_read_cmd_ready                     (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready                          ), //i
-    .io_read_cmd_payload_last              (core_io_read_cmd_payload_last                                                                          ), //o
-    .io_read_cmd_payload_fragment_source   (core_io_read_cmd_payload_fragment_source                                                               ), //o
-    .io_read_cmd_payload_fragment_opcode   (core_io_read_cmd_payload_fragment_opcode                                                               ), //o
-    .io_read_cmd_payload_fragment_address  (core_io_read_cmd_payload_fragment_address[31:0]                                                        ), //o
-    .io_read_cmd_payload_fragment_length   (core_io_read_cmd_payload_fragment_length[12:0]                                                         ), //o
-    .io_read_cmd_payload_fragment_context  (core_io_read_cmd_payload_fragment_context[24:0]                                                        ), //o
-    .io_read_rsp_valid                     (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid                          ), //i
-    .io_read_rsp_ready                     (core_io_read_rsp_ready                                                                                 ), //o
-    .io_read_rsp_payload_last              (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last                   ), //i
-    .io_read_rsp_payload_fragment_source   (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source        ), //i
-    .io_read_rsp_payload_fragment_opcode   (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode        ), //i
-    .io_read_rsp_payload_fragment_data     (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data[255:0]   ), //i
-    .io_read_rsp_payload_fragment_context  (interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context[24:0] ), //i
-    .io_write_cmd_valid                    (core_io_write_cmd_valid                                                                                ), //o
-    .io_write_cmd_ready                    (io_write_cmd_rValidN                                                                                   ), //i
-    .io_write_cmd_payload_last             (core_io_write_cmd_payload_last                                                                         ), //o
-    .io_write_cmd_payload_fragment_source  (core_io_write_cmd_payload_fragment_source                                                              ), //o
-    .io_write_cmd_payload_fragment_opcode  (core_io_write_cmd_payload_fragment_opcode                                                              ), //o
-    .io_write_cmd_payload_fragment_address (core_io_write_cmd_payload_fragment_address[31:0]                                                       ), //o
-    .io_write_cmd_payload_fragment_length  (core_io_write_cmd_payload_fragment_length[12:0]                                                        ), //o
-    .io_write_cmd_payload_fragment_data    (core_io_write_cmd_payload_fragment_data[255:0]                                                         ), //o
-    .io_write_cmd_payload_fragment_mask    (core_io_write_cmd_payload_fragment_mask[31:0]                                                          ), //o
-    .io_write_cmd_payload_fragment_context (core_io_write_cmd_payload_fragment_context[14:0]                                                       ), //o
-    .io_write_rsp_valid                    (interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid                         ), //i
-    .io_write_rsp_ready                    (core_io_write_rsp_ready                                                                                ), //o
-    .io_write_rsp_payload_last             (interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last                  ), //i
-    .io_write_rsp_payload_fragment_source  (interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source       ), //i
-    .io_write_rsp_payload_fragment_opcode  (interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode       ), //i
-    .io_write_rsp_payload_fragment_context (interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context[14:0]), //i
-    .io_outputs_0_valid                    (core_io_outputs_0_valid                                                                                ), //o
-    .io_outputs_0_ready                    (io_outputs_0_rValidN                                                                                   ), //i
-    .io_outputs_0_payload_data             (core_io_outputs_0_payload_data[127:0]                                                                  ), //o
-    .io_outputs_0_payload_mask             (core_io_outputs_0_payload_mask[15:0]                                                                   ), //o
-    .io_outputs_0_payload_sink             (core_io_outputs_0_payload_sink[3:0]                                                                    ), //o
-    .io_outputs_0_payload_last             (core_io_outputs_0_payload_last                                                                         ), //o
-    .io_outputs_1_valid                    (core_io_outputs_1_valid                                                                                ), //o
-    .io_outputs_1_ready                    (io_outputs_1_rValidN                                                                                   ), //i
-    .io_outputs_1_payload_data             (core_io_outputs_1_payload_data[127:0]                                                                  ), //o
-    .io_outputs_1_payload_mask             (core_io_outputs_1_payload_mask[15:0]                                                                   ), //o
-    .io_outputs_1_payload_sink             (core_io_outputs_1_payload_sink[3:0]                                                                    ), //o
-    .io_outputs_1_payload_last             (core_io_outputs_1_payload_last                                                                         ), //o
-    .io_inputs_0_valid                     (io_pop_s2mPipe_m2sPipe_valid                                                                           ), //i
-    .io_inputs_0_ready                     (core_io_inputs_0_ready                                                                                 ), //o
-    .io_inputs_0_payload_data              (io_pop_s2mPipe_m2sPipe_payload_data[127:0]                                                             ), //i
-    .io_inputs_0_payload_mask              (io_pop_s2mPipe_m2sPipe_payload_mask[15:0]                                                              ), //i
-    .io_inputs_0_payload_sink              (io_pop_s2mPipe_m2sPipe_payload_sink[3:0]                                                               ), //i
-    .io_inputs_0_payload_last              (io_pop_s2mPipe_m2sPipe_payload_last                                                                    ), //i
-    .io_inputs_1_valid                     (io_pop_s2mPipe_m2sPipe_valid_1                                                                         ), //i
-    .io_inputs_1_ready                     (core_io_inputs_1_ready                                                                                 ), //o
-    .io_inputs_1_payload_data              (io_pop_s2mPipe_m2sPipe_payload_data_1[127:0]                                                           ), //i
-    .io_inputs_1_payload_mask              (io_pop_s2mPipe_m2sPipe_payload_mask_1[15:0]                                                            ), //i
-    .io_inputs_1_payload_sink              (io_pop_s2mPipe_m2sPipe_payload_sink_1[3:0]                                                             ), //i
-    .io_inputs_1_payload_last              (io_pop_s2mPipe_m2sPipe_payload_last_1                                                                  ), //i
-    .io_interrupts                         (core_io_interrupts[3:0]                                                                                ), //o
-    .io_ctrl_PADDR                         (withCtrlCc_apbCc_io_output_PADDR[13:0]                                                                 ), //i
-    .io_ctrl_PSEL                          (withCtrlCc_apbCc_io_output_PSEL                                                                        ), //i
-    .io_ctrl_PENABLE                       (withCtrlCc_apbCc_io_output_PENABLE                                                                     ), //i
-    .io_ctrl_PREADY                        (core_io_ctrl_PREADY                                                                                    ), //o
-    .io_ctrl_PWRITE                        (withCtrlCc_apbCc_io_output_PWRITE                                                                      ), //i
-    .io_ctrl_PWDATA                        (withCtrlCc_apbCc_io_output_PWDATA[31:0]                                                                ), //i
-    .io_ctrl_PRDATA                        (core_io_ctrl_PRDATA[31:0]                                                                              ), //o
-    .io_ctrl_PSLVERROR                     (core_io_ctrl_PSLVERROR                                                                                 ), //o
-    .clk                                   (clk                                                                                                    ), //i
-    .reset                                 (reset                                                                                                  )  //i
+  EfxDMA_Core_9bdfdf1cb95c4a7d8530357860e1bb9e core (
+    .io_sgRead_cmd_valid                     (core_io_sgRead_cmd_valid                                                                                     ), //o
+    .io_sgRead_cmd_ready                     (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready                          ), //i
+    .io_sgRead_cmd_payload_last              (core_io_sgRead_cmd_payload_last                                                                              ), //o
+    .io_sgRead_cmd_payload_fragment_opcode   (core_io_sgRead_cmd_payload_fragment_opcode                                                                   ), //o
+    .io_sgRead_cmd_payload_fragment_address  (core_io_sgRead_cmd_payload_fragment_address[31:0]                                                            ), //o
+    .io_sgRead_cmd_payload_fragment_length   (core_io_sgRead_cmd_payload_fragment_length[4:0]                                                              ), //o
+    .io_sgRead_cmd_payload_fragment_context  (core_io_sgRead_cmd_payload_fragment_context                                                                  ), //o
+    .io_sgRead_rsp_valid                     (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid                          ), //i
+    .io_sgRead_rsp_ready                     (core_io_sgRead_rsp_ready                                                                                     ), //o
+    .io_sgRead_rsp_payload_last              (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last                   ), //i
+    .io_sgRead_rsp_payload_fragment_opcode   (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode        ), //i
+    .io_sgRead_rsp_payload_fragment_data     (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_data[255:0]   ), //i
+    .io_sgRead_rsp_payload_fragment_context  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context       ), //i
+    .io_sgWrite_cmd_valid                    (core_io_sgWrite_cmd_valid                                                                                    ), //o
+    .io_sgWrite_cmd_ready                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready                         ), //i
+    .io_sgWrite_cmd_payload_last             (core_io_sgWrite_cmd_payload_last                                                                             ), //o
+    .io_sgWrite_cmd_payload_fragment_opcode  (core_io_sgWrite_cmd_payload_fragment_opcode                                                                  ), //o
+    .io_sgWrite_cmd_payload_fragment_address (core_io_sgWrite_cmd_payload_fragment_address[31:0]                                                           ), //o
+    .io_sgWrite_cmd_payload_fragment_length  (core_io_sgWrite_cmd_payload_fragment_length[1:0]                                                             ), //o
+    .io_sgWrite_cmd_payload_fragment_data    (core_io_sgWrite_cmd_payload_fragment_data[255:0]                                                             ), //o
+    .io_sgWrite_cmd_payload_fragment_mask    (core_io_sgWrite_cmd_payload_fragment_mask[31:0]                                                              ), //o
+    .io_sgWrite_cmd_payload_fragment_context (core_io_sgWrite_cmd_payload_fragment_context                                                                 ), //o
+    .io_sgWrite_rsp_valid                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid                         ), //i
+    .io_sgWrite_rsp_ready                    (core_io_sgWrite_rsp_ready                                                                                    ), //o
+    .io_sgWrite_rsp_payload_last             (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last                  ), //i
+    .io_sgWrite_rsp_payload_fragment_opcode  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode       ), //i
+    .io_sgWrite_rsp_payload_fragment_context (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context      ), //i
+    .io_read_cmd_valid                       (core_io_read_cmd_valid                                                                                       ), //o
+    .io_read_cmd_ready                       (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready                          ), //i
+    .io_read_cmd_payload_last                (core_io_read_cmd_payload_last                                                                                ), //o
+    .io_read_cmd_payload_fragment_source     (core_io_read_cmd_payload_fragment_source                                                                     ), //o
+    .io_read_cmd_payload_fragment_opcode     (core_io_read_cmd_payload_fragment_opcode                                                                     ), //o
+    .io_read_cmd_payload_fragment_address    (core_io_read_cmd_payload_fragment_address[31:0]                                                              ), //o
+    .io_read_cmd_payload_fragment_length     (core_io_read_cmd_payload_fragment_length[12:0]                                                               ), //o
+    .io_read_cmd_payload_fragment_context    (core_io_read_cmd_payload_fragment_context[24:0]                                                              ), //o
+    .io_read_rsp_valid                       (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid                          ), //i
+    .io_read_rsp_ready                       (core_io_read_rsp_ready                                                                                       ), //o
+    .io_read_rsp_payload_last                (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last                   ), //i
+    .io_read_rsp_payload_fragment_source     (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source        ), //i
+    .io_read_rsp_payload_fragment_opcode     (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode        ), //i
+    .io_read_rsp_payload_fragment_data       (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_data[255:0]   ), //i
+    .io_read_rsp_payload_fragment_context    (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context[24:0] ), //i
+    .io_write_cmd_valid                      (core_io_write_cmd_valid                                                                                      ), //o
+    .io_write_cmd_ready                      (io_write_cmd_rValidN                                                                                         ), //i
+    .io_write_cmd_payload_last               (core_io_write_cmd_payload_last                                                                               ), //o
+    .io_write_cmd_payload_fragment_source    (core_io_write_cmd_payload_fragment_source                                                                    ), //o
+    .io_write_cmd_payload_fragment_opcode    (core_io_write_cmd_payload_fragment_opcode                                                                    ), //o
+    .io_write_cmd_payload_fragment_address   (core_io_write_cmd_payload_fragment_address[31:0]                                                             ), //o
+    .io_write_cmd_payload_fragment_length    (core_io_write_cmd_payload_fragment_length[12:0]                                                              ), //o
+    .io_write_cmd_payload_fragment_data      (core_io_write_cmd_payload_fragment_data[255:0]                                                               ), //o
+    .io_write_cmd_payload_fragment_mask      (core_io_write_cmd_payload_fragment_mask[31:0]                                                                ), //o
+    .io_write_cmd_payload_fragment_context   (core_io_write_cmd_payload_fragment_context[14:0]                                                             ), //o
+    .io_write_rsp_valid                      (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid                         ), //i
+    .io_write_rsp_ready                      (core_io_write_rsp_ready                                                                                      ), //o
+    .io_write_rsp_payload_last               (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last                  ), //i
+    .io_write_rsp_payload_fragment_source    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source       ), //i
+    .io_write_rsp_payload_fragment_opcode    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode       ), //i
+    .io_write_rsp_payload_fragment_context   (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context[14:0]), //i
+    .io_outputs_0_valid                      (core_io_outputs_0_valid                                                                                      ), //o
+    .io_outputs_0_ready                      (io_outputs_0_rValidN                                                                                         ), //i
+    .io_outputs_0_payload_data               (core_io_outputs_0_payload_data[127:0]                                                                        ), //o
+    .io_outputs_0_payload_mask               (core_io_outputs_0_payload_mask[15:0]                                                                         ), //o
+    .io_outputs_0_payload_sink               (core_io_outputs_0_payload_sink[3:0]                                                                          ), //o
+    .io_outputs_0_payload_last               (core_io_outputs_0_payload_last                                                                               ), //o
+    .io_outputs_1_valid                      (core_io_outputs_1_valid                                                                                      ), //o
+    .io_outputs_1_ready                      (io_outputs_1_rValidN                                                                                         ), //i
+    .io_outputs_1_payload_data               (core_io_outputs_1_payload_data[127:0]                                                                        ), //o
+    .io_outputs_1_payload_mask               (core_io_outputs_1_payload_mask[15:0]                                                                         ), //o
+    .io_outputs_1_payload_sink               (core_io_outputs_1_payload_sink[3:0]                                                                          ), //o
+    .io_outputs_1_payload_last               (core_io_outputs_1_payload_last                                                                               ), //o
+    .io_inputs_0_valid                       (io_pop_s2mPipe_m2sPipe_valid                                                                                 ), //i
+    .io_inputs_0_ready                       (core_io_inputs_0_ready                                                                                       ), //o
+    .io_inputs_0_payload_data                (io_pop_s2mPipe_m2sPipe_payload_data[127:0]                                                                   ), //i
+    .io_inputs_0_payload_mask                (io_pop_s2mPipe_m2sPipe_payload_mask[15:0]                                                                    ), //i
+    .io_inputs_0_payload_sink                (io_pop_s2mPipe_m2sPipe_payload_sink[3:0]                                                                     ), //i
+    .io_inputs_0_payload_last                (io_pop_s2mPipe_m2sPipe_payload_last                                                                          ), //i
+    .io_inputs_1_valid                       (io_pop_s2mPipe_m2sPipe_valid_1                                                                               ), //i
+    .io_inputs_1_ready                       (core_io_inputs_1_ready                                                                                       ), //o
+    .io_inputs_1_payload_data                (io_pop_s2mPipe_m2sPipe_payload_data_1[127:0]                                                                 ), //i
+    .io_inputs_1_payload_mask                (io_pop_s2mPipe_m2sPipe_payload_mask_1[15:0]                                                                  ), //i
+    .io_inputs_1_payload_sink                (io_pop_s2mPipe_m2sPipe_payload_sink_1[3:0]                                                                   ), //i
+    .io_inputs_1_payload_last                (io_pop_s2mPipe_m2sPipe_payload_last_1                                                                        ), //i
+    .io_interrupts                           (core_io_interrupts[3:0]                                                                                      ), //o
+    .io_ctrl_PADDR                           (withCtrlCc_apbCc_io_output_PADDR[13:0]                                                                       ), //i
+    .io_ctrl_PSEL                            (withCtrlCc_apbCc_io_output_PSEL                                                                              ), //i
+    .io_ctrl_PENABLE                         (withCtrlCc_apbCc_io_output_PENABLE                                                                           ), //i
+    .io_ctrl_PREADY                          (core_io_ctrl_PREADY                                                                                          ), //o
+    .io_ctrl_PWRITE                          (withCtrlCc_apbCc_io_output_PWRITE                                                                            ), //i
+    .io_ctrl_PWDATA                          (withCtrlCc_apbCc_io_output_PWDATA[31:0]                                                                      ), //i
+    .io_ctrl_PRDATA                          (core_io_ctrl_PRDATA[31:0]                                                                                    ), //o
+    .io_ctrl_PSLVERROR                       (core_io_ctrl_PSLVERROR                                                                                       ), //o
+    .ll_0_descriptorUpdate                   (core_ll_0_descriptorUpdate                                                                                   ), //o
+    .ll_1_descriptorUpdate                   (core_ll_1_descriptorUpdate                                                                                   ), //o
+    .clk                                     (clk                                                                                                          ), //i
+    .reset                                   (reset                                                                                                        )  //i
   );
-  EfxDMA_Apb3CC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd withCtrlCc_apbCc (
+  EfxDMA_Apb3CC_9bdfdf1cb95c4a7d8530357860e1bb9e withCtrlCc_apbCc (
     .io_input_PADDR      (ctrl_PADDR[13:0]                       ), //i
     .io_input_PSEL       (ctrl_PSEL                              ), //i
     .io_input_PENABLE    (ctrl_PENABLE                           ), //i
@@ -936,17 +1058,17 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                 (clk                                    ), //i
     .reset               (reset                                  )  //i
   );
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_10_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd io_interrupts_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_10_9bdfdf1cb95c4a7d8530357860e1bb9e io_interrupts_buffercc (
     .io_dataIn  (core_io_interrupts[3:0]               ), //i
     .io_dataOut (io_interrupts_buffercc_io_dataOut[3:0]), //o
     .ctrl_clk   (ctrl_clk                              ), //i
     .ctrl_reset (ctrl_reset                            )  //i
   );
-  EfxDMA_BmbUpSizerBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd bmbUpSizerBridge (
+  EfxDMA_BmbUpSizerBridge_9bdfdf1cb95c4a7d8530357860e1bb9e bmbUpSizerBridge (
     .io_input_cmd_valid                     (interconnect_read_aggregated_cmd_halfPipe_valid                         ), //i
     .io_input_cmd_ready                     (bmbUpSizerBridge_io_input_cmd_ready                                     ), //o
     .io_input_cmd_payload_last              (interconnect_read_aggregated_cmd_halfPipe_payload_last                  ), //i
-    .io_input_cmd_payload_fragment_source   (interconnect_read_aggregated_cmd_halfPipe_payload_fragment_source       ), //i
+    .io_input_cmd_payload_fragment_source   (interconnect_read_aggregated_cmd_halfPipe_payload_fragment_source[1:0]  ), //i
     .io_input_cmd_payload_fragment_opcode   (interconnect_read_aggregated_cmd_halfPipe_payload_fragment_opcode       ), //i
     .io_input_cmd_payload_fragment_address  (interconnect_read_aggregated_cmd_halfPipe_payload_fragment_address[31:0]), //i
     .io_input_cmd_payload_fragment_length   (interconnect_read_aggregated_cmd_halfPipe_payload_fragment_length[12:0] ), //i
@@ -954,14 +1076,14 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_rsp_valid                     (bmbUpSizerBridge_io_input_rsp_valid                                     ), //o
     .io_input_rsp_ready                     (interconnect_read_aggregated_rsp_ready                                  ), //i
     .io_input_rsp_payload_last              (bmbUpSizerBridge_io_input_rsp_payload_last                              ), //o
-    .io_input_rsp_payload_fragment_source   (bmbUpSizerBridge_io_input_rsp_payload_fragment_source                   ), //o
+    .io_input_rsp_payload_fragment_source   (bmbUpSizerBridge_io_input_rsp_payload_fragment_source[1:0]              ), //o
     .io_input_rsp_payload_fragment_opcode   (bmbUpSizerBridge_io_input_rsp_payload_fragment_opcode                   ), //o
     .io_input_rsp_payload_fragment_data     (bmbUpSizerBridge_io_input_rsp_payload_fragment_data[255:0]              ), //o
     .io_input_rsp_payload_fragment_context  (bmbUpSizerBridge_io_input_rsp_payload_fragment_context[24:0]            ), //o
     .io_output_cmd_valid                    (bmbUpSizerBridge_io_output_cmd_valid                                    ), //o
     .io_output_cmd_ready                    (readLogic_sourceRemover_io_input_cmd_ready                              ), //i
     .io_output_cmd_payload_last             (bmbUpSizerBridge_io_output_cmd_payload_last                             ), //o
-    .io_output_cmd_payload_fragment_source  (bmbUpSizerBridge_io_output_cmd_payload_fragment_source                  ), //o
+    .io_output_cmd_payload_fragment_source  (bmbUpSizerBridge_io_output_cmd_payload_fragment_source[1:0]             ), //o
     .io_output_cmd_payload_fragment_opcode  (bmbUpSizerBridge_io_output_cmd_payload_fragment_opcode                  ), //o
     .io_output_cmd_payload_fragment_address (bmbUpSizerBridge_io_output_cmd_payload_fragment_address[31:0]           ), //o
     .io_output_cmd_payload_fragment_length  (bmbUpSizerBridge_io_output_cmd_payload_fragment_length[12:0]            ), //o
@@ -969,18 +1091,18 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_output_rsp_valid                    (readLogic_sourceRemover_io_input_rsp_valid                              ), //i
     .io_output_rsp_ready                    (bmbUpSizerBridge_io_output_rsp_ready                                    ), //o
     .io_output_rsp_payload_last             (readLogic_sourceRemover_io_input_rsp_payload_last                       ), //i
-    .io_output_rsp_payload_fragment_source  (readLogic_sourceRemover_io_input_rsp_payload_fragment_source            ), //i
+    .io_output_rsp_payload_fragment_source  (readLogic_sourceRemover_io_input_rsp_payload_fragment_source[1:0]       ), //i
     .io_output_rsp_payload_fragment_opcode  (readLogic_sourceRemover_io_input_rsp_payload_fragment_opcode            ), //i
     .io_output_rsp_payload_fragment_data    (readLogic_sourceRemover_io_input_rsp_payload_fragment_data[511:0]       ), //i
     .io_output_rsp_payload_fragment_context (readLogic_sourceRemover_io_input_rsp_payload_fragment_context[26:0]     ), //i
     .clk                                    (clk                                                                     ), //i
     .reset                                  (reset                                                                   )  //i
   );
-  EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd readLogic_sourceRemover (
+  EfxDMA_BmbSourceRemover_9bdfdf1cb95c4a7d8530357860e1bb9e readLogic_sourceRemover (
     .io_input_cmd_valid                     (bmbUpSizerBridge_io_output_cmd_valid                                ), //i
     .io_input_cmd_ready                     (readLogic_sourceRemover_io_input_cmd_ready                          ), //o
     .io_input_cmd_payload_last              (bmbUpSizerBridge_io_output_cmd_payload_last                         ), //i
-    .io_input_cmd_payload_fragment_source   (bmbUpSizerBridge_io_output_cmd_payload_fragment_source              ), //i
+    .io_input_cmd_payload_fragment_source   (bmbUpSizerBridge_io_output_cmd_payload_fragment_source[1:0]         ), //i
     .io_input_cmd_payload_fragment_opcode   (bmbUpSizerBridge_io_output_cmd_payload_fragment_opcode              ), //i
     .io_input_cmd_payload_fragment_address  (bmbUpSizerBridge_io_output_cmd_payload_fragment_address[31:0]       ), //i
     .io_input_cmd_payload_fragment_length   (bmbUpSizerBridge_io_output_cmd_payload_fragment_length[12:0]        ), //i
@@ -988,7 +1110,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_rsp_valid                     (readLogic_sourceRemover_io_input_rsp_valid                          ), //o
     .io_input_rsp_ready                     (bmbUpSizerBridge_io_output_rsp_ready                                ), //i
     .io_input_rsp_payload_last              (readLogic_sourceRemover_io_input_rsp_payload_last                   ), //o
-    .io_input_rsp_payload_fragment_source   (readLogic_sourceRemover_io_input_rsp_payload_fragment_source        ), //o
+    .io_input_rsp_payload_fragment_source   (readLogic_sourceRemover_io_input_rsp_payload_fragment_source[1:0]   ), //o
     .io_input_rsp_payload_fragment_opcode   (readLogic_sourceRemover_io_input_rsp_payload_fragment_opcode        ), //o
     .io_input_rsp_payload_fragment_data     (readLogic_sourceRemover_io_input_rsp_payload_fragment_data[511:0]   ), //o
     .io_input_rsp_payload_fragment_context  (readLogic_sourceRemover_io_input_rsp_payload_fragment_context[26:0] ), //o
@@ -998,28 +1120,28 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_output_cmd_payload_fragment_opcode  (readLogic_sourceRemover_io_output_cmd_payload_fragment_opcode       ), //o
     .io_output_cmd_payload_fragment_address (readLogic_sourceRemover_io_output_cmd_payload_fragment_address[31:0]), //o
     .io_output_cmd_payload_fragment_length  (readLogic_sourceRemover_io_output_cmd_payload_fragment_length[12:0] ), //o
-    .io_output_cmd_payload_fragment_context (readLogic_sourceRemover_io_output_cmd_payload_fragment_context[27:0]), //o
+    .io_output_cmd_payload_fragment_context (readLogic_sourceRemover_io_output_cmd_payload_fragment_context[28:0]), //o
     .io_output_rsp_valid                    (readLogic_bridge_io_input_rsp_valid                                 ), //i
     .io_output_rsp_ready                    (readLogic_sourceRemover_io_output_rsp_ready                         ), //o
     .io_output_rsp_payload_last             (readLogic_bridge_io_input_rsp_payload_last                          ), //i
     .io_output_rsp_payload_fragment_opcode  (readLogic_bridge_io_input_rsp_payload_fragment_opcode               ), //i
     .io_output_rsp_payload_fragment_data    (readLogic_bridge_io_input_rsp_payload_fragment_data[511:0]          ), //i
-    .io_output_rsp_payload_fragment_context (readLogic_bridge_io_input_rsp_payload_fragment_context[27:0]        )  //i
+    .io_output_rsp_payload_fragment_context (readLogic_bridge_io_input_rsp_payload_fragment_context[28:0]        )  //i
   );
-  EfxDMA_BmbToAxi4ReadOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd readLogic_bridge (
+  EfxDMA_BmbToAxi4ReadOnlyBridge_9bdfdf1cb95c4a7d8530357860e1bb9e readLogic_bridge (
     .io_input_cmd_valid                    (readLogic_sourceRemover_io_output_cmd_valid                         ), //i
     .io_input_cmd_ready                    (readLogic_bridge_io_input_cmd_ready                                 ), //o
     .io_input_cmd_payload_last             (readLogic_sourceRemover_io_output_cmd_payload_last                  ), //i
     .io_input_cmd_payload_fragment_opcode  (readLogic_sourceRemover_io_output_cmd_payload_fragment_opcode       ), //i
     .io_input_cmd_payload_fragment_address (readLogic_sourceRemover_io_output_cmd_payload_fragment_address[31:0]), //i
     .io_input_cmd_payload_fragment_length  (readLogic_sourceRemover_io_output_cmd_payload_fragment_length[12:0] ), //i
-    .io_input_cmd_payload_fragment_context (readLogic_sourceRemover_io_output_cmd_payload_fragment_context[27:0]), //i
+    .io_input_cmd_payload_fragment_context (readLogic_sourceRemover_io_output_cmd_payload_fragment_context[28:0]), //i
     .io_input_rsp_valid                    (readLogic_bridge_io_input_rsp_valid                                 ), //o
     .io_input_rsp_ready                    (readLogic_sourceRemover_io_output_rsp_ready                         ), //i
     .io_input_rsp_payload_last             (readLogic_bridge_io_input_rsp_payload_last                          ), //o
     .io_input_rsp_payload_fragment_opcode  (readLogic_bridge_io_input_rsp_payload_fragment_opcode               ), //o
     .io_input_rsp_payload_fragment_data    (readLogic_bridge_io_input_rsp_payload_fragment_data[511:0]          ), //o
-    .io_input_rsp_payload_fragment_context (readLogic_bridge_io_input_rsp_payload_fragment_context[27:0]        ), //o
+    .io_input_rsp_payload_fragment_context (readLogic_bridge_io_input_rsp_payload_fragment_context[28:0]        ), //o
     .io_output_ar_valid                    (readLogic_bridge_io_output_ar_valid                                 ), //o
     .io_output_ar_ready                    (readLogic_adapter_ar_ready                                          ), //i
     .io_output_ar_payload_addr             (readLogic_bridge_io_output_ar_payload_addr[31:0]                    ), //o
@@ -1035,11 +1157,11 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                                   (clk                                                                 ), //i
     .reset                                 (reset                                                               )  //i
   );
-  EfxDMA_BmbUpSizerBridge_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd bmbUpSizerBridge_1 (
+  EfxDMA_BmbUpSizerBridge_1_9bdfdf1cb95c4a7d8530357860e1bb9e bmbUpSizerBridge_1 (
     .io_input_cmd_valid                     (interconnect_write_aggregated_cmd_m2sPipe_valid                         ), //i
     .io_input_cmd_ready                     (bmbUpSizerBridge_1_io_input_cmd_ready                                   ), //o
     .io_input_cmd_payload_last              (interconnect_write_aggregated_cmd_m2sPipe_payload_last                  ), //i
-    .io_input_cmd_payload_fragment_source   (interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_source       ), //i
+    .io_input_cmd_payload_fragment_source   (interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_source[1:0]  ), //i
     .io_input_cmd_payload_fragment_opcode   (interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_opcode       ), //i
     .io_input_cmd_payload_fragment_address  (interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_address[31:0]), //i
     .io_input_cmd_payload_fragment_length   (interconnect_write_aggregated_cmd_m2sPipe_payload_fragment_length[12:0] ), //i
@@ -1049,13 +1171,13 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_rsp_valid                     (bmbUpSizerBridge_1_io_input_rsp_valid                                   ), //o
     .io_input_rsp_ready                     (interconnect_write_aggregated_rsp_ready                                 ), //i
     .io_input_rsp_payload_last              (bmbUpSizerBridge_1_io_input_rsp_payload_last                            ), //o
-    .io_input_rsp_payload_fragment_source   (bmbUpSizerBridge_1_io_input_rsp_payload_fragment_source                 ), //o
+    .io_input_rsp_payload_fragment_source   (bmbUpSizerBridge_1_io_input_rsp_payload_fragment_source[1:0]            ), //o
     .io_input_rsp_payload_fragment_opcode   (bmbUpSizerBridge_1_io_input_rsp_payload_fragment_opcode                 ), //o
     .io_input_rsp_payload_fragment_context  (bmbUpSizerBridge_1_io_input_rsp_payload_fragment_context[14:0]          ), //o
     .io_output_cmd_valid                    (bmbUpSizerBridge_1_io_output_cmd_valid                                  ), //o
     .io_output_cmd_ready                    (writeLogic_sourceRemover_io_input_cmd_ready                             ), //i
     .io_output_cmd_payload_last             (bmbUpSizerBridge_1_io_output_cmd_payload_last                           ), //o
-    .io_output_cmd_payload_fragment_source  (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source                ), //o
+    .io_output_cmd_payload_fragment_source  (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source[1:0]           ), //o
     .io_output_cmd_payload_fragment_opcode  (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_opcode                ), //o
     .io_output_cmd_payload_fragment_address (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_address[31:0]         ), //o
     .io_output_cmd_payload_fragment_length  (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_length[12:0]          ), //o
@@ -1065,17 +1187,17 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_output_rsp_valid                    (writeLogic_sourceRemover_io_input_rsp_valid                             ), //i
     .io_output_rsp_ready                    (bmbUpSizerBridge_1_io_output_rsp_ready                                  ), //o
     .io_output_rsp_payload_last             (writeLogic_sourceRemover_io_input_rsp_payload_last                      ), //i
-    .io_output_rsp_payload_fragment_source  (writeLogic_sourceRemover_io_input_rsp_payload_fragment_source           ), //i
+    .io_output_rsp_payload_fragment_source  (writeLogic_sourceRemover_io_input_rsp_payload_fragment_source[1:0]      ), //i
     .io_output_rsp_payload_fragment_opcode  (writeLogic_sourceRemover_io_input_rsp_payload_fragment_opcode           ), //i
     .io_output_rsp_payload_fragment_context (writeLogic_sourceRemover_io_input_rsp_payload_fragment_context[14:0]    ), //i
     .clk                                    (clk                                                                     ), //i
     .reset                                  (reset                                                                   )  //i
   );
-  EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd writeLogic_sourceRemover (
+  EfxDMA_BmbSourceRemover_1_9bdfdf1cb95c4a7d8530357860e1bb9e writeLogic_sourceRemover (
     .io_input_cmd_valid                     (bmbUpSizerBridge_1_io_output_cmd_valid                               ), //i
     .io_input_cmd_ready                     (writeLogic_sourceRemover_io_input_cmd_ready                          ), //o
     .io_input_cmd_payload_last              (bmbUpSizerBridge_1_io_output_cmd_payload_last                        ), //i
-    .io_input_cmd_payload_fragment_source   (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source             ), //i
+    .io_input_cmd_payload_fragment_source   (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_source[1:0]        ), //i
     .io_input_cmd_payload_fragment_opcode   (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_opcode             ), //i
     .io_input_cmd_payload_fragment_address  (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_address[31:0]      ), //i
     .io_input_cmd_payload_fragment_length   (bmbUpSizerBridge_1_io_output_cmd_payload_fragment_length[12:0]       ), //i
@@ -1085,7 +1207,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_rsp_valid                     (writeLogic_sourceRemover_io_input_rsp_valid                          ), //o
     .io_input_rsp_ready                     (bmbUpSizerBridge_1_io_output_rsp_ready                               ), //i
     .io_input_rsp_payload_last              (writeLogic_sourceRemover_io_input_rsp_payload_last                   ), //o
-    .io_input_rsp_payload_fragment_source   (writeLogic_sourceRemover_io_input_rsp_payload_fragment_source        ), //o
+    .io_input_rsp_payload_fragment_source   (writeLogic_sourceRemover_io_input_rsp_payload_fragment_source[1:0]   ), //o
     .io_input_rsp_payload_fragment_opcode   (writeLogic_sourceRemover_io_input_rsp_payload_fragment_opcode        ), //o
     .io_input_rsp_payload_fragment_context  (writeLogic_sourceRemover_io_input_rsp_payload_fragment_context[14:0] ), //o
     .io_output_cmd_valid                    (writeLogic_sourceRemover_io_output_cmd_valid                         ), //o
@@ -1096,14 +1218,14 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_output_cmd_payload_fragment_length  (writeLogic_sourceRemover_io_output_cmd_payload_fragment_length[12:0] ), //o
     .io_output_cmd_payload_fragment_data    (writeLogic_sourceRemover_io_output_cmd_payload_fragment_data[511:0]  ), //o
     .io_output_cmd_payload_fragment_mask    (writeLogic_sourceRemover_io_output_cmd_payload_fragment_mask[63:0]   ), //o
-    .io_output_cmd_payload_fragment_context (writeLogic_sourceRemover_io_output_cmd_payload_fragment_context[15:0]), //o
+    .io_output_cmd_payload_fragment_context (writeLogic_sourceRemover_io_output_cmd_payload_fragment_context[16:0]), //o
     .io_output_rsp_valid                    (writeLogic_bridge_io_input_rsp_valid                                 ), //i
     .io_output_rsp_ready                    (writeLogic_sourceRemover_io_output_rsp_ready                         ), //o
     .io_output_rsp_payload_last             (writeLogic_bridge_io_input_rsp_payload_last                          ), //i
     .io_output_rsp_payload_fragment_opcode  (writeLogic_bridge_io_input_rsp_payload_fragment_opcode               ), //i
-    .io_output_rsp_payload_fragment_context (writeLogic_bridge_io_input_rsp_payload_fragment_context[15:0]        )  //i
+    .io_output_rsp_payload_fragment_context (writeLogic_bridge_io_input_rsp_payload_fragment_context[16:0]        )  //i
   );
-  EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd writeLogic_bridge (
+  EfxDMA_BmbToAxi4WriteOnlyBridge_9bdfdf1cb95c4a7d8530357860e1bb9e writeLogic_bridge (
     .io_input_cmd_valid                    (writeLogic_sourceRemover_io_output_cmd_valid                         ), //i
     .io_input_cmd_ready                    (writeLogic_bridge_io_input_cmd_ready                                 ), //o
     .io_input_cmd_payload_last             (writeLogic_sourceRemover_io_output_cmd_payload_last                  ), //i
@@ -1112,12 +1234,12 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_cmd_payload_fragment_length  (writeLogic_sourceRemover_io_output_cmd_payload_fragment_length[12:0] ), //i
     .io_input_cmd_payload_fragment_data    (writeLogic_sourceRemover_io_output_cmd_payload_fragment_data[511:0]  ), //i
     .io_input_cmd_payload_fragment_mask    (writeLogic_sourceRemover_io_output_cmd_payload_fragment_mask[63:0]   ), //i
-    .io_input_cmd_payload_fragment_context (writeLogic_sourceRemover_io_output_cmd_payload_fragment_context[15:0]), //i
+    .io_input_cmd_payload_fragment_context (writeLogic_sourceRemover_io_output_cmd_payload_fragment_context[16:0]), //i
     .io_input_rsp_valid                    (writeLogic_bridge_io_input_rsp_valid                                 ), //o
     .io_input_rsp_ready                    (writeLogic_sourceRemover_io_output_rsp_ready                         ), //i
     .io_input_rsp_payload_last             (writeLogic_bridge_io_input_rsp_payload_last                          ), //o
     .io_input_rsp_payload_fragment_opcode  (writeLogic_bridge_io_input_rsp_payload_fragment_opcode               ), //o
-    .io_input_rsp_payload_fragment_context (writeLogic_bridge_io_input_rsp_payload_fragment_context[15:0]        ), //o
+    .io_input_rsp_payload_fragment_context (writeLogic_bridge_io_input_rsp_payload_fragment_context[16:0]        ), //o
     .io_output_aw_valid                    (writeLogic_bridge_io_output_aw_valid                                 ), //o
     .io_output_aw_ready                    (writeLogic_adapter_aw_ready                                          ), //i
     .io_output_aw_payload_addr             (writeLogic_bridge_io_output_aw_payload_addr[31:0]                    ), //o
@@ -1136,7 +1258,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                                   (clk                                                                  ), //i
     .reset                                 (reset                                                                )  //i
   );
-  EfxDMA_BsbUpSizerDense_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputsAdapter_0_upsizer_logic (
+  EfxDMA_BsbUpSizerDense_9bdfdf1cb95c4a7d8530357860e1bb9e inputsAdapter_0_upsizer_logic (
     .io_input_valid         (dat0_i_tvalid                                              ), //i
     .io_input_ready         (inputsAdapter_0_upsizer_logic_io_input_ready               ), //o
     .io_input_payload_data  (dat0_i_tdata[63:0]                                         ), //i
@@ -1152,7 +1274,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat0_i_clk             (dat0_i_clk                                                 ), //i
     .dat0_i_reset           (dat0_i_reset                                               )  //i
   );
-  EfxDMA_StreamFifoCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputsAdapter_0_crossclock_fifo (
+  EfxDMA_StreamFifoCC_9bdfdf1cb95c4a7d8530357860e1bb9e inputsAdapter_0_crossclock_fifo (
     .io_push_valid        (inputsAdapter_0_upsizer_logic_io_output_valid              ), //i
     .io_push_ready        (inputsAdapter_0_crossclock_fifo_io_push_ready              ), //o
     .io_push_payload_data (inputsAdapter_0_upsizer_logic_io_output_payload_data[127:0]), //i
@@ -1172,7 +1294,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                  (clk                                                        ), //i
     .reset                (reset                                                      )  //i
   );
-  EfxDMA_BsbUpSizerDense_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputsAdapter_1_upsizer_logic (
+  EfxDMA_BsbUpSizerDense_1_9bdfdf1cb95c4a7d8530357860e1bb9e inputsAdapter_1_upsizer_logic (
     .io_input_valid         (dat2_i_tvalid                                              ), //i
     .io_input_ready         (inputsAdapter_1_upsizer_logic_io_input_ready               ), //o
     .io_input_payload_data  (dat2_i_tdata[31:0]                                         ), //i
@@ -1188,7 +1310,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat2_i_clk             (dat2_i_clk                                                 ), //i
     .dat2_i_reset           (dat2_i_reset                                               )  //i
   );
-  EfxDMA_StreamFifoCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputsAdapter_1_crossclock_fifo (
+  EfxDMA_StreamFifoCC_1_9bdfdf1cb95c4a7d8530357860e1bb9e inputsAdapter_1_crossclock_fifo (
     .io_push_valid        (inputsAdapter_1_upsizer_logic_io_output_valid              ), //i
     .io_push_ready        (inputsAdapter_1_crossclock_fifo_io_push_ready              ), //o
     .io_push_payload_data (inputsAdapter_1_upsizer_logic_io_output_payload_data[127:0]), //i
@@ -1208,7 +1330,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                  (clk                                                        ), //i
     .reset                (reset                                                      )  //i
   );
-  EfxDMA_StreamFifoCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd outputsAdapter_0_crossclock_fifo (
+  EfxDMA_StreamFifoCC_2_9bdfdf1cb95c4a7d8530357860e1bb9e outputsAdapter_0_crossclock_fifo (
     .io_push_valid        (outputsAdapter_0_ptr_valid                                 ), //i
     .io_push_ready        (outputsAdapter_0_crossclock_fifo_io_push_ready             ), //o
     .io_push_payload_data (outputsAdapter_0_ptr_payload_data[127:0]                   ), //i
@@ -1228,7 +1350,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat1_o_clk           (dat1_o_clk                                                 ), //i
     .dat1_o_reset         (dat1_o_reset                                               )  //i
   );
-  EfxDMA_BsbDownSizerSparse_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd outputsAdapter_0_sparseDownsizer_logic (
+  EfxDMA_BsbDownSizerSparse_9bdfdf1cb95c4a7d8530357860e1bb9e outputsAdapter_0_sparseDownsizer_logic (
     .io_input_valid         (outputsAdapter_0_crossclock_fifo_io_pop_valid                      ), //i
     .io_input_ready         (outputsAdapter_0_sparseDownsizer_logic_io_input_ready              ), //o
     .io_input_payload_data  (outputsAdapter_0_crossclock_fifo_io_pop_payload_data[127:0]        ), //i
@@ -1244,7 +1366,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat1_o_clk             (dat1_o_clk                                                         ), //i
     .dat1_o_reset           (dat1_o_reset                                                       )  //i
   );
-  EfxDMA_StreamFifoCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd outputsAdapter_1_crossclock_fifo (
+  EfxDMA_StreamFifoCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e outputsAdapter_1_crossclock_fifo (
     .io_push_valid        (outputsAdapter_1_ptr_valid                                 ), //i
     .io_push_ready        (outputsAdapter_1_crossclock_fifo_io_push_ready             ), //o
     .io_push_payload_data (outputsAdapter_1_ptr_payload_data[127:0]                   ), //i
@@ -1264,7 +1386,7 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat3_o_clk           (dat3_o_clk                                                 ), //i
     .dat3_o_reset         (dat3_o_reset                                               )  //i
   );
-  EfxDMA_BsbDownSizerSparse_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd outputsAdapter_1_sparseDownsizer_logic (
+  EfxDMA_BsbDownSizerSparse_1_9bdfdf1cb95c4a7d8530357860e1bb9e outputsAdapter_1_sparseDownsizer_logic (
     .io_input_valid         (outputsAdapter_1_crossclock_fifo_io_pop_valid                      ), //i
     .io_input_ready         (outputsAdapter_1_sparseDownsizer_logic_io_input_ready              ), //o
     .io_input_payload_data  (outputsAdapter_1_crossclock_fifo_io_pop_payload_data[127:0]        ), //i
@@ -1280,10 +1402,124 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .dat3_o_clk             (dat3_o_clk                                                         ), //i
     .dat3_o_reset           (dat3_o_reset                                                       )  //i
   );
+  EfxDMA_BmbArbiter_9bdfdf1cb95c4a7d8530357860e1bb9e interconnect_read_aggregated_arbiter (
+    .io_inputs_0_cmd_valid                    (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid                         ), //i
+    .io_inputs_0_cmd_ready                    (interconnect_read_aggregated_arbiter_io_inputs_0_cmd_ready                                                  ), //o
+    .io_inputs_0_cmd_payload_last             (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last                  ), //i
+    .io_inputs_0_cmd_payload_fragment_opcode  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode       ), //i
+    .io_inputs_0_cmd_payload_fragment_address (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address[31:0]), //i
+    .io_inputs_0_cmd_payload_fragment_length  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length[4:0]  ), //i
+    .io_inputs_0_cmd_payload_fragment_context (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context      ), //i
+    .io_inputs_0_rsp_valid                    (interconnect_read_aggregated_arbiter_io_inputs_0_rsp_valid                                                  ), //o
+    .io_inputs_0_rsp_ready                    (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready                         ), //i
+    .io_inputs_0_rsp_payload_last             (interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_last                                           ), //o
+    .io_inputs_0_rsp_payload_fragment_opcode  (interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode                                ), //o
+    .io_inputs_0_rsp_payload_fragment_data    (interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_data[255:0]                           ), //o
+    .io_inputs_0_rsp_payload_fragment_context (interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context                               ), //o
+    .io_inputs_1_cmd_valid                    (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid                         ), //i
+    .io_inputs_1_cmd_ready                    (interconnect_read_aggregated_arbiter_io_inputs_1_cmd_ready                                                  ), //o
+    .io_inputs_1_cmd_payload_last             (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last                  ), //i
+    .io_inputs_1_cmd_payload_fragment_source  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source       ), //i
+    .io_inputs_1_cmd_payload_fragment_opcode  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode       ), //i
+    .io_inputs_1_cmd_payload_fragment_address (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address[31:0]), //i
+    .io_inputs_1_cmd_payload_fragment_length  (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length[12:0] ), //i
+    .io_inputs_1_cmd_payload_fragment_context (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context[24:0]), //i
+    .io_inputs_1_rsp_valid                    (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_valid                                                  ), //o
+    .io_inputs_1_rsp_ready                    (interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready                         ), //i
+    .io_inputs_1_rsp_payload_last             (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_last                                           ), //o
+    .io_inputs_1_rsp_payload_fragment_source  (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source                                ), //o
+    .io_inputs_1_rsp_payload_fragment_opcode  (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode                                ), //o
+    .io_inputs_1_rsp_payload_fragment_data    (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_data[255:0]                           ), //o
+    .io_inputs_1_rsp_payload_fragment_context (interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context[24:0]                         ), //o
+    .io_output_cmd_valid                      (interconnect_read_aggregated_arbiter_io_output_cmd_valid                                                    ), //o
+    .io_output_cmd_ready                      (interconnect_read_aggregated_cmd_ready                                                                      ), //i
+    .io_output_cmd_payload_last               (interconnect_read_aggregated_arbiter_io_output_cmd_payload_last                                             ), //o
+    .io_output_cmd_payload_fragment_source    (interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_source[1:0]                             ), //o
+    .io_output_cmd_payload_fragment_opcode    (interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_opcode                                  ), //o
+    .io_output_cmd_payload_fragment_address   (interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_address[31:0]                           ), //o
+    .io_output_cmd_payload_fragment_length    (interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_length[12:0]                            ), //o
+    .io_output_cmd_payload_fragment_context   (interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_context[24:0]                           ), //o
+    .io_output_rsp_valid                      (interconnect_read_aggregated_rsp_valid                                                                      ), //i
+    .io_output_rsp_ready                      (interconnect_read_aggregated_arbiter_io_output_rsp_ready                                                    ), //o
+    .io_output_rsp_payload_last               (interconnect_read_aggregated_rsp_payload_last                                                               ), //i
+    .io_output_rsp_payload_fragment_source    (interconnect_read_aggregated_rsp_payload_fragment_source[1:0]                                               ), //i
+    .io_output_rsp_payload_fragment_opcode    (interconnect_read_aggregated_rsp_payload_fragment_opcode                                                    ), //i
+    .io_output_rsp_payload_fragment_data      (interconnect_read_aggregated_rsp_payload_fragment_data[255:0]                                               ), //i
+    .io_output_rsp_payload_fragment_context   (interconnect_read_aggregated_rsp_payload_fragment_context[24:0]                                             ), //i
+    .clk                                      (clk                                                                                                         ), //i
+    .reset                                    (reset                                                                                                       )  //i
+  );
+  EfxDMA_BmbArbiter_1_9bdfdf1cb95c4a7d8530357860e1bb9e interconnect_write_aggregated_arbiter (
+    .io_inputs_0_cmd_valid                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid                         ), //i
+    .io_inputs_0_cmd_ready                    (interconnect_write_aggregated_arbiter_io_inputs_0_cmd_ready                                                  ), //o
+    .io_inputs_0_cmd_payload_last             (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last                  ), //i
+    .io_inputs_0_cmd_payload_fragment_opcode  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode       ), //i
+    .io_inputs_0_cmd_payload_fragment_address (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address[31:0]), //i
+    .io_inputs_0_cmd_payload_fragment_length  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length[1:0]  ), //i
+    .io_inputs_0_cmd_payload_fragment_data    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_data[255:0]  ), //i
+    .io_inputs_0_cmd_payload_fragment_mask    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_mask[31:0]   ), //i
+    .io_inputs_0_cmd_payload_fragment_context (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context      ), //i
+    .io_inputs_0_rsp_valid                    (interconnect_write_aggregated_arbiter_io_inputs_0_rsp_valid                                                  ), //o
+    .io_inputs_0_rsp_ready                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready                         ), //i
+    .io_inputs_0_rsp_payload_last             (interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_last                                           ), //o
+    .io_inputs_0_rsp_payload_fragment_opcode  (interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode                                ), //o
+    .io_inputs_0_rsp_payload_fragment_context (interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context                               ), //o
+    .io_inputs_1_cmd_valid                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid                         ), //i
+    .io_inputs_1_cmd_ready                    (interconnect_write_aggregated_arbiter_io_inputs_1_cmd_ready                                                  ), //o
+    .io_inputs_1_cmd_payload_last             (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last                  ), //i
+    .io_inputs_1_cmd_payload_fragment_source  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source       ), //i
+    .io_inputs_1_cmd_payload_fragment_opcode  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode       ), //i
+    .io_inputs_1_cmd_payload_fragment_address (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address[31:0]), //i
+    .io_inputs_1_cmd_payload_fragment_length  (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length[12:0] ), //i
+    .io_inputs_1_cmd_payload_fragment_data    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_data[255:0]  ), //i
+    .io_inputs_1_cmd_payload_fragment_mask    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_mask[31:0]   ), //i
+    .io_inputs_1_cmd_payload_fragment_context (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context[14:0]), //i
+    .io_inputs_1_rsp_valid                    (interconnect_write_aggregated_arbiter_io_inputs_1_rsp_valid                                                  ), //o
+    .io_inputs_1_rsp_ready                    (interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready                         ), //i
+    .io_inputs_1_rsp_payload_last             (interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_last                                           ), //o
+    .io_inputs_1_rsp_payload_fragment_source  (interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source                                ), //o
+    .io_inputs_1_rsp_payload_fragment_opcode  (interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode                                ), //o
+    .io_inputs_1_rsp_payload_fragment_context (interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context[14:0]                         ), //o
+    .io_output_cmd_valid                      (interconnect_write_aggregated_arbiter_io_output_cmd_valid                                                    ), //o
+    .io_output_cmd_ready                      (interconnect_write_aggregated_cmd_ready                                                                      ), //i
+    .io_output_cmd_payload_last               (interconnect_write_aggregated_arbiter_io_output_cmd_payload_last                                             ), //o
+    .io_output_cmd_payload_fragment_source    (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_source[1:0]                             ), //o
+    .io_output_cmd_payload_fragment_opcode    (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_opcode                                  ), //o
+    .io_output_cmd_payload_fragment_address   (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_address[31:0]                           ), //o
+    .io_output_cmd_payload_fragment_length    (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_length[12:0]                            ), //o
+    .io_output_cmd_payload_fragment_data      (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_data[255:0]                             ), //o
+    .io_output_cmd_payload_fragment_mask      (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_mask[31:0]                              ), //o
+    .io_output_cmd_payload_fragment_context   (interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_context[14:0]                           ), //o
+    .io_output_rsp_valid                      (interconnect_write_aggregated_rsp_valid                                                                      ), //i
+    .io_output_rsp_ready                      (interconnect_write_aggregated_arbiter_io_output_rsp_ready                                                    ), //o
+    .io_output_rsp_payload_last               (interconnect_write_aggregated_rsp_payload_last                                                               ), //i
+    .io_output_rsp_payload_fragment_source    (interconnect_write_aggregated_rsp_payload_fragment_source[1:0]                                               ), //i
+    .io_output_rsp_payload_fragment_opcode    (interconnect_write_aggregated_rsp_payload_fragment_opcode                                                    ), //i
+    .io_output_rsp_payload_fragment_context   (interconnect_write_aggregated_rsp_payload_fragment_context[14:0]                                             ), //i
+    .clk                                      (clk                                                                                                          ), //i
+    .reset                                    (reset                                                                                                        )  //i
+  );
+  assign io_0_descriptorUpdate = core_ll_0_descriptorUpdate;
+  assign io_1_descriptorUpdate = core_ll_1_descriptorUpdate;
   assign ctrl_PREADY = withCtrlCc_apbCc_io_input_PREADY;
   assign ctrl_PRDATA = withCtrlCc_apbCc_io_input_PRDATA;
   assign ctrl_PSLVERROR = withCtrlCc_apbCc_io_input_PSLVERROR;
   assign ctrl_interrupts = io_interrupts_buffercc_io_dataOut;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid = core_io_read_cmd_valid;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready = core_io_read_rsp_ready;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last = core_io_read_cmd_payload_last;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source = core_io_read_cmd_payload_fragment_source;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode = core_io_read_cmd_payload_fragment_opcode;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address = core_io_read_cmd_payload_fragment_address;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length = core_io_read_cmd_payload_fragment_length;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context = core_io_read_cmd_payload_fragment_context;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid = core_io_sgRead_cmd_valid;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready = core_io_sgRead_rsp_ready;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last = core_io_sgRead_cmd_payload_last;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode = core_io_sgRead_cmd_payload_fragment_opcode;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address = core_io_sgRead_cmd_payload_fragment_address;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length = core_io_sgRead_cmd_payload_fragment_length;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context = core_io_sgRead_cmd_payload_fragment_context;
   assign io_write_cmd_s2mPipe_valid = (core_io_write_cmd_valid || (! io_write_cmd_rValidN));
   assign io_write_cmd_s2mPipe_payload_last = (io_write_cmd_rValidN ? core_io_write_cmd_payload_last : io_write_cmd_rData_last);
   assign io_write_cmd_s2mPipe_payload_fragment_source = (io_write_cmd_rValidN ? core_io_write_cmd_payload_fragment_source : io_write_cmd_rData_fragment_source);
@@ -1310,7 +1546,26 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign io_write_cmd_s2mPipe_m2sPipe_payload_fragment_data = io_write_cmd_s2mPipe_rData_fragment_data;
   assign io_write_cmd_s2mPipe_m2sPipe_payload_fragment_mask = io_write_cmd_s2mPipe_rData_fragment_mask;
   assign io_write_cmd_s2mPipe_m2sPipe_payload_fragment_context = io_write_cmd_s2mPipe_rData_fragment_context;
-  assign io_write_cmd_s2mPipe_m2sPipe_ready = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign io_write_cmd_s2mPipe_m2sPipe_ready = interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_valid = io_write_cmd_s2mPipe_m2sPipe_valid;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_ready = core_io_write_rsp_ready;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_last = io_write_cmd_s2mPipe_m2sPipe_payload_last;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_source = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_source;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_opcode = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_opcode;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_address = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_address;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_length = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_length;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_data = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_data;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_mask = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_mask;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_payload_fragment_context = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_context;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_valid = core_io_sgWrite_cmd_valid;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_ready = core_io_sgWrite_rsp_ready;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_last = core_io_sgWrite_cmd_payload_last;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_opcode = core_io_sgWrite_cmd_payload_fragment_opcode;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_address = core_io_sgWrite_cmd_payload_fragment_address;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_length = core_io_sgWrite_cmd_payload_fragment_length;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_data = core_io_sgWrite_cmd_payload_fragment_data;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_mask = core_io_sgWrite_cmd_payload_fragment_mask;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_payload_fragment_context = core_io_sgWrite_cmd_payload_fragment_context;
   assign interconnect_read_aggregated_cmd_halfPipe_fire = (interconnect_read_aggregated_cmd_halfPipe_valid && interconnect_read_aggregated_cmd_halfPipe_ready);
   assign interconnect_read_aggregated_cmd_ready = (! interconnect_read_aggregated_cmd_rValid);
   assign interconnect_read_aggregated_cmd_halfPipe_valid = interconnect_read_aggregated_cmd_rValid;
@@ -1563,55 +1818,48 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign dat3_o_tkeep = outputsAdapter_1_sparseDownsizer_logic_io_output_payload_mask;
   assign dat3_o_tdest = outputsAdapter_1_sparseDownsizer_logic_io_output_payload_sink;
   assign dat3_o_tlast = outputsAdapter_1_sparseDownsizer_logic_io_output_payload_last;
-  assign interconnect_read_aggregated_cmd_valid = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = interconnect_read_aggregated_cmd_ready;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = interconnect_read_aggregated_rsp_valid;
-  assign interconnect_read_aggregated_rsp_ready = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  assign interconnect_read_aggregated_cmd_payload_last = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = interconnect_read_aggregated_rsp_payload_last;
-  assign interconnect_read_aggregated_cmd_payload_fragment_source = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source;
-  assign interconnect_read_aggregated_cmd_payload_fragment_opcode = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  assign interconnect_read_aggregated_cmd_payload_fragment_address = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  assign interconnect_read_aggregated_cmd_payload_fragment_length = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  assign interconnect_read_aggregated_cmd_payload_fragment_context = interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source = interconnect_read_aggregated_rsp_payload_fragment_source;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = interconnect_read_aggregated_rsp_payload_fragment_opcode;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = interconnect_read_aggregated_rsp_payload_fragment_data;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = interconnect_read_aggregated_rsp_payload_fragment_context;
-  assign interconnect_write_aggregated_cmd_valid = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = interconnect_write_aggregated_cmd_ready;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = interconnect_write_aggregated_rsp_valid;
-  assign interconnect_write_aggregated_rsp_ready = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  assign interconnect_write_aggregated_cmd_payload_last = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = interconnect_write_aggregated_rsp_payload_last;
-  assign interconnect_write_aggregated_cmd_payload_fragment_source = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source;
-  assign interconnect_write_aggregated_cmd_payload_fragment_opcode = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  assign interconnect_write_aggregated_cmd_payload_fragment_address = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  assign interconnect_write_aggregated_cmd_payload_fragment_length = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  assign interconnect_write_aggregated_cmd_payload_fragment_data = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
-  assign interconnect_write_aggregated_cmd_payload_fragment_mask = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_mask;
-  assign interconnect_write_aggregated_cmd_payload_fragment_context = interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_source = interconnect_write_aggregated_rsp_payload_fragment_source;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = interconnect_write_aggregated_rsp_payload_fragment_opcode;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = interconnect_write_aggregated_rsp_payload_fragment_context;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = core_io_read_cmd_valid;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = core_io_read_rsp_ready;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = core_io_read_cmd_payload_last;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source = core_io_read_cmd_payload_fragment_source;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = core_io_read_cmd_payload_fragment_opcode;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = core_io_read_cmd_payload_fragment_address;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = core_io_read_cmd_payload_fragment_length;
-  assign interconnect_read_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = core_io_read_cmd_payload_fragment_context;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = io_write_cmd_s2mPipe_m2sPipe_valid;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = core_io_write_rsp_ready;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = io_write_cmd_s2mPipe_m2sPipe_payload_last;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_source = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_source;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_opcode;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_address;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_length;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_data;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_mask = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_mask;
-  assign interconnect_write_aggregated_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = io_write_cmd_s2mPipe_m2sPipe_payload_fragment_context;
+  assign interconnect_read_aggregated_cmd_valid = interconnect_read_aggregated_arbiter_io_output_cmd_valid;
+  assign interconnect_read_aggregated_rsp_ready = interconnect_read_aggregated_arbiter_io_output_rsp_ready;
+  assign interconnect_read_aggregated_cmd_payload_last = interconnect_read_aggregated_arbiter_io_output_cmd_payload_last;
+  assign interconnect_read_aggregated_cmd_payload_fragment_source = interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_source;
+  assign interconnect_read_aggregated_cmd_payload_fragment_opcode = interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_opcode;
+  assign interconnect_read_aggregated_cmd_payload_fragment_address = interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_address;
+  assign interconnect_read_aggregated_cmd_payload_fragment_length = interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_length;
+  assign interconnect_read_aggregated_cmd_payload_fragment_context = interconnect_read_aggregated_arbiter_io_output_cmd_payload_fragment_context;
+  assign interconnect_write_aggregated_cmd_valid = interconnect_write_aggregated_arbiter_io_output_cmd_valid;
+  assign interconnect_write_aggregated_rsp_ready = interconnect_write_aggregated_arbiter_io_output_rsp_ready;
+  assign interconnect_write_aggregated_cmd_payload_last = interconnect_write_aggregated_arbiter_io_output_cmd_payload_last;
+  assign interconnect_write_aggregated_cmd_payload_fragment_source = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_source;
+  assign interconnect_write_aggregated_cmd_payload_fragment_opcode = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_opcode;
+  assign interconnect_write_aggregated_cmd_payload_fragment_address = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_address;
+  assign interconnect_write_aggregated_cmd_payload_fragment_length = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_length;
+  assign interconnect_write_aggregated_cmd_payload_fragment_data = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_data;
+  assign interconnect_write_aggregated_cmd_payload_fragment_mask = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_mask;
+  assign interconnect_write_aggregated_cmd_payload_fragment_context = interconnect_write_aggregated_arbiter_io_output_cmd_payload_fragment_context;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready = interconnect_read_aggregated_arbiter_io_inputs_0_cmd_ready;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid = interconnect_read_aggregated_arbiter_io_inputs_0_rsp_valid;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last = interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_last;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode = interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_data = interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_data;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context = interconnect_read_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready = interconnect_read_aggregated_arbiter_io_inputs_1_cmd_ready;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_valid;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_last;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_data = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_data;
+  assign interconnect_read_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context = interconnect_read_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_cmd_ready = interconnect_write_aggregated_arbiter_io_inputs_0_cmd_ready;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_valid = interconnect_write_aggregated_arbiter_io_inputs_0_rsp_valid;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_last = interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_last;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_opcode = interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_opcode;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_0_decoder_rsp_payload_fragment_context = interconnect_write_aggregated_arbiter_io_inputs_0_rsp_payload_fragment_context;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_cmd_ready = interconnect_write_aggregated_arbiter_io_inputs_1_cmd_ready;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_valid = interconnect_write_aggregated_arbiter_io_inputs_1_rsp_valid;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_last = interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_last;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_source = interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_source;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_opcode = interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_opcode;
+  assign interconnect_write_aggregated_slaveModel_arbiterGen_logic_sorted_1_decoder_rsp_payload_fragment_context = interconnect_write_aggregated_arbiter_io_inputs_1_rsp_payload_fragment_context;
   always @(posedge clk) begin
     if(reset) begin
       io_write_cmd_rValidN <= 1'b1;
@@ -1864,7 +2112,282 @@ module EfxDMA_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BsbDownSizerSparse_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbArbiter_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
+  input  wire          io_inputs_0_cmd_valid,
+  output wire          io_inputs_0_cmd_ready,
+  input  wire          io_inputs_0_cmd_payload_last,
+  input  wire [0:0]    io_inputs_0_cmd_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_0_cmd_payload_fragment_address,
+  input  wire [1:0]    io_inputs_0_cmd_payload_fragment_length,
+  input  wire [255:0]  io_inputs_0_cmd_payload_fragment_data,
+  input  wire [31:0]   io_inputs_0_cmd_payload_fragment_mask,
+  input  wire [0:0]    io_inputs_0_cmd_payload_fragment_context,
+  output wire          io_inputs_0_rsp_valid,
+  input  wire          io_inputs_0_rsp_ready,
+  output wire          io_inputs_0_rsp_payload_last,
+  output wire [0:0]    io_inputs_0_rsp_payload_fragment_opcode,
+  output wire [0:0]    io_inputs_0_rsp_payload_fragment_context,
+  input  wire          io_inputs_1_cmd_valid,
+  output wire          io_inputs_1_cmd_ready,
+  input  wire          io_inputs_1_cmd_payload_last,
+  input  wire [0:0]    io_inputs_1_cmd_payload_fragment_source,
+  input  wire [0:0]    io_inputs_1_cmd_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_1_cmd_payload_fragment_address,
+  input  wire [12:0]   io_inputs_1_cmd_payload_fragment_length,
+  input  wire [255:0]  io_inputs_1_cmd_payload_fragment_data,
+  input  wire [31:0]   io_inputs_1_cmd_payload_fragment_mask,
+  input  wire [14:0]   io_inputs_1_cmd_payload_fragment_context,
+  output wire          io_inputs_1_rsp_valid,
+  input  wire          io_inputs_1_rsp_ready,
+  output wire          io_inputs_1_rsp_payload_last,
+  output wire [0:0]    io_inputs_1_rsp_payload_fragment_source,
+  output wire [0:0]    io_inputs_1_rsp_payload_fragment_opcode,
+  output wire [14:0]   io_inputs_1_rsp_payload_fragment_context,
+  output wire          io_output_cmd_valid,
+  input  wire          io_output_cmd_ready,
+  output wire          io_output_cmd_payload_last,
+  output wire [1:0]    io_output_cmd_payload_fragment_source,
+  output wire [0:0]    io_output_cmd_payload_fragment_opcode,
+  output wire [31:0]   io_output_cmd_payload_fragment_address,
+  output wire [12:0]   io_output_cmd_payload_fragment_length,
+  output wire [255:0]  io_output_cmd_payload_fragment_data,
+  output wire [31:0]   io_output_cmd_payload_fragment_mask,
+  output wire [14:0]   io_output_cmd_payload_fragment_context,
+  input  wire          io_output_rsp_valid,
+  output wire          io_output_rsp_ready,
+  input  wire          io_output_rsp_payload_last,
+  input  wire [1:0]    io_output_rsp_payload_fragment_source,
+  input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
+  input  wire [14:0]   io_output_rsp_payload_fragment_context,
+  input  wire          clk,
+  input  wire          reset
+);
+
+  wire       [12:0]   memory_arbiter_io_inputs_0_payload_fragment_length;
+  wire       [14:0]   memory_arbiter_io_inputs_0_payload_fragment_context;
+  wire       [1:0]    memory_arbiter_io_inputs_1_payload_fragment_source;
+  wire                memory_arbiter_io_inputs_0_ready;
+  wire                memory_arbiter_io_inputs_1_ready;
+  wire                memory_arbiter_io_output_valid;
+  wire                memory_arbiter_io_output_payload_last;
+  wire       [1:0]    memory_arbiter_io_output_payload_fragment_source;
+  wire       [0:0]    memory_arbiter_io_output_payload_fragment_opcode;
+  wire       [31:0]   memory_arbiter_io_output_payload_fragment_address;
+  wire       [12:0]   memory_arbiter_io_output_payload_fragment_length;
+  wire       [255:0]  memory_arbiter_io_output_payload_fragment_data;
+  wire       [31:0]   memory_arbiter_io_output_payload_fragment_mask;
+  wire       [14:0]   memory_arbiter_io_output_payload_fragment_context;
+  wire       [0:0]    memory_arbiter_io_chosen;
+  wire       [1:0]    memory_arbiter_io_chosenOH;
+  wire       [2:0]    _zz_io_output_cmd_payload_fragment_source;
+  reg                 _zz_io_output_rsp_ready;
+  wire       [0:0]    memory_rspSel;
+
+  assign _zz_io_output_cmd_payload_fragment_source = {memory_arbiter_io_output_payload_fragment_source,memory_arbiter_io_chosen};
+  EfxDMA_StreamArbiter_1_9bdfdf1cb95c4a7d8530357860e1bb9e memory_arbiter (
+    .io_inputs_0_valid                    (io_inputs_0_cmd_valid                                    ), //i
+    .io_inputs_0_ready                    (memory_arbiter_io_inputs_0_ready                         ), //o
+    .io_inputs_0_payload_last             (io_inputs_0_cmd_payload_last                             ), //i
+    .io_inputs_0_payload_fragment_source  (2'b00                                                    ), //i
+    .io_inputs_0_payload_fragment_opcode  (io_inputs_0_cmd_payload_fragment_opcode                  ), //i
+    .io_inputs_0_payload_fragment_address (io_inputs_0_cmd_payload_fragment_address[31:0]           ), //i
+    .io_inputs_0_payload_fragment_length  (memory_arbiter_io_inputs_0_payload_fragment_length[12:0] ), //i
+    .io_inputs_0_payload_fragment_data    (io_inputs_0_cmd_payload_fragment_data[255:0]             ), //i
+    .io_inputs_0_payload_fragment_mask    (io_inputs_0_cmd_payload_fragment_mask[31:0]              ), //i
+    .io_inputs_0_payload_fragment_context (memory_arbiter_io_inputs_0_payload_fragment_context[14:0]), //i
+    .io_inputs_1_valid                    (io_inputs_1_cmd_valid                                    ), //i
+    .io_inputs_1_ready                    (memory_arbiter_io_inputs_1_ready                         ), //o
+    .io_inputs_1_payload_last             (io_inputs_1_cmd_payload_last                             ), //i
+    .io_inputs_1_payload_fragment_source  (memory_arbiter_io_inputs_1_payload_fragment_source[1:0]  ), //i
+    .io_inputs_1_payload_fragment_opcode  (io_inputs_1_cmd_payload_fragment_opcode                  ), //i
+    .io_inputs_1_payload_fragment_address (io_inputs_1_cmd_payload_fragment_address[31:0]           ), //i
+    .io_inputs_1_payload_fragment_length  (io_inputs_1_cmd_payload_fragment_length[12:0]            ), //i
+    .io_inputs_1_payload_fragment_data    (io_inputs_1_cmd_payload_fragment_data[255:0]             ), //i
+    .io_inputs_1_payload_fragment_mask    (io_inputs_1_cmd_payload_fragment_mask[31:0]              ), //i
+    .io_inputs_1_payload_fragment_context (io_inputs_1_cmd_payload_fragment_context[14:0]           ), //i
+    .io_output_valid                      (memory_arbiter_io_output_valid                           ), //o
+    .io_output_ready                      (io_output_cmd_ready                                      ), //i
+    .io_output_payload_last               (memory_arbiter_io_output_payload_last                    ), //o
+    .io_output_payload_fragment_source    (memory_arbiter_io_output_payload_fragment_source[1:0]    ), //o
+    .io_output_payload_fragment_opcode    (memory_arbiter_io_output_payload_fragment_opcode         ), //o
+    .io_output_payload_fragment_address   (memory_arbiter_io_output_payload_fragment_address[31:0]  ), //o
+    .io_output_payload_fragment_length    (memory_arbiter_io_output_payload_fragment_length[12:0]   ), //o
+    .io_output_payload_fragment_data      (memory_arbiter_io_output_payload_fragment_data[255:0]    ), //o
+    .io_output_payload_fragment_mask      (memory_arbiter_io_output_payload_fragment_mask[31:0]     ), //o
+    .io_output_payload_fragment_context   (memory_arbiter_io_output_payload_fragment_context[14:0]  ), //o
+    .io_chosen                            (memory_arbiter_io_chosen                                 ), //o
+    .io_chosenOH                          (memory_arbiter_io_chosenOH[1:0]                          ), //o
+    .clk                                  (clk                                                      ), //i
+    .reset                                (reset                                                    )  //i
+  );
+  always @(*) begin
+    case(memory_rspSel)
+      1'b0 : _zz_io_output_rsp_ready = io_inputs_0_rsp_ready;
+      default : _zz_io_output_rsp_ready = io_inputs_1_rsp_ready;
+    endcase
+  end
+
+  assign io_inputs_0_cmd_ready = memory_arbiter_io_inputs_0_ready;
+  assign memory_arbiter_io_inputs_0_payload_fragment_length = {11'd0, io_inputs_0_cmd_payload_fragment_length};
+  assign memory_arbiter_io_inputs_0_payload_fragment_context = {14'd0, io_inputs_0_cmd_payload_fragment_context};
+  assign io_inputs_1_cmd_ready = memory_arbiter_io_inputs_1_ready;
+  assign memory_arbiter_io_inputs_1_payload_fragment_source = {1'd0, io_inputs_1_cmd_payload_fragment_source};
+  assign io_output_cmd_valid = memory_arbiter_io_output_valid;
+  assign io_output_cmd_payload_last = memory_arbiter_io_output_payload_last;
+  assign io_output_cmd_payload_fragment_opcode = memory_arbiter_io_output_payload_fragment_opcode;
+  assign io_output_cmd_payload_fragment_address = memory_arbiter_io_output_payload_fragment_address;
+  assign io_output_cmd_payload_fragment_length = memory_arbiter_io_output_payload_fragment_length;
+  assign io_output_cmd_payload_fragment_data = memory_arbiter_io_output_payload_fragment_data;
+  assign io_output_cmd_payload_fragment_mask = memory_arbiter_io_output_payload_fragment_mask;
+  assign io_output_cmd_payload_fragment_context = memory_arbiter_io_output_payload_fragment_context;
+  assign io_output_cmd_payload_fragment_source = _zz_io_output_cmd_payload_fragment_source[1:0];
+  assign memory_rspSel = io_output_rsp_payload_fragment_source[0 : 0];
+  assign io_inputs_0_rsp_valid = (io_output_rsp_valid && (memory_rspSel == 1'b0));
+  assign io_inputs_0_rsp_payload_last = io_output_rsp_payload_last;
+  assign io_inputs_0_rsp_payload_fragment_opcode = io_output_rsp_payload_fragment_opcode;
+  assign io_inputs_0_rsp_payload_fragment_context = io_output_rsp_payload_fragment_context[0:0];
+  assign io_inputs_1_rsp_valid = (io_output_rsp_valid && (memory_rspSel == 1'b1));
+  assign io_inputs_1_rsp_payload_last = io_output_rsp_payload_last;
+  assign io_inputs_1_rsp_payload_fragment_opcode = io_output_rsp_payload_fragment_opcode;
+  assign io_inputs_1_rsp_payload_fragment_context = io_output_rsp_payload_fragment_context;
+  assign io_inputs_1_rsp_payload_fragment_source = (io_output_rsp_payload_fragment_source >>> 1'd1);
+  assign io_output_rsp_ready = _zz_io_output_rsp_ready;
+
+endmodule
+
+module EfxDMA_BmbArbiter_9bdfdf1cb95c4a7d8530357860e1bb9e (
+  input  wire          io_inputs_0_cmd_valid,
+  output wire          io_inputs_0_cmd_ready,
+  input  wire          io_inputs_0_cmd_payload_last,
+  input  wire [0:0]    io_inputs_0_cmd_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_0_cmd_payload_fragment_address,
+  input  wire [4:0]    io_inputs_0_cmd_payload_fragment_length,
+  input  wire [0:0]    io_inputs_0_cmd_payload_fragment_context,
+  output wire          io_inputs_0_rsp_valid,
+  input  wire          io_inputs_0_rsp_ready,
+  output wire          io_inputs_0_rsp_payload_last,
+  output wire [0:0]    io_inputs_0_rsp_payload_fragment_opcode,
+  output wire [255:0]  io_inputs_0_rsp_payload_fragment_data,
+  output wire [0:0]    io_inputs_0_rsp_payload_fragment_context,
+  input  wire          io_inputs_1_cmd_valid,
+  output wire          io_inputs_1_cmd_ready,
+  input  wire          io_inputs_1_cmd_payload_last,
+  input  wire [0:0]    io_inputs_1_cmd_payload_fragment_source,
+  input  wire [0:0]    io_inputs_1_cmd_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_1_cmd_payload_fragment_address,
+  input  wire [12:0]   io_inputs_1_cmd_payload_fragment_length,
+  input  wire [24:0]   io_inputs_1_cmd_payload_fragment_context,
+  output wire          io_inputs_1_rsp_valid,
+  input  wire          io_inputs_1_rsp_ready,
+  output wire          io_inputs_1_rsp_payload_last,
+  output wire [0:0]    io_inputs_1_rsp_payload_fragment_source,
+  output wire [0:0]    io_inputs_1_rsp_payload_fragment_opcode,
+  output wire [255:0]  io_inputs_1_rsp_payload_fragment_data,
+  output wire [24:0]   io_inputs_1_rsp_payload_fragment_context,
+  output wire          io_output_cmd_valid,
+  input  wire          io_output_cmd_ready,
+  output wire          io_output_cmd_payload_last,
+  output wire [1:0]    io_output_cmd_payload_fragment_source,
+  output wire [0:0]    io_output_cmd_payload_fragment_opcode,
+  output wire [31:0]   io_output_cmd_payload_fragment_address,
+  output wire [12:0]   io_output_cmd_payload_fragment_length,
+  output wire [24:0]   io_output_cmd_payload_fragment_context,
+  input  wire          io_output_rsp_valid,
+  output wire          io_output_rsp_ready,
+  input  wire          io_output_rsp_payload_last,
+  input  wire [1:0]    io_output_rsp_payload_fragment_source,
+  input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
+  input  wire [255:0]  io_output_rsp_payload_fragment_data,
+  input  wire [24:0]   io_output_rsp_payload_fragment_context,
+  input  wire          clk,
+  input  wire          reset
+);
+
+  wire       [12:0]   memory_arbiter_io_inputs_0_payload_fragment_length;
+  wire       [24:0]   memory_arbiter_io_inputs_0_payload_fragment_context;
+  wire       [1:0]    memory_arbiter_io_inputs_1_payload_fragment_source;
+  wire                memory_arbiter_io_inputs_0_ready;
+  wire                memory_arbiter_io_inputs_1_ready;
+  wire                memory_arbiter_io_output_valid;
+  wire                memory_arbiter_io_output_payload_last;
+  wire       [1:0]    memory_arbiter_io_output_payload_fragment_source;
+  wire       [0:0]    memory_arbiter_io_output_payload_fragment_opcode;
+  wire       [31:0]   memory_arbiter_io_output_payload_fragment_address;
+  wire       [12:0]   memory_arbiter_io_output_payload_fragment_length;
+  wire       [24:0]   memory_arbiter_io_output_payload_fragment_context;
+  wire       [0:0]    memory_arbiter_io_chosen;
+  wire       [1:0]    memory_arbiter_io_chosenOH;
+  wire       [2:0]    _zz_io_output_cmd_payload_fragment_source;
+  reg                 _zz_io_output_rsp_ready;
+  wire       [0:0]    memory_rspSel;
+
+  assign _zz_io_output_cmd_payload_fragment_source = {memory_arbiter_io_output_payload_fragment_source,memory_arbiter_io_chosen};
+  EfxDMA_StreamArbiter_9bdfdf1cb95c4a7d8530357860e1bb9e memory_arbiter (
+    .io_inputs_0_valid                    (io_inputs_0_cmd_valid                                    ), //i
+    .io_inputs_0_ready                    (memory_arbiter_io_inputs_0_ready                         ), //o
+    .io_inputs_0_payload_last             (io_inputs_0_cmd_payload_last                             ), //i
+    .io_inputs_0_payload_fragment_source  (2'b00                                                    ), //i
+    .io_inputs_0_payload_fragment_opcode  (io_inputs_0_cmd_payload_fragment_opcode                  ), //i
+    .io_inputs_0_payload_fragment_address (io_inputs_0_cmd_payload_fragment_address[31:0]           ), //i
+    .io_inputs_0_payload_fragment_length  (memory_arbiter_io_inputs_0_payload_fragment_length[12:0] ), //i
+    .io_inputs_0_payload_fragment_context (memory_arbiter_io_inputs_0_payload_fragment_context[24:0]), //i
+    .io_inputs_1_valid                    (io_inputs_1_cmd_valid                                    ), //i
+    .io_inputs_1_ready                    (memory_arbiter_io_inputs_1_ready                         ), //o
+    .io_inputs_1_payload_last             (io_inputs_1_cmd_payload_last                             ), //i
+    .io_inputs_1_payload_fragment_source  (memory_arbiter_io_inputs_1_payload_fragment_source[1:0]  ), //i
+    .io_inputs_1_payload_fragment_opcode  (io_inputs_1_cmd_payload_fragment_opcode                  ), //i
+    .io_inputs_1_payload_fragment_address (io_inputs_1_cmd_payload_fragment_address[31:0]           ), //i
+    .io_inputs_1_payload_fragment_length  (io_inputs_1_cmd_payload_fragment_length[12:0]            ), //i
+    .io_inputs_1_payload_fragment_context (io_inputs_1_cmd_payload_fragment_context[24:0]           ), //i
+    .io_output_valid                      (memory_arbiter_io_output_valid                           ), //o
+    .io_output_ready                      (io_output_cmd_ready                                      ), //i
+    .io_output_payload_last               (memory_arbiter_io_output_payload_last                    ), //o
+    .io_output_payload_fragment_source    (memory_arbiter_io_output_payload_fragment_source[1:0]    ), //o
+    .io_output_payload_fragment_opcode    (memory_arbiter_io_output_payload_fragment_opcode         ), //o
+    .io_output_payload_fragment_address   (memory_arbiter_io_output_payload_fragment_address[31:0]  ), //o
+    .io_output_payload_fragment_length    (memory_arbiter_io_output_payload_fragment_length[12:0]   ), //o
+    .io_output_payload_fragment_context   (memory_arbiter_io_output_payload_fragment_context[24:0]  ), //o
+    .io_chosen                            (memory_arbiter_io_chosen                                 ), //o
+    .io_chosenOH                          (memory_arbiter_io_chosenOH[1:0]                          ), //o
+    .clk                                  (clk                                                      ), //i
+    .reset                                (reset                                                    )  //i
+  );
+  always @(*) begin
+    case(memory_rspSel)
+      1'b0 : _zz_io_output_rsp_ready = io_inputs_0_rsp_ready;
+      default : _zz_io_output_rsp_ready = io_inputs_1_rsp_ready;
+    endcase
+  end
+
+  assign io_inputs_0_cmd_ready = memory_arbiter_io_inputs_0_ready;
+  assign memory_arbiter_io_inputs_0_payload_fragment_length = {8'd0, io_inputs_0_cmd_payload_fragment_length};
+  assign memory_arbiter_io_inputs_0_payload_fragment_context = {24'd0, io_inputs_0_cmd_payload_fragment_context};
+  assign io_inputs_1_cmd_ready = memory_arbiter_io_inputs_1_ready;
+  assign memory_arbiter_io_inputs_1_payload_fragment_source = {1'd0, io_inputs_1_cmd_payload_fragment_source};
+  assign io_output_cmd_valid = memory_arbiter_io_output_valid;
+  assign io_output_cmd_payload_last = memory_arbiter_io_output_payload_last;
+  assign io_output_cmd_payload_fragment_opcode = memory_arbiter_io_output_payload_fragment_opcode;
+  assign io_output_cmd_payload_fragment_address = memory_arbiter_io_output_payload_fragment_address;
+  assign io_output_cmd_payload_fragment_length = memory_arbiter_io_output_payload_fragment_length;
+  assign io_output_cmd_payload_fragment_context = memory_arbiter_io_output_payload_fragment_context;
+  assign io_output_cmd_payload_fragment_source = _zz_io_output_cmd_payload_fragment_source[1:0];
+  assign memory_rspSel = io_output_rsp_payload_fragment_source[0 : 0];
+  assign io_inputs_0_rsp_valid = (io_output_rsp_valid && (memory_rspSel == 1'b0));
+  assign io_inputs_0_rsp_payload_last = io_output_rsp_payload_last;
+  assign io_inputs_0_rsp_payload_fragment_opcode = io_output_rsp_payload_fragment_opcode;
+  assign io_inputs_0_rsp_payload_fragment_data = io_output_rsp_payload_fragment_data;
+  assign io_inputs_0_rsp_payload_fragment_context = io_output_rsp_payload_fragment_context[0:0];
+  assign io_inputs_1_rsp_valid = (io_output_rsp_valid && (memory_rspSel == 1'b1));
+  assign io_inputs_1_rsp_payload_last = io_output_rsp_payload_last;
+  assign io_inputs_1_rsp_payload_fragment_opcode = io_output_rsp_payload_fragment_opcode;
+  assign io_inputs_1_rsp_payload_fragment_data = io_output_rsp_payload_fragment_data;
+  assign io_inputs_1_rsp_payload_fragment_context = io_output_rsp_payload_fragment_context;
+  assign io_inputs_1_rsp_payload_fragment_source = (io_output_rsp_payload_fragment_source >>> 1'd1);
+  assign io_output_rsp_ready = _zz_io_output_rsp_ready;
+
+endmodule
+
+module EfxDMA_BsbDownSizerSparse_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   output wire          io_input_ready,
   input  wire [127:0]  io_input_payload_data,
@@ -1929,7 +2452,7 @@ module EfxDMA_BsbDownSizerSparse_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifoCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifoCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire [127:0]  io_push_payload_data,
@@ -2023,13 +2546,13 @@ module EfxDMA_StreamFifoCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
   end
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd popToPushGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e popToPushGray_buffercc (
     .io_dataIn  (popToPushGray[4:0]                    ), //i
     .io_dataOut (popToPushGray_buffercc_io_dataOut[4:0]), //o
     .clk        (clk                                   ), //i
     .reset      (reset                                 )  //i
   );
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_9_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd pushToPopGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_9_9bdfdf1cb95c4a7d8530357860e1bb9e pushToPopGray_buffercc (
     .io_dataIn    (pushToPopGray[4:0]                    ), //i
     .io_dataOut   (pushToPopGray_buffercc_io_dataOut[4:0]), //o
     .dat3_o_clk   (dat3_o_clk                            ), //i
@@ -2141,7 +2664,7 @@ module EfxDMA_StreamFifoCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BsbDownSizerSparse_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BsbDownSizerSparse_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   output wire          io_input_ready,
   input  wire [127:0]  io_input_payload_data,
@@ -2198,7 +2721,7 @@ module EfxDMA_BsbDownSizerSparse_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifoCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifoCC_2_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire [127:0]  io_push_payload_data,
@@ -2292,13 +2815,13 @@ module EfxDMA_StreamFifoCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
   end
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd popToPushGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e popToPushGray_buffercc (
     .io_dataIn  (popToPushGray[4:0]                    ), //i
     .io_dataOut (popToPushGray_buffercc_io_dataOut[4:0]), //o
     .clk        (clk                                   ), //i
     .reset      (reset                                 )  //i
   );
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_7_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd pushToPopGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_7_9bdfdf1cb95c4a7d8530357860e1bb9e pushToPopGray_buffercc (
     .io_dataIn    (pushToPopGray[4:0]                    ), //i
     .io_dataOut   (pushToPopGray_buffercc_io_dataOut[4:0]), //o
     .dat1_o_clk   (dat1_o_clk                            ), //i
@@ -2410,7 +2933,7 @@ module EfxDMA_StreamFifoCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifoCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifoCC_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire [127:0]  io_push_payload_data,
@@ -2504,13 +3027,13 @@ module EfxDMA_StreamFifoCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
   end
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_4_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd popToPushGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_4_9bdfdf1cb95c4a7d8530357860e1bb9e popToPushGray_buffercc (
     .io_dataIn    (popToPushGray[4:0]                    ), //i
     .io_dataOut   (popToPushGray_buffercc_io_dataOut[4:0]), //o
     .dat2_i_clk   (dat2_i_clk                            ), //i
     .dat2_i_reset (dat2_i_reset                          )  //i
   );
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd pushToPopGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e pushToPopGray_buffercc (
     .io_dataIn  (pushToPopGray[4:0]                    ), //i
     .io_dataOut (pushToPopGray_buffercc_io_dataOut[4:0]), //o
     .clk        (clk                                   ), //i
@@ -2622,7 +3145,7 @@ module EfxDMA_StreamFifoCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BsbUpSizerDense_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BsbUpSizerDense_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   output wire          io_input_ready,
   input  wire [31:0]   io_input_payload_data,
@@ -2719,7 +3242,7 @@ module EfxDMA_BsbUpSizerDense_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifoCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifoCC_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire [127:0]  io_push_payload_data,
@@ -2813,13 +3336,13 @@ module EfxDMA_StreamFifoCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
   end
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd popToPushGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_2_9bdfdf1cb95c4a7d8530357860e1bb9e popToPushGray_buffercc (
     .io_dataIn    (popToPushGray[4:0]                    ), //i
     .io_dataOut   (popToPushGray_buffercc_io_dataOut[4:0]), //o
     .dat0_i_clk   (dat0_i_clk                            ), //i
     .dat0_i_reset (dat0_i_reset                          )  //i
   );
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd pushToPopGray_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e pushToPopGray_buffercc (
     .io_dataIn  (pushToPopGray[4:0]                    ), //i
     .io_dataOut (pushToPopGray_buffercc_io_dataOut[4:0]), //o
     .clk        (clk                                   ), //i
@@ -2931,7 +3454,7 @@ module EfxDMA_StreamFifoCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BsbUpSizerDense_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BsbUpSizerDense_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   output wire          io_input_ready,
   input  wire [63:0]   io_input_payload_data,
@@ -3016,7 +3539,7 @@ module EfxDMA_BsbUpSizerDense_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbToAxi4WriteOnlyBridge_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
@@ -3025,12 +3548,12 @@ module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
   input  wire [511:0]  io_input_cmd_payload_fragment_data,
   input  wire [63:0]   io_input_cmd_payload_fragment_mask,
-  input  wire [15:0]   io_input_cmd_payload_fragment_context,
+  input  wire [16:0]   io_input_cmd_payload_fragment_context,
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
-  output wire [15:0]   io_input_rsp_payload_fragment_context,
+  output wire [16:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_aw_valid,
   input  wire          io_output_aw_ready,
   output wire [31:0]   io_output_aw_payload_addr,
@@ -3056,7 +3579,7 @@ module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                contextRemover_io_input_rsp_valid;
   wire                contextRemover_io_input_rsp_payload_last;
   wire       [0:0]    contextRemover_io_input_rsp_payload_fragment_opcode;
-  wire       [15:0]   contextRemover_io_input_rsp_payload_fragment_context;
+  wire       [16:0]   contextRemover_io_input_rsp_payload_fragment_context;
   wire                contextRemover_io_output_cmd_valid;
   wire                contextRemover_io_output_cmd_payload_last;
   wire       [0:0]    contextRemover_io_output_cmd_payload_fragment_opcode;
@@ -3106,7 +3629,7 @@ module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_io_output_aw_payload_len = ({1'b0,cmdStage_payload_fragment_length} + _zz_io_output_aw_payload_len_1);
   assign _zz_io_output_aw_payload_len_2 = cmdStage_payload_fragment_address[5 : 0];
   assign _zz_io_output_aw_payload_len_1 = {8'd0, _zz_io_output_aw_payload_len_2};
-  EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd contextRemover (
+  EfxDMA_BmbContextRemover_1_9bdfdf1cb95c4a7d8530357860e1bb9e contextRemover (
     .io_input_cmd_valid                     (io_input_cmd_valid                                         ), //i
     .io_input_cmd_ready                     (contextRemover_io_input_cmd_ready                          ), //o
     .io_input_cmd_payload_last              (io_input_cmd_payload_last                                  ), //i
@@ -3115,12 +3638,12 @@ module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .io_input_cmd_payload_fragment_length   (io_input_cmd_payload_fragment_length[12:0]                 ), //i
     .io_input_cmd_payload_fragment_data     (io_input_cmd_payload_fragment_data[511:0]                  ), //i
     .io_input_cmd_payload_fragment_mask     (io_input_cmd_payload_fragment_mask[63:0]                   ), //i
-    .io_input_cmd_payload_fragment_context  (io_input_cmd_payload_fragment_context[15:0]                ), //i
+    .io_input_cmd_payload_fragment_context  (io_input_cmd_payload_fragment_context[16:0]                ), //i
     .io_input_rsp_valid                     (contextRemover_io_input_rsp_valid                          ), //o
     .io_input_rsp_ready                     (io_input_rsp_ready                                         ), //i
     .io_input_rsp_payload_last              (contextRemover_io_input_rsp_payload_last                   ), //o
     .io_input_rsp_payload_fragment_opcode   (contextRemover_io_input_rsp_payload_fragment_opcode        ), //o
-    .io_input_rsp_payload_fragment_context  (contextRemover_io_input_rsp_payload_fragment_context[15:0] ), //o
+    .io_input_rsp_payload_fragment_context  (contextRemover_io_input_rsp_payload_fragment_context[16:0] ), //o
     .io_output_cmd_valid                    (contextRemover_io_output_cmd_valid                         ), //o
     .io_output_cmd_ready                    (contextRemover_io_output_cmd_ready                         ), //i
     .io_output_cmd_payload_last             (contextRemover_io_output_cmd_payload_last                  ), //o
@@ -3238,11 +3761,11 @@ module EfxDMA_BmbToAxi4WriteOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbSourceRemover_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
-  input  wire [0:0]    io_input_cmd_payload_fragment_source,
+  input  wire [1:0]    io_input_cmd_payload_fragment_source,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
@@ -3252,7 +3775,7 @@ module EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
-  output wire [0:0]    io_input_rsp_payload_fragment_source,
+  output wire [1:0]    io_input_rsp_payload_fragment_source,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [14:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_cmd_valid,
@@ -3263,19 +3786,19 @@ module EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire [12:0]   io_output_cmd_payload_fragment_length,
   output wire [511:0]  io_output_cmd_payload_fragment_data,
   output wire [63:0]   io_output_cmd_payload_fragment_mask,
-  output wire [15:0]   io_output_cmd_payload_fragment_context,
+  output wire [16:0]   io_output_cmd_payload_fragment_context,
   input  wire          io_output_rsp_valid,
   output wire          io_output_rsp_ready,
   input  wire          io_output_rsp_payload_last,
   input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
-  input  wire [15:0]   io_output_rsp_payload_fragment_context
+  input  wire [16:0]   io_output_rsp_payload_fragment_context
 );
 
-  wire       [0:0]    cmdContext_source;
+  wire       [1:0]    cmdContext_source;
   wire       [14:0]   cmdContext_context;
-  wire       [0:0]    rspContext_source;
+  wire       [1:0]    rspContext_source;
   wire       [14:0]   rspContext_context;
-  wire       [15:0]   _zz_rspContext_source;
+  wire       [16:0]   _zz_rspContext_source;
 
   assign cmdContext_source = io_input_cmd_payload_fragment_source;
   assign cmdContext_context = io_input_cmd_payload_fragment_context;
@@ -3289,8 +3812,8 @@ module EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign io_output_cmd_payload_fragment_mask = io_input_cmd_payload_fragment_mask;
   assign io_output_cmd_payload_fragment_context = {cmdContext_context,cmdContext_source};
   assign _zz_rspContext_source = io_output_rsp_payload_fragment_context;
-  assign rspContext_source = _zz_rspContext_source[0 : 0];
-  assign rspContext_context = _zz_rspContext_source[15 : 1];
+  assign rspContext_source = _zz_rspContext_source[1 : 0];
+  assign rspContext_context = _zz_rspContext_source[16 : 2];
   assign io_input_rsp_valid = io_output_rsp_valid;
   assign io_output_rsp_ready = io_input_rsp_ready;
   assign io_input_rsp_payload_last = io_output_rsp_payload_last;
@@ -3300,11 +3823,11 @@ module EfxDMA_BmbSourceRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbUpSizerBridge_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbUpSizerBridge_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
-  input  wire [0:0]    io_input_cmd_payload_fragment_source,
+  input  wire [1:0]    io_input_cmd_payload_fragment_source,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
@@ -3314,13 +3837,13 @@ module EfxDMA_BmbUpSizerBridge_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
-  output wire [0:0]    io_input_rsp_payload_fragment_source,
+  output wire [1:0]    io_input_rsp_payload_fragment_source,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [14:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_cmd_valid,
   input  wire          io_output_cmd_ready,
   output wire          io_output_cmd_payload_last,
-  output wire [0:0]    io_output_cmd_payload_fragment_source,
+  output wire [1:0]    io_output_cmd_payload_fragment_source,
   output wire [0:0]    io_output_cmd_payload_fragment_opcode,
   output wire [31:0]   io_output_cmd_payload_fragment_address,
   output wire [12:0]   io_output_cmd_payload_fragment_length,
@@ -3330,7 +3853,7 @@ module EfxDMA_BmbUpSizerBridge_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire          io_output_rsp_valid,
   output wire          io_output_rsp_ready,
   input  wire          io_output_rsp_payload_last,
-  input  wire [0:0]    io_output_rsp_payload_fragment_source,
+  input  wire [1:0]    io_output_rsp_payload_fragment_source,
   input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
   input  wire [14:0]   io_output_rsp_payload_fragment_context,
   input  wire          clk,
@@ -3424,20 +3947,20 @@ module EfxDMA_BmbUpSizerBridge_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbToAxi4ReadOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbToAxi4ReadOnlyBridge_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
-  input  wire [27:0]   io_input_cmd_payload_fragment_context,
+  input  wire [28:0]   io_input_cmd_payload_fragment_context,
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [511:0]  io_input_rsp_payload_fragment_data,
-  output wire [27:0]   io_input_rsp_payload_fragment_context,
+  output wire [28:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_ar_valid,
   input  wire          io_output_ar_ready,
   output wire [31:0]   io_output_ar_payload_addr,
@@ -3460,7 +3983,7 @@ module EfxDMA_BmbToAxi4ReadOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                contextRemover_io_input_rsp_payload_last;
   wire       [0:0]    contextRemover_io_input_rsp_payload_fragment_opcode;
   wire       [511:0]  contextRemover_io_input_rsp_payload_fragment_data;
-  wire       [27:0]   contextRemover_io_input_rsp_payload_fragment_context;
+  wire       [28:0]   contextRemover_io_input_rsp_payload_fragment_context;
   wire                contextRemover_io_output_cmd_valid;
   wire                contextRemover_io_output_cmd_payload_last;
   wire       [0:0]    contextRemover_io_output_cmd_payload_fragment_opcode;
@@ -3475,20 +3998,20 @@ module EfxDMA_BmbToAxi4ReadOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_io_output_ar_payload_len = ({1'b0,contextRemover_io_output_cmd_payload_fragment_length} + _zz_io_output_ar_payload_len_1);
   assign _zz_io_output_ar_payload_len_2 = contextRemover_io_output_cmd_payload_fragment_address[5 : 0];
   assign _zz_io_output_ar_payload_len_1 = {8'd0, _zz_io_output_ar_payload_len_2};
-  EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd contextRemover (
+  EfxDMA_BmbContextRemover_9bdfdf1cb95c4a7d8530357860e1bb9e contextRemover (
     .io_input_cmd_valid                     (io_input_cmd_valid                                         ), //i
     .io_input_cmd_ready                     (contextRemover_io_input_cmd_ready                          ), //o
     .io_input_cmd_payload_last              (io_input_cmd_payload_last                                  ), //i
     .io_input_cmd_payload_fragment_opcode   (io_input_cmd_payload_fragment_opcode                       ), //i
     .io_input_cmd_payload_fragment_address  (io_input_cmd_payload_fragment_address[31:0]                ), //i
     .io_input_cmd_payload_fragment_length   (io_input_cmd_payload_fragment_length[12:0]                 ), //i
-    .io_input_cmd_payload_fragment_context  (io_input_cmd_payload_fragment_context[27:0]                ), //i
+    .io_input_cmd_payload_fragment_context  (io_input_cmd_payload_fragment_context[28:0]                ), //i
     .io_input_rsp_valid                     (contextRemover_io_input_rsp_valid                          ), //o
     .io_input_rsp_ready                     (io_input_rsp_ready                                         ), //i
     .io_input_rsp_payload_last              (contextRemover_io_input_rsp_payload_last                   ), //o
     .io_input_rsp_payload_fragment_opcode   (contextRemover_io_input_rsp_payload_fragment_opcode        ), //o
     .io_input_rsp_payload_fragment_data     (contextRemover_io_input_rsp_payload_fragment_data[511:0]   ), //o
-    .io_input_rsp_payload_fragment_context  (contextRemover_io_input_rsp_payload_fragment_context[27:0] ), //o
+    .io_input_rsp_payload_fragment_context  (contextRemover_io_input_rsp_payload_fragment_context[28:0] ), //o
     .io_output_cmd_valid                    (contextRemover_io_output_cmd_valid                         ), //o
     .io_output_cmd_ready                    (io_output_ar_ready                                         ), //i
     .io_output_cmd_payload_last             (contextRemover_io_output_cmd_payload_last                  ), //o
@@ -3528,11 +4051,11 @@ module EfxDMA_BmbToAxi4ReadOnlyBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbSourceRemover_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
-  input  wire [0:0]    io_input_cmd_payload_fragment_source,
+  input  wire [1:0]    io_input_cmd_payload_fragment_source,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
@@ -3540,7 +4063,7 @@ module EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
-  output wire [0:0]    io_input_rsp_payload_fragment_source,
+  output wire [1:0]    io_input_rsp_payload_fragment_source,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [511:0]  io_input_rsp_payload_fragment_data,
   output wire [26:0]   io_input_rsp_payload_fragment_context,
@@ -3550,20 +4073,20 @@ module EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire [0:0]    io_output_cmd_payload_fragment_opcode,
   output wire [31:0]   io_output_cmd_payload_fragment_address,
   output wire [12:0]   io_output_cmd_payload_fragment_length,
-  output wire [27:0]   io_output_cmd_payload_fragment_context,
+  output wire [28:0]   io_output_cmd_payload_fragment_context,
   input  wire          io_output_rsp_valid,
   output wire          io_output_rsp_ready,
   input  wire          io_output_rsp_payload_last,
   input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
   input  wire [511:0]  io_output_rsp_payload_fragment_data,
-  input  wire [27:0]   io_output_rsp_payload_fragment_context
+  input  wire [28:0]   io_output_rsp_payload_fragment_context
 );
 
-  wire       [0:0]    cmdContext_source;
+  wire       [1:0]    cmdContext_source;
   wire       [26:0]   cmdContext_context;
-  wire       [0:0]    rspContext_source;
+  wire       [1:0]    rspContext_source;
   wire       [26:0]   rspContext_context;
-  wire       [27:0]   _zz_rspContext_source;
+  wire       [28:0]   _zz_rspContext_source;
 
   assign cmdContext_source = io_input_cmd_payload_fragment_source;
   assign cmdContext_context = io_input_cmd_payload_fragment_context;
@@ -3575,8 +4098,8 @@ module EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign io_output_cmd_payload_fragment_length = io_input_cmd_payload_fragment_length;
   assign io_output_cmd_payload_fragment_context = {cmdContext_context,cmdContext_source};
   assign _zz_rspContext_source = io_output_rsp_payload_fragment_context;
-  assign rspContext_source = _zz_rspContext_source[0 : 0];
-  assign rspContext_context = _zz_rspContext_source[27 : 1];
+  assign rspContext_source = _zz_rspContext_source[1 : 0];
+  assign rspContext_context = _zz_rspContext_source[28 : 2];
   assign io_input_rsp_valid = io_output_rsp_valid;
   assign io_output_rsp_ready = io_input_rsp_ready;
   assign io_input_rsp_payload_last = io_output_rsp_payload_last;
@@ -3587,11 +4110,11 @@ module EfxDMA_BmbSourceRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbUpSizerBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbUpSizerBridge_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output wire          io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
-  input  wire [0:0]    io_input_cmd_payload_fragment_source,
+  input  wire [1:0]    io_input_cmd_payload_fragment_source,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
@@ -3599,14 +4122,14 @@ module EfxDMA_BmbUpSizerBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output reg           io_input_rsp_payload_last,
-  output wire [0:0]    io_input_rsp_payload_fragment_source,
+  output wire [1:0]    io_input_rsp_payload_fragment_source,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [255:0]  io_input_rsp_payload_fragment_data,
   output wire [24:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_cmd_valid,
   input  wire          io_output_cmd_ready,
   output wire          io_output_cmd_payload_last,
-  output wire [0:0]    io_output_cmd_payload_fragment_source,
+  output wire [1:0]    io_output_cmd_payload_fragment_source,
   output wire [0:0]    io_output_cmd_payload_fragment_opcode,
   output wire [31:0]   io_output_cmd_payload_fragment_address,
   output wire [12:0]   io_output_cmd_payload_fragment_length,
@@ -3614,7 +4137,7 @@ module EfxDMA_BmbUpSizerBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire          io_output_rsp_valid,
   output wire          io_output_rsp_ready,
   input  wire          io_output_rsp_payload_last,
-  input  wire [0:0]    io_output_rsp_payload_fragment_source,
+  input  wire [1:0]    io_output_rsp_payload_fragment_source,
   input  wire [0:0]    io_output_rsp_payload_fragment_opcode,
   input  wire [511:0]  io_output_rsp_payload_fragment_data,
   input  wire [26:0]   io_output_rsp_payload_fragment_context,
@@ -3708,7 +4231,7 @@ module EfxDMA_BmbUpSizerBridge_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_10_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_10_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [3:0]    io_dataIn,
   output wire [3:0]    io_dataOut,
   input  wire          ctrl_clk,
@@ -3727,7 +4250,7 @@ module EfxDMA_BufferCC_10_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_Apb3CC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_Apb3CC_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [13:0]   io_input_PADDR,
   input  wire [0:0]    io_input_PSEL,
   input  wire          io_input_PENABLE,
@@ -3788,7 +4311,7 @@ module EfxDMA_Apb3CC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                outputLogic_outputRsp_payload_PSLVERROR;
   wire                outputLogic_outputCmd_fire;
 
-  EfxDMA_FlowCCUnsafeByToggle_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd flowCCUnsafeByToggle (
+  EfxDMA_FlowCCUnsafeByToggle_9bdfdf1cb95c4a7d8530357860e1bb9e flowCCUnsafeByToggle (
     .io_input_valid           (inputLogic_inputCmd_valid                          ), //i
     .io_input_payload_PADDR   (inputLogic_inputCmd_payload_PADDR[13:0]            ), //i
     .io_input_payload_PWRITE  (inputLogic_inputCmd_payload_PWRITE                 ), //i
@@ -3802,7 +4325,7 @@ module EfxDMA_Apb3CC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                      (clk                                                ), //i
     .reset                    (reset                                              )  //i
   );
-  EfxDMA_FlowCCUnsafeByToggle_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd flowCCUnsafeByToggle_1 (
+  EfxDMA_FlowCCUnsafeByToggle_1_9bdfdf1cb95c4a7d8530357860e1bb9e flowCCUnsafeByToggle_1 (
     .io_input_valid              (outputLogic_outputRsp_valid                          ), //i
     .io_input_payload_PRDATA     (outputLogic_outputRsp_payload_PRDATA[31:0]           ), //i
     .io_input_payload_PSLVERROR  (outputLogic_outputRsp_payload_PSLVERROR              ), //i
@@ -3922,7 +4445,34 @@ module EfxDMA_Apb3CC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_Core_9bdfdf1cb95c4a7d8530357860e1bb9e (
+  output wire          io_sgRead_cmd_valid,
+  input  wire          io_sgRead_cmd_ready,
+  output wire          io_sgRead_cmd_payload_last,
+  output wire [0:0]    io_sgRead_cmd_payload_fragment_opcode,
+  output wire [31:0]   io_sgRead_cmd_payload_fragment_address,
+  output wire [4:0]    io_sgRead_cmd_payload_fragment_length,
+  output wire [0:0]    io_sgRead_cmd_payload_fragment_context,
+  input  wire          io_sgRead_rsp_valid,
+  output wire          io_sgRead_rsp_ready,
+  input  wire          io_sgRead_rsp_payload_last,
+  input  wire [0:0]    io_sgRead_rsp_payload_fragment_opcode,
+  input  wire [255:0]  io_sgRead_rsp_payload_fragment_data,
+  input  wire [0:0]    io_sgRead_rsp_payload_fragment_context,
+  output wire          io_sgWrite_cmd_valid,
+  input  wire          io_sgWrite_cmd_ready,
+  output wire          io_sgWrite_cmd_payload_last,
+  output wire [0:0]    io_sgWrite_cmd_payload_fragment_opcode,
+  output wire [31:0]   io_sgWrite_cmd_payload_fragment_address,
+  output wire [1:0]    io_sgWrite_cmd_payload_fragment_length,
+  output reg  [255:0]  io_sgWrite_cmd_payload_fragment_data,
+  output reg  [31:0]   io_sgWrite_cmd_payload_fragment_mask,
+  output wire [0:0]    io_sgWrite_cmd_payload_fragment_context,
+  input  wire          io_sgWrite_rsp_valid,
+  output wire          io_sgWrite_rsp_ready,
+  input  wire          io_sgWrite_rsp_payload_last,
+  input  wire [0:0]    io_sgWrite_rsp_payload_fragment_opcode,
+  input  wire [0:0]    io_sgWrite_rsp_payload_fragment_context,
   output reg           io_read_cmd_valid,
   input  wire          io_read_cmd_ready,
   output wire          io_read_cmd_payload_last,
@@ -3987,6 +4537,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire [31:0]   io_ctrl_PWDATA,
   output reg  [31:0]   io_ctrl_PRDATA,
   output wire          io_ctrl_PSLVERROR,
+  output wire          ll_0_descriptorUpdate,
+  output wire          ll_1_descriptorUpdate,
   input  wire          clk,
   input  wire          reset
 );
@@ -4038,6 +4590,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [31:0]   b2m_fsm_aggregate_engine_io_output_mask;
   wire                b2m_fsm_aggregate_engine_io_output_consumed;
   wire       [4:0]    b2m_fsm_aggregate_engine_io_output_usedUntil;
+  wire       [26:0]   _zz_channels_0_bytesProbe_value;
+  wire       [26:0]   _zz_channels_0_bytesProbe_value_1;
   wire       [15:0]   _zz_channels_0_fifo_pop_withOverride_backupNext;
   wire       [15:0]   _zz_channels_0_fifo_pop_withOverride_exposed;
   wire       [26:0]   _zz_channels_0_pop_b2m_selfFlush;
@@ -4052,6 +4606,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [31:0]   _zz_channels_0_pop_b2m_address;
   wire       [31:0]   _zz_channels_0_pop_b2m_address_1;
   wire       [11:0]   _zz_channels_0_fifo_push_available;
+  wire       [26:0]   _zz_channels_1_bytesProbe_value;
+  wire       [26:0]   _zz_channels_1_bytesProbe_value_1;
   wire       [15:0]   _zz_channels_1_fifo_pop_withoutOverride_exposed;
   wire       [3:0]    _zz_channels_1_push_m2b_memPending;
   wire       [3:0]    _zz_channels_1_push_m2b_memPending_1;
@@ -4244,15 +4800,30 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [7:0]    _zz_b2m_fsm_cmd_maskFirst_11;
   wire       [4:0]    _zz_b2m_fsm_cmd_maskFirst_12;
   wire       [4:0]    _zz_b2m_fsm_cmd_maskFirst_13;
+  wire       [1:0]    _zz__zz_ll_arbiter_head_1;
+  wire       [1:0]    _zz__zz_ll_arbiter_head_1_1;
+  wire       [1:0]    _zz_ll_arbiter_head_2;
+  wire       [1:0]    _zz_ll_arbiter_isJustASink;
+  wire       [1:0]    _zz_ll_arbiter_doDescriptorStall;
+  wire       [1:0]    _zz_ll_arbiter_onSgStream;
+  wire       [1:0]    _zz_ll_cmd_ptr;
+  wire       [1:0]    _zz_ll_cmd_ptrNext;
+  wire       [1:0]    _zz_ll_cmd_endOfPacket;
   wire       [0:0]    _zz_channels_0_channelStart;
   wire       [0:0]    _zz_channels_0_ctrl_kick;
+  wire       [0:0]    _zz_channels_0_channelStart_1;
+  wire       [0:0]    _zz_channels_0_ll_sgStart;
   wire       [0:0]    _zz_channels_0_interrupts_completion_valid;
   wire       [0:0]    _zz_channels_0_interrupts_onChannelCompletion_valid;
+  wire       [0:0]    _zz_channels_0_interrupts_onLinkedListUpdate_valid;
   wire       [0:0]    _zz_channels_0_interrupts_s2mPacket_valid;
   wire       [0:0]    _zz_channels_1_channelStart;
   wire       [0:0]    _zz_channels_1_ctrl_kick;
+  wire       [0:0]    _zz_channels_1_channelStart_1;
+  wire       [0:0]    _zz_channels_1_ll_sgStart;
   wire       [0:0]    _zz_channels_1_interrupts_completion_valid;
   wire       [0:0]    _zz_channels_1_interrupts_onChannelCompletion_valid;
+  wire       [0:0]    _zz_channels_1_interrupts_onLinkedListUpdate_valid;
   wire       [0:0]    _zz_channels_2_channelStart;
   wire       [0:0]    _zz_channels_2_ctrl_kick;
   wire       [0:0]    _zz_channels_2_interrupts_completion_valid;
@@ -4262,14 +4833,16 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [0:0]    _zz_channels_3_ctrl_kick;
   wire       [0:0]    _zz_channels_3_interrupts_completion_valid;
   wire       [0:0]    _zz_channels_3_interrupts_onChannelCompletion_valid;
+  wire       [31:0]   _zz_io_ctrl_PRDATA;
+  wire       [31:0]   _zz_io_ctrl_PRDATA_1;
   wire       [11:0]   _zz_channels_0_fifo_push_ptrIncr_value;
   wire       [0:0]    _zz_channels_0_fifo_push_ptrIncr_value_1;
   wire       [15:0]   _zz_channels_0_fifo_pop_bytesIncr_value_1;
   wire       [4:0]    _zz_channels_0_fifo_pop_bytesIncr_value_2;
   wire       [11:0]   _zz_channels_0_fifo_pop_ptrIncr_value;
   wire       [1:0]    _zz_channels_0_fifo_pop_ptrIncr_value_1;
-  wire       [11:0]   _zz_channels_1_fifo_push_ptrIncr_value;
-  wire       [1:0]    _zz_channels_1_fifo_push_ptrIncr_value_1;
+  wire       [11:0]   _zz_channels_1_fifo_push_ptrIncr_value_1;
+  wire       [1:0]    _zz_channels_1_fifo_push_ptrIncr_value_2;
   wire       [15:0]   _zz_channels_1_fifo_pop_bytesIncr_value_1;
   wire       [5:0]    _zz_channels_1_fifo_pop_bytesIncr_value_2;
   wire       [5:0]    _zz_channels_1_fifo_pop_bytesIncr_value_3;
@@ -4306,7 +4879,30 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg        [1:0]    channels_0_weight;
   reg                 channels_0_selfRestart;
   reg                 channels_0_readyToStop;
+  reg        [26:0]   channels_0_bytesProbe_value;
+  reg                 channels_0_bytesProbe_incr_valid;
+  reg        [12:0]   channels_0_bytesProbe_incr_payload;
   reg                 channels_0_ctrl_kick;
+  reg                 channels_0_ll_sgStart;
+  reg                 channels_0_ll_valid;
+  reg                 channels_0_ll_onSgStream;
+  reg                 channels_0_ll_head;
+  reg                 channels_0_ll_justASync;
+  reg                 channels_0_ll_waitDone;
+  reg                 channels_0_ll_readDone;
+  reg                 channels_0_ll_writeDone;
+  reg                 channels_0_ll_gotDescriptorStall;
+  reg                 channels_0_ll_controlNoCompletion;
+  reg                 channels_0_ll_packet;
+  reg                 channels_0_ll_requireSync;
+  reg        [31:0]   channels_0_ll_ptr;
+  reg        [31:0]   channels_0_ll_ptrNext;
+  wire                channels_0_ll_requestLl;
+  reg                 channels_0_ll_descriptorUpdated;
+  wire                when_DmaSg_l318;
+  wire                when_DmaSg_l320;
+  wire                when_DmaSg_l322;
+  wire                when_DmaSg_l328;
   wire       [11:0]   channels_0_fifo_base;
   wire       [11:0]   channels_0_fifo_words;
   reg        [11:0]   channels_0_fifo_push_available;
@@ -4354,6 +4950,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg                 channels_0_pop_b2m_memPendingInc;
   wire                when_DmaSg_l523;
   wire                when_DmaSg_l532;
+  wire                when_DmaSg_l536;
   wire                when_DmaSg_l547;
   wire                when_DmaSg_l563;
   wire                channels_0_readyForChannelCompletion;
@@ -4371,9 +4968,13 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg                 channels_0_interrupts_onChannelCompletion_enable;
   reg                 channels_0_interrupts_onChannelCompletion_valid;
   wire                when_DmaSg_l255_3;
+  reg                 channels_0_interrupts_onLinkedListUpdate_enable;
+  reg                 channels_0_interrupts_onLinkedListUpdate_valid;
+  wire                when_DmaSg_l255_4;
   reg                 channels_0_interrupts_s2mPacket_enable;
   reg                 channels_0_interrupts_s2mPacket_valid;
-  wire                when_DmaSg_l255_4;
+  wire                when_DmaSg_l255_5;
+  wire                when_DmaSg_l625;
   reg                 channels_1_channelStart;
   reg                 channels_1_channelStop;
   reg                 channels_1_channelCompletion;
@@ -4386,7 +4987,30 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg        [1:0]    channels_1_weight;
   reg                 channels_1_selfRestart;
   reg                 channels_1_readyToStop;
+  reg        [26:0]   channels_1_bytesProbe_value;
+  reg                 channels_1_bytesProbe_incr_valid;
+  reg        [12:0]   channels_1_bytesProbe_incr_payload;
   reg                 channels_1_ctrl_kick;
+  reg                 channels_1_ll_sgStart;
+  reg                 channels_1_ll_valid;
+  reg                 channels_1_ll_onSgStream;
+  reg                 channels_1_ll_head;
+  reg                 channels_1_ll_justASync;
+  reg                 channels_1_ll_waitDone;
+  reg                 channels_1_ll_readDone;
+  reg                 channels_1_ll_writeDone;
+  reg                 channels_1_ll_gotDescriptorStall;
+  reg                 channels_1_ll_controlNoCompletion;
+  reg                 channels_1_ll_packet;
+  reg                 channels_1_ll_requireSync;
+  reg        [31:0]   channels_1_ll_ptr;
+  reg        [31:0]   channels_1_ll_ptrNext;
+  wire                channels_1_ll_requestLl;
+  reg                 channels_1_ll_descriptorUpdated;
+  wire                when_DmaSg_l318_1;
+  wire                when_DmaSg_l320_1;
+  wire                when_DmaSg_l322_1;
+  wire                when_DmaSg_l328_1;
   wire       [11:0]   channels_1_fifo_base;
   wire       [11:0]   channels_1_fifo_words;
   reg        [11:0]   channels_1_fifo_push_available;
@@ -4432,14 +5056,18 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                when_DmaSg_l593_1;
   wire                channels_1_s2b_full;
   reg        [11:0]   channels_1_fifo_pop_ptrIncr_value_regNext;
-  wire                when_DmaSg_l255_5;
+  wire                when_DmaSg_l255_6;
   reg                 channels_1_interrupts_completion_enable;
   reg                 channels_1_interrupts_completion_valid;
-  wire                when_DmaSg_l255_6;
   wire                when_DmaSg_l255_7;
+  wire                when_DmaSg_l255_8;
   reg                 channels_1_interrupts_onChannelCompletion_enable;
   reg                 channels_1_interrupts_onChannelCompletion_valid;
-  wire                when_DmaSg_l255_8;
+  wire                when_DmaSg_l255_9;
+  reg                 channels_1_interrupts_onLinkedListUpdate_enable;
+  reg                 channels_1_interrupts_onLinkedListUpdate_valid;
+  wire                when_DmaSg_l255_10;
+  wire                when_DmaSg_l625_1;
   reg                 channels_2_channelStart;
   reg                 channels_2_channelStop;
   reg                 channels_2_channelCompletion;
@@ -4509,17 +5137,17 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                when_DmaSg_l593_2;
   wire                channels_2_s2b_full;
   reg        [11:0]   channels_2_fifo_pop_ptrIncr_value_regNext;
-  wire                when_DmaSg_l255_9;
+  wire                when_DmaSg_l255_11;
   reg                 channels_2_interrupts_completion_enable;
   reg                 channels_2_interrupts_completion_valid;
-  wire                when_DmaSg_l255_10;
-  wire                when_DmaSg_l255_11;
+  wire                when_DmaSg_l255_12;
+  wire                when_DmaSg_l255_13;
   reg                 channels_2_interrupts_onChannelCompletion_enable;
   reg                 channels_2_interrupts_onChannelCompletion_valid;
-  wire                when_DmaSg_l255_12;
+  wire                when_DmaSg_l255_14;
   reg                 channels_2_interrupts_s2mPacket_enable;
   reg                 channels_2_interrupts_s2mPacket_valid;
-  wire                when_DmaSg_l255_13;
+  wire                when_DmaSg_l255_15;
   reg                 channels_3_channelStart;
   reg                 channels_3_channelStop;
   reg                 channels_3_channelCompletion;
@@ -4578,14 +5206,14 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                when_DmaSg_l593_3;
   wire                channels_3_s2b_full;
   reg        [11:0]   channels_3_fifo_pop_ptrIncr_value_regNext;
-  wire                when_DmaSg_l255_14;
+  wire                when_DmaSg_l255_16;
   reg                 channels_3_interrupts_completion_enable;
   reg                 channels_3_interrupts_completion_valid;
-  wire                when_DmaSg_l255_15;
-  wire                when_DmaSg_l255_16;
+  wire                when_DmaSg_l255_17;
+  wire                when_DmaSg_l255_18;
   reg                 channels_3_interrupts_onChannelCompletion_enable;
   reg                 channels_3_interrupts_onChannelCompletion_valid;
-  wire                when_DmaSg_l255_17;
+  wire                when_DmaSg_l255_19;
   wire                io_inputs_0_fire;
   wire                when_package_l12;
   reg                 io_inputs_0_payload_last_regNextWhen;
@@ -4827,6 +5455,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [0:0]    m2b_rsp_writeContext_channel;
   wire       [5:0]    m2b_rsp_writeContext_loadByteInNextBeat;
   wire                memory_core_io_writes_2_cmd_fire;
+  wire                _zz_channels_1_fifo_push_ptrIncr_value;
+  wire                when_DmaSg_l874;
   wire                m2b_writeRsp_context_last;
   wire                m2b_writeRsp_context_lastOfBurst;
   wire       [0:0]    m2b_writeRsp_context_channel;
@@ -4947,47 +5577,145 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [1:0]    _zz_3;
   wire                when_DmaSg_l1116;
   wire                when_DmaSg_l1116_1;
+  wire       [1:0]    _zz_ll_arbiter_head;
+  wire                _zz_ll_arbiter_head_1;
+  wire                ll_arbiter_head;
+  wire                ll_arbiter_isJustASink;
+  wire                ll_arbiter_doDescriptorStall;
+  wire                ll_arbiter_onSgStream;
+  reg                 ll_cmd_valid;
+  wire                when_DmaSg_l1149;
+  reg                 ll_cmd_oh_0;
+  reg                 ll_cmd_oh_1;
+  wire                when_DmaSg_l1148;
+  reg        [31:0]   ll_cmd_ptr;
+  wire                when_DmaSg_l1148_1;
+  reg        [31:0]   ll_cmd_ptrNext;
+  wire                when_DmaSg_l1148_2;
+  reg        [26:0]   ll_cmd_bytesDone;
+  wire                when_DmaSg_l1148_3;
+  reg                 ll_cmd_endOfPacket;
+  wire                when_DmaSg_l1154;
+  reg                 ll_cmd_isJustASink;
+  wire                when_DmaSg_l1155;
+  reg                 ll_cmd_doDescriptorStall;
+  wire                when_DmaSg_l1156;
+  reg                 ll_cmd_onSgStream;
+  reg                 ll_cmd_readFired;
+  reg                 ll_cmd_writeFired;
+  wire                when_DmaSg_l1160;
+  wire                when_DmaSg_l1161;
+  wire                when_DmaSg_l1169;
+  wire                when_DmaSg_l1169_1;
+  wire                when_DmaSg_l1177;
+  wire       [0:0]    ll_cmd_context_channel;
+  wire       [3:0]    ll_cmd_writeMaskSplit_0;
+  wire       [3:0]    ll_cmd_writeMaskSplit_1;
+  wire       [3:0]    ll_cmd_writeMaskSplit_2;
+  wire       [3:0]    ll_cmd_writeMaskSplit_3;
+  wire       [3:0]    ll_cmd_writeMaskSplit_4;
+  wire       [3:0]    ll_cmd_writeMaskSplit_5;
+  wire       [3:0]    ll_cmd_writeMaskSplit_6;
+  wire       [3:0]    ll_cmd_writeMaskSplit_7;
+  wire       [31:0]   ll_cmd_writeDataSplit_0;
+  wire       [31:0]   ll_cmd_writeDataSplit_1;
+  wire       [31:0]   ll_cmd_writeDataSplit_2;
+  wire       [31:0]   ll_cmd_writeDataSplit_3;
+  wire       [31:0]   ll_cmd_writeDataSplit_4;
+  wire       [31:0]   ll_cmd_writeDataSplit_5;
+  wire       [31:0]   ll_cmd_writeDataSplit_6;
+  wire       [31:0]   ll_cmd_writeDataSplit_7;
+  wire                io_sgRead_cmd_fire;
+  wire                io_sgWrite_cmd_fire;
+  wire       [0:0]    ll_readRsp_context_channel;
+  wire       [1:0]    _zz_ll_readRsp_oh_0;
+  wire                ll_readRsp_oh_0;
+  wire                ll_readRsp_oh_1;
+  reg                 ll_readRsp_completed;
+  wire                io_sgRead_rsp_fire;
+  wire                when_DmaSg_l1248;
+  wire                when_DmaSg_l1248_1;
+  wire                when_DmaSg_l1248_2;
+  wire                when_DmaSg_l1248_3;
+  wire                when_DmaSg_l1248_4;
+  wire                when_DmaSg_l1248_5;
+  wire                when_DmaSg_l1248_6;
+  wire                when_DmaSg_l1271;
+  wire       [0:0]    ll_writeRsp_context_channel;
+  wire       [1:0]    _zz_ll_writeRsp_oh_0;
+  wire                ll_writeRsp_oh_0;
+  wire                ll_writeRsp_oh_1;
+  wire                io_sgWrite_rsp_fire;
   reg                 when_BusSlaveFactory_l377;
   wire                when_BusSlaveFactory_l379;
   reg                 when_BusSlaveFactory_l377_1;
   wire                when_BusSlaveFactory_l379_1;
+  reg                 when_BusSlaveFactory_l377_2;
+  wire                when_BusSlaveFactory_l379_2;
+  reg                 when_BusSlaveFactory_l377_3;
+  wire                when_BusSlaveFactory_l379_3;
   reg                 when_BusSlaveFactory_l341;
   wire                when_BusSlaveFactory_l347;
   reg                 when_BusSlaveFactory_l341_1;
   wire                when_BusSlaveFactory_l347_1;
   reg                 when_BusSlaveFactory_l341_2;
   wire                when_BusSlaveFactory_l347_2;
-  reg                 when_BusSlaveFactory_l377_2;
-  wire                when_BusSlaveFactory_l379_2;
-  reg                 when_BusSlaveFactory_l377_3;
-  wire                when_BusSlaveFactory_l379_3;
   reg                 when_BusSlaveFactory_l341_3;
   wire                when_BusSlaveFactory_l347_3;
-  reg                 when_BusSlaveFactory_l341_4;
-  wire                when_BusSlaveFactory_l347_4;
   reg                 when_BusSlaveFactory_l377_4;
   wire                when_BusSlaveFactory_l379_4;
   reg                 when_BusSlaveFactory_l377_5;
   wire                when_BusSlaveFactory_l379_5;
-  reg                 when_BusSlaveFactory_l341_5;
-  wire                when_BusSlaveFactory_l347_5;
-  reg                 when_BusSlaveFactory_l341_6;
-  wire                when_BusSlaveFactory_l347_6;
-  reg                 when_BusSlaveFactory_l341_7;
-  wire                when_BusSlaveFactory_l347_7;
   reg                 when_BusSlaveFactory_l377_6;
   wire                when_BusSlaveFactory_l379_6;
   reg                 when_BusSlaveFactory_l377_7;
   wire                when_BusSlaveFactory_l379_7;
+  reg                 when_BusSlaveFactory_l341_4;
+  wire                when_BusSlaveFactory_l347_4;
+  reg                 when_BusSlaveFactory_l341_5;
+  wire                when_BusSlaveFactory_l347_5;
+  reg                 when_BusSlaveFactory_l341_6;
+  wire                when_BusSlaveFactory_l347_6;
+  reg                 when_BusSlaveFactory_l377_8;
+  wire                when_BusSlaveFactory_l379_8;
+  reg                 when_BusSlaveFactory_l377_9;
+  wire                when_BusSlaveFactory_l379_9;
+  reg                 when_BusSlaveFactory_l341_7;
+  wire                when_BusSlaveFactory_l347_7;
   reg                 when_BusSlaveFactory_l341_8;
   wire                when_BusSlaveFactory_l347_8;
   reg                 when_BusSlaveFactory_l341_9;
   wire                when_BusSlaveFactory_l347_9;
+  reg                 when_BusSlaveFactory_l377_10;
+  wire                when_BusSlaveFactory_l379_10;
+  reg                 when_BusSlaveFactory_l377_11;
+  wire                when_BusSlaveFactory_l379_11;
+  reg                 when_BusSlaveFactory_l341_10;
+  wire                when_BusSlaveFactory_l347_10;
+  reg                 when_BusSlaveFactory_l341_11;
+  wire                when_BusSlaveFactory_l347_11;
   wire                when_Apb3SlaveFactory_l81;
   wire                when_Apb3SlaveFactory_l81_1;
   wire                when_Apb3SlaveFactory_l81_2;
   wire                when_Apb3SlaveFactory_l81_3;
+  wire                when_Apb3SlaveFactory_l81_4;
+  wire                when_Apb3SlaveFactory_l81_5;
+  function [31:0] zz_io_sgWrite_cmd_payload_fragment_mask(input dummy);
+    begin
+      zz_io_sgWrite_cmd_payload_fragment_mask[7 : 4] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[11 : 8] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[15 : 12] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[19 : 16] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[23 : 20] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[27 : 24] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[31 : 28] = 4'b0000;
+      zz_io_sgWrite_cmd_payload_fragment_mask[3 : 0] = 4'b1111;
+    end
+  endfunction
+  wire [31:0] _zz_4;
 
+  assign _zz_channels_0_bytesProbe_value = (channels_0_bytesProbe_value + _zz_channels_0_bytesProbe_value_1);
+  assign _zz_channels_0_bytesProbe_value_1 = {14'd0, channels_0_bytesProbe_incr_payload};
   assign _zz_channels_0_fifo_pop_withOverride_backupNext = (channels_0_fifo_pop_withOverride_backup + channels_0_fifo_pop_bytesIncr_value);
   assign _zz_channels_0_fifo_pop_withOverride_exposed = (channels_0_fifo_pop_withOverride_exposed - channels_0_fifo_pop_bytesDecr_value);
   assign _zz_channels_0_pop_b2m_selfFlush = {11'd0, channels_0_fifo_pop_bytes};
@@ -5002,6 +5730,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_channels_0_pop_b2m_address = (channels_0_pop_b2m_address - _zz_channels_0_pop_b2m_address_1);
   assign _zz_channels_0_pop_b2m_address_1 = {6'd0, channels_0_bytes};
   assign _zz_channels_0_fifo_push_available = (channels_0_fifo_push_available + channels_0_fifo_pop_ptrIncr_value_regNext);
+  assign _zz_channels_1_bytesProbe_value = (channels_1_bytesProbe_value + _zz_channels_1_bytesProbe_value_1);
+  assign _zz_channels_1_bytesProbe_value_1 = {14'd0, channels_1_bytesProbe_incr_payload};
   assign _zz_channels_1_fifo_pop_withoutOverride_exposed = (channels_1_fifo_pop_withoutOverride_exposed + channels_1_fifo_pop_bytesIncr_value);
   assign _zz_channels_1_push_m2b_memPending = (channels_1_push_m2b_memPending + _zz_channels_1_push_m2b_memPending_1);
   assign _zz_channels_1_push_m2b_memPending_2 = channels_1_push_m2b_memPendingIncr;
@@ -5092,15 +5822,30 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_b2m_fsm_beatCounter_1 = {8'd0, _zz_b2m_fsm_beatCounter_2};
   assign _zz_b2m_fsm_sel_ptr_1 = (b2m_fsm_sel_ptr + 12'h002);
   assign _zz_b2m_fsm_cmd_maskLastTriggerComb = b2m_fsm_sel_bytesInBurst[4:0];
+  assign _zz__zz_ll_arbiter_head_1 = (_zz_ll_arbiter_head & (~ _zz__zz_ll_arbiter_head_1_1));
+  assign _zz__zz_ll_arbiter_head_1_1 = (_zz_ll_arbiter_head - 2'b01);
+  assign _zz_ll_arbiter_head_2 = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_arbiter_isJustASink = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_arbiter_doDescriptorStall = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_arbiter_onSgStream = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_cmd_ptr = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_cmd_ptrNext = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
+  assign _zz_ll_cmd_endOfPacket = {_zz_ll_arbiter_head_1,channels_0_ll_requestLl};
   assign _zz_channels_0_channelStart = 1'b1;
   assign _zz_channels_0_ctrl_kick = 1'b1;
+  assign _zz_channels_0_channelStart_1 = 1'b1;
+  assign _zz_channels_0_ll_sgStart = 1'b1;
   assign _zz_channels_0_interrupts_completion_valid = 1'b0;
   assign _zz_channels_0_interrupts_onChannelCompletion_valid = 1'b0;
+  assign _zz_channels_0_interrupts_onLinkedListUpdate_valid = 1'b0;
   assign _zz_channels_0_interrupts_s2mPacket_valid = 1'b0;
   assign _zz_channels_1_channelStart = 1'b1;
   assign _zz_channels_1_ctrl_kick = 1'b1;
+  assign _zz_channels_1_channelStart_1 = 1'b1;
+  assign _zz_channels_1_ll_sgStart = 1'b1;
   assign _zz_channels_1_interrupts_completion_valid = 1'b0;
   assign _zz_channels_1_interrupts_onChannelCompletion_valid = 1'b0;
+  assign _zz_channels_1_interrupts_onLinkedListUpdate_valid = 1'b0;
   assign _zz_channels_2_channelStart = 1'b1;
   assign _zz_channels_2_ctrl_kick = 1'b1;
   assign _zz_channels_2_interrupts_completion_valid = 1'b0;
@@ -5110,14 +5855,16 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_channels_3_ctrl_kick = 1'b1;
   assign _zz_channels_3_interrupts_completion_valid = 1'b0;
   assign _zz_channels_3_interrupts_onChannelCompletion_valid = 1'b0;
+  assign _zz_io_ctrl_PRDATA = channels_0_ll_ptr;
+  assign _zz_io_ctrl_PRDATA_1 = channels_1_ll_ptr;
   assign _zz_channels_0_fifo_push_ptrIncr_value_1 = ((when_DmaSg_l665 && (|s2b_0_cmd_sinkHalted_payload_mask)) ? 1'b1 : 1'b0);
   assign _zz_channels_0_fifo_push_ptrIncr_value = {11'd0, _zz_channels_0_fifo_push_ptrIncr_value_1};
   assign _zz_channels_0_fifo_pop_bytesIncr_value_2 = (_zz_channels_0_fifo_pop_bytesIncr_value ? s2b_0_rsp_context_bytes : 5'h0);
   assign _zz_channels_0_fifo_pop_bytesIncr_value_1 = {11'd0, _zz_channels_0_fifo_pop_bytesIncr_value_2};
   assign _zz_channels_0_fifo_pop_ptrIncr_value_1 = ((b2m_fsm_cmd_doPtrIncr && (b2m_fsm_sel_channel == 1'b0)) ? 2'b10 : 2'b00);
   assign _zz_channels_0_fifo_pop_ptrIncr_value = {10'd0, _zz_channels_0_fifo_pop_ptrIncr_value_1};
-  assign _zz_channels_1_fifo_push_ptrIncr_value_1 = ((memory_core_io_writes_2_cmd_fire && (m2b_rsp_context_channel == 1'b0)) ? 2'b10 : 2'b00);
-  assign _zz_channels_1_fifo_push_ptrIncr_value = {10'd0, _zz_channels_1_fifo_push_ptrIncr_value_1};
+  assign _zz_channels_1_fifo_push_ptrIncr_value_2 = (_zz_channels_1_fifo_push_ptrIncr_value ? 2'b10 : 2'b00);
+  assign _zz_channels_1_fifo_push_ptrIncr_value_1 = {10'd0, _zz_channels_1_fifo_push_ptrIncr_value_2};
   assign _zz_channels_1_fifo_pop_bytesIncr_value_2 = (_zz_channels_1_fifo_pop_bytesIncr_value ? _zz_channels_1_fifo_pop_bytesIncr_value_3 : 6'h0);
   assign _zz_channels_1_fifo_pop_bytesIncr_value_1 = {10'd0, _zz_channels_1_fifo_pop_bytesIncr_value_2};
   assign _zz_channels_1_fifo_pop_bytesIncr_value_3 = (m2b_writeRsp_context_loadByteInNextBeat + 6'h01);
@@ -5208,7 +5955,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_b2m_fsm_cmd_maskFirst_11 = {(b2m_fsm_cmd_maskFirstTrigger <= 5'h07),{(b2m_fsm_cmd_maskFirstTrigger <= 5'h06),{(b2m_fsm_cmd_maskFirstTrigger <= 5'h05),{(b2m_fsm_cmd_maskFirstTrigger <= 5'h04),{(b2m_fsm_cmd_maskFirstTrigger <= 5'h03),{(b2m_fsm_cmd_maskFirstTrigger <= 5'h02),{(b2m_fsm_cmd_maskFirstTrigger <= _zz_b2m_fsm_cmd_maskFirst_12),(b2m_fsm_cmd_maskFirstTrigger <= _zz_b2m_fsm_cmd_maskFirst_13)}}}}}}};
   assign _zz_b2m_fsm_cmd_maskFirst_12 = 5'h01;
   assign _zz_b2m_fsm_cmd_maskFirst_13 = 5'h0;
-  EfxDMA_DmaMemoryCore_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd memory_core (
+  EfxDMA_DmaMemoryCore_9bdfdf1cb95c4a7d8530357860e1bb9e memory_core (
     .io_writes_0_cmd_valid            (s2b_0_cmd_sinkHalted_valid                       ), //i
     .io_writes_0_cmd_ready            (memory_core_io_writes_0_cmd_ready                ), //o
     .io_writes_0_cmd_payload_address  (memory_core_io_writes_0_cmd_payload_address[10:0]), //i
@@ -5267,7 +6014,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     .clk                              (clk                                              ), //i
     .reset                            (reset                                            )  //i
   );
-  EfxDMA_Aggregator_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd b2m_fsm_aggregate_engine (
+  EfxDMA_Aggregator_9bdfdf1cb95c4a7d8530357860e1bb9e b2m_fsm_aggregate_engine (
     .io_input_valid         (b2m_fsm_aggregate_memoryPort_valid                  ), //i
     .io_input_ready         (b2m_fsm_aggregate_engine_io_input_ready             ), //o
     .io_input_payload_data  (b2m_fsm_aggregate_memoryPort_payload_data[255:0]    ), //i
@@ -5545,7 +6292,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       14'h0054 : begin
         io_ctrl_PRDATA[0 : 0] = channels_0_interrupts_completion_valid;
         io_ctrl_PRDATA[2 : 2] = channels_0_interrupts_onChannelCompletion_valid;
+        io_ctrl_PRDATA[3 : 3] = channels_0_interrupts_onLinkedListUpdate_valid;
         io_ctrl_PRDATA[4 : 4] = channels_0_interrupts_s2mPacket_valid;
+      end
+      14'h0060 : begin
+        io_ctrl_PRDATA[26 : 0] = channels_0_bytesProbe_value;
       end
       14'h00ac : begin
         io_ctrl_PRDATA[0 : 0] = channels_1_channelValid;
@@ -5553,6 +6304,10 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       14'h00d4 : begin
         io_ctrl_PRDATA[0 : 0] = channels_1_interrupts_completion_valid;
         io_ctrl_PRDATA[2 : 2] = channels_1_interrupts_onChannelCompletion_valid;
+        io_ctrl_PRDATA[3 : 3] = channels_1_interrupts_onLinkedListUpdate_valid;
+      end
+      14'h00e0 : begin
+        io_ctrl_PRDATA[26 : 0] = channels_1_bytesProbe_value;
       end
       14'h012c : begin
         io_ctrl_PRDATA[0 : 0] = channels_2_channelValid;
@@ -5572,6 +6327,12 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       default : begin
       end
     endcase
+    if(when_Apb3SlaveFactory_l81_1) begin
+      io_ctrl_PRDATA[31 : 0] = _zz_io_ctrl_PRDATA[31 : 0];
+    end
+    if(when_Apb3SlaveFactory_l81_3) begin
+      io_ctrl_PRDATA[31 : 0] = _zz_io_ctrl_PRDATA_1[31 : 0];
+    end
   end
 
   assign ctrl_askWrite = ((io_ctrl_PSEL[0] && io_ctrl_PENABLE) && io_ctrl_PWRITE);
@@ -5584,6 +6345,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     if(when_BusSlaveFactory_l377) begin
       if(when_BusSlaveFactory_l379) begin
         channels_0_channelStart = _zz_channels_0_channelStart[0];
+      end
+    end
+    if(when_BusSlaveFactory_l377_2) begin
+      if(when_BusSlaveFactory_l379_2) begin
+        channels_0_channelStart = _zz_channels_0_channelStart_1[0];
       end
     end
   end
@@ -5603,6 +6369,13 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     channels_0_descriptorStart = 1'b0;
     if(channels_0_ctrl_kick) begin
       channels_0_descriptorStart = 1'b1;
+    end
+    if(when_DmaSg_l318) begin
+      if(when_DmaSg_l320) begin
+        if(when_DmaSg_l322) begin
+          channels_0_descriptorStart = 1'b1;
+        end
+      end
     end
     if(channels_0_channelValid) begin
       if(!channels_0_channelStop) begin
@@ -5638,11 +6411,55 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
   always @(*) begin
     channels_0_readyToStop = 1'b1;
+    if(channels_0_ll_waitDone) begin
+      channels_0_readyToStop = 1'b0;
+    end
     if(when_DmaSg_l563) begin
       channels_0_readyToStop = 1'b0;
     end
   end
 
+  always @(*) begin
+    channels_0_bytesProbe_incr_valid = 1'b0;
+    if(io_write_rsp_fire) begin
+      if(when_DmaSg_l1116) begin
+        channels_0_bytesProbe_incr_valid = 1'b1;
+      end
+    end
+  end
+
+  always @(*) begin
+    channels_0_bytesProbe_incr_payload = 13'bxxxxxxxxxxxxx;
+    if(io_write_rsp_fire) begin
+      if(when_DmaSg_l1116) begin
+        channels_0_bytesProbe_incr_payload = b2m_rsp_context_length;
+      end
+    end
+  end
+
+  always @(*) begin
+    channels_0_ll_sgStart = 1'b0;
+    if(when_BusSlaveFactory_l377_3) begin
+      if(when_BusSlaveFactory_l379_3) begin
+        channels_0_ll_sgStart = _zz_channels_0_ll_sgStart[0];
+      end
+    end
+  end
+
+  assign channels_0_ll_requestLl = ((((channels_0_channelValid && channels_0_ll_valid) && (! channels_0_channelStop)) && (! channels_0_ll_waitDone)) && ((! channels_0_descriptorValid) || channels_0_ll_requireSync));
+  always @(*) begin
+    channels_0_ll_descriptorUpdated = 1'b0;
+    if(when_DmaSg_l318) begin
+      if(when_DmaSg_l328) begin
+        channels_0_ll_descriptorUpdated = 1'b1;
+      end
+    end
+  end
+
+  assign when_DmaSg_l318 = (((channels_0_ll_valid && channels_0_ll_waitDone) && channels_0_ll_writeDone) && channels_0_ll_readDone);
+  assign when_DmaSg_l320 = (! channels_0_ll_justASync);
+  assign when_DmaSg_l322 = (! channels_0_ll_gotDescriptorStall);
+  assign when_DmaSg_l328 = (! channels_0_ll_head);
   assign channels_0_fifo_base = 12'h0;
   assign channels_0_fifo_words = 12'h1ff;
   assign channels_0_fifo_push_availableDecr = 12'h0;
@@ -5733,6 +6550,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
   assign when_DmaSg_l523 = ((channels_0_pop_b2m_memPending == 4'b0000) && (channels_0_fifo_pop_bytes == 16'h0));
   assign when_DmaSg_l532 = (channels_0_descriptorValid && (! channels_0_push_memory));
+  assign when_DmaSg_l536 = (! channels_0_pop_b2m_waitFinalRsp);
   assign when_DmaSg_l547 = ((channels_0_descriptorValid && (channels_0_pop_b2m_memPending == 4'b0000)) && channels_0_pop_b2m_waitFinalRsp);
   assign when_DmaSg_l563 = (channels_0_pop_b2m_memPending != 4'b0000);
   assign channels_0_readyForChannelCompletion = 1'b1;
@@ -5745,6 +6563,9 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     if(channels_0_ctrl_kick) begin
       _zz_when_DmaSg_l593 = 1'b0;
     end
+    if(channels_0_ll_valid) begin
+      _zz_when_DmaSg_l593 = 1'b0;
+    end
   end
 
   assign when_DmaSg_l578 = (channels_0_selfRestart && (! channels_0_ctrl_kick));
@@ -5754,12 +6575,19 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign when_DmaSg_l255_1 = (! channels_0_interrupts_completion_enable);
   assign when_DmaSg_l255_2 = (channels_0_channelValid && channels_0_channelCompletion);
   assign when_DmaSg_l255_3 = (! channels_0_interrupts_onChannelCompletion_enable);
-  assign when_DmaSg_l255_4 = (! channels_0_interrupts_s2mPacket_enable);
+  assign when_DmaSg_l255_4 = (! channels_0_interrupts_onLinkedListUpdate_enable);
+  assign when_DmaSg_l255_5 = (! channels_0_interrupts_s2mPacket_enable);
+  assign when_DmaSg_l625 = (channels_0_channelStart || channels_0_descriptorStart);
   always @(*) begin
     channels_1_channelStart = 1'b0;
-    if(when_BusSlaveFactory_l377_2) begin
-      if(when_BusSlaveFactory_l379_2) begin
+    if(when_BusSlaveFactory_l377_4) begin
+      if(when_BusSlaveFactory_l379_4) begin
         channels_1_channelStart = _zz_channels_1_channelStart[0];
+      end
+    end
+    if(when_BusSlaveFactory_l377_6) begin
+      if(when_BusSlaveFactory_l379_6) begin
+        channels_1_channelStart = _zz_channels_1_channelStart_1[0];
       end
     end
   end
@@ -5779,6 +6607,13 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     channels_1_descriptorStart = 1'b0;
     if(channels_1_ctrl_kick) begin
       channels_1_descriptorStart = 1'b1;
+    end
+    if(when_DmaSg_l318_1) begin
+      if(when_DmaSg_l320_1) begin
+        if(when_DmaSg_l322_1) begin
+          channels_1_descriptorStart = 1'b1;
+        end
+      end
     end
     if(channels_1_channelValid) begin
       if(!channels_1_channelStop) begin
@@ -5807,11 +6642,51 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
   always @(*) begin
     channels_1_readyToStop = 1'b1;
+    if(channels_1_ll_waitDone) begin
+      channels_1_readyToStop = 1'b0;
+    end
     if(when_DmaSg_l562) begin
       channels_1_readyToStop = 1'b0;
     end
   end
 
+  always @(*) begin
+    channels_1_bytesProbe_incr_valid = 1'b0;
+    if(when_DmaSg_l874) begin
+      channels_1_bytesProbe_incr_valid = 1'b1;
+    end
+  end
+
+  always @(*) begin
+    channels_1_bytesProbe_incr_payload = 13'bxxxxxxxxxxxxx;
+    if(when_DmaSg_l874) begin
+      channels_1_bytesProbe_incr_payload = m2b_rsp_context_length;
+    end
+  end
+
+  always @(*) begin
+    channels_1_ll_sgStart = 1'b0;
+    if(when_BusSlaveFactory_l377_7) begin
+      if(when_BusSlaveFactory_l379_7) begin
+        channels_1_ll_sgStart = _zz_channels_1_ll_sgStart[0];
+      end
+    end
+  end
+
+  assign channels_1_ll_requestLl = ((((channels_1_channelValid && channels_1_ll_valid) && (! channels_1_channelStop)) && (! channels_1_ll_waitDone)) && ((! channels_1_descriptorValid) || channels_1_ll_requireSync));
+  always @(*) begin
+    channels_1_ll_descriptorUpdated = 1'b0;
+    if(when_DmaSg_l318_1) begin
+      if(when_DmaSg_l328_1) begin
+        channels_1_ll_descriptorUpdated = 1'b1;
+      end
+    end
+  end
+
+  assign when_DmaSg_l318_1 = (((channels_1_ll_valid && channels_1_ll_waitDone) && channels_1_ll_writeDone) && channels_1_ll_readDone);
+  assign when_DmaSg_l320_1 = (! channels_1_ll_justASync);
+  assign when_DmaSg_l322_1 = (! channels_1_ll_gotDescriptorStall);
+  assign when_DmaSg_l328_1 = (! channels_1_ll_head);
   assign channels_1_fifo_base = 12'h200;
   assign channels_1_fifo_words = 12'h1ff;
   always @(*) begin
@@ -5884,19 +6759,24 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     if(channels_1_ctrl_kick) begin
       _zz_when_DmaSg_l593_1 = 1'b0;
     end
+    if(channels_1_ll_valid) begin
+      _zz_when_DmaSg_l593_1 = 1'b0;
+    end
   end
 
   assign when_DmaSg_l578_1 = (channels_1_selfRestart && (! channels_1_ctrl_kick));
   assign when_DmaSg_l593_1 = (_zz_when_DmaSg_l593_1 && channels_1_readyForChannelCompletion);
   assign channels_1_s2b_full = (channels_1_fifo_push_available < 12'h002);
-  assign when_DmaSg_l255_5 = (channels_1_descriptorValid && channels_1_descriptorCompletion);
-  assign when_DmaSg_l255_6 = (! channels_1_interrupts_completion_enable);
-  assign when_DmaSg_l255_7 = (channels_1_channelValid && channels_1_channelCompletion);
-  assign when_DmaSg_l255_8 = (! channels_1_interrupts_onChannelCompletion_enable);
+  assign when_DmaSg_l255_6 = (channels_1_descriptorValid && channels_1_descriptorCompletion);
+  assign when_DmaSg_l255_7 = (! channels_1_interrupts_completion_enable);
+  assign when_DmaSg_l255_8 = (channels_1_channelValid && channels_1_channelCompletion);
+  assign when_DmaSg_l255_9 = (! channels_1_interrupts_onChannelCompletion_enable);
+  assign when_DmaSg_l255_10 = (! channels_1_interrupts_onLinkedListUpdate_enable);
+  assign when_DmaSg_l625_1 = (channels_1_channelStart || channels_1_descriptorStart);
   always @(*) begin
     channels_2_channelStart = 1'b0;
-    if(when_BusSlaveFactory_l377_4) begin
-      if(when_BusSlaveFactory_l379_4) begin
+    if(when_BusSlaveFactory_l377_8) begin
+      if(when_BusSlaveFactory_l379_8) begin
         channels_2_channelStart = _zz_channels_2_channelStart[0];
       end
     end
@@ -6064,15 +6944,15 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign when_DmaSg_l578_2 = (channels_2_selfRestart && (! channels_2_ctrl_kick));
   assign when_DmaSg_l593_2 = (_zz_when_DmaSg_l593_2 && channels_2_readyForChannelCompletion);
   assign channels_2_s2b_full = (channels_2_fifo_push_available < 12'h002);
-  assign when_DmaSg_l255_9 = (channels_2_descriptorValid && channels_2_descriptorCompletion);
-  assign when_DmaSg_l255_10 = (! channels_2_interrupts_completion_enable);
-  assign when_DmaSg_l255_11 = (channels_2_channelValid && channels_2_channelCompletion);
-  assign when_DmaSg_l255_12 = (! channels_2_interrupts_onChannelCompletion_enable);
-  assign when_DmaSg_l255_13 = (! channels_2_interrupts_s2mPacket_enable);
+  assign when_DmaSg_l255_11 = (channels_2_descriptorValid && channels_2_descriptorCompletion);
+  assign when_DmaSg_l255_12 = (! channels_2_interrupts_completion_enable);
+  assign when_DmaSg_l255_13 = (channels_2_channelValid && channels_2_channelCompletion);
+  assign when_DmaSg_l255_14 = (! channels_2_interrupts_onChannelCompletion_enable);
+  assign when_DmaSg_l255_15 = (! channels_2_interrupts_s2mPacket_enable);
   always @(*) begin
     channels_3_channelStart = 1'b0;
-    if(when_BusSlaveFactory_l377_6) begin
-      if(when_BusSlaveFactory_l379_6) begin
+    if(when_BusSlaveFactory_l377_10) begin
+      if(when_BusSlaveFactory_l379_10) begin
         channels_3_channelStart = _zz_channels_3_channelStart[0];
       end
     end
@@ -6203,10 +7083,10 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign when_DmaSg_l578_3 = (channels_3_selfRestart && (! channels_3_ctrl_kick));
   assign when_DmaSg_l593_3 = (_zz_when_DmaSg_l593_3 && channels_3_readyForChannelCompletion);
   assign channels_3_s2b_full = (channels_3_fifo_push_available < 12'h002);
-  assign when_DmaSg_l255_14 = (channels_3_descriptorValid && channels_3_descriptorCompletion);
-  assign when_DmaSg_l255_15 = (! channels_3_interrupts_completion_enable);
-  assign when_DmaSg_l255_16 = (channels_3_channelValid && channels_3_channelCompletion);
-  assign when_DmaSg_l255_17 = (! channels_3_interrupts_onChannelCompletion_enable);
+  assign when_DmaSg_l255_16 = (channels_3_descriptorValid && channels_3_descriptorCompletion);
+  assign when_DmaSg_l255_17 = (! channels_3_interrupts_completion_enable);
+  assign when_DmaSg_l255_18 = (channels_3_channelValid && channels_3_channelCompletion);
+  assign when_DmaSg_l255_19 = (! channels_3_interrupts_onChannelCompletion_enable);
   assign io_inputs_0_fire = (io_inputs_0_valid && io_inputs_0_ready);
   assign when_package_l12 = (io_inputs_0_fire && (io_inputs_0_payload_sink == 4'b0000));
   assign when_package_l12_1 = (io_inputs_0_fire && (io_inputs_0_payload_sink == 4'b0001));
@@ -6500,6 +7380,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign io_read_rsp_ready = memory_core_io_writes_2_cmd_ready;
   assign memory_core_io_writes_2_cmd_payload_context = {m2b_rsp_writeContext_loadByteInNextBeat,{m2b_rsp_writeContext_channel,{m2b_rsp_writeContext_lastOfBurst,m2b_rsp_writeContext_last}}};
   assign memory_core_io_writes_2_cmd_fire = (io_read_rsp_valid && memory_core_io_writes_2_cmd_ready);
+  assign _zz_channels_1_fifo_push_ptrIncr_value = (memory_core_io_writes_2_cmd_fire && (m2b_rsp_context_channel == 1'b0));
+  assign when_DmaSg_l874 = (_zz_channels_1_fifo_push_ptrIncr_value && io_read_rsp_payload_last);
   assign _zz_m2b_writeRsp_context_last = memory_core_io_writes_2_rsp_payload_context;
   assign m2b_writeRsp_context_last = _zz_m2b_writeRsp_context_last[0];
   assign m2b_writeRsp_context_lastOfBurst = _zz_m2b_writeRsp_context_last[1];
@@ -6621,12 +7503,101 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign _zz_3 = ({1'd0,1'b1} <<< b2m_rsp_context_channel);
   assign when_DmaSg_l1116 = (b2m_rsp_context_channel == 1'b0);
   assign when_DmaSg_l1116_1 = (b2m_rsp_context_channel == 1'b1);
+  assign _zz_ll_arbiter_head = {channels_1_ll_requestLl,channels_0_ll_requestLl};
+  assign _zz_ll_arbiter_head_1 = _zz__zz_ll_arbiter_head_1[1];
+  assign ll_arbiter_head = (_zz_ll_arbiter_head_2[0] ? channels_0_ll_head : channels_1_ll_head);
+  assign ll_arbiter_isJustASink = (_zz_ll_arbiter_isJustASink[0] ? channels_0_descriptorValid : channels_1_descriptorValid);
+  assign ll_arbiter_doDescriptorStall = (_zz_ll_arbiter_doDescriptorStall[0] ? ((! channels_0_ll_controlNoCompletion) || channels_0_ll_gotDescriptorStall) : ((! channels_1_ll_controlNoCompletion) || channels_1_ll_gotDescriptorStall));
+  assign ll_arbiter_onSgStream = (_zz_ll_arbiter_onSgStream[0] ? channels_0_ll_onSgStream : channels_1_ll_onSgStream);
+  assign when_DmaSg_l1149 = (! ll_cmd_valid);
+  assign when_DmaSg_l1148 = (! ll_cmd_valid);
+  assign when_DmaSg_l1148_1 = (! ll_cmd_valid);
+  assign when_DmaSg_l1148_2 = (! ll_cmd_valid);
+  assign when_DmaSg_l1148_3 = (! ll_cmd_valid);
+  assign when_DmaSg_l1154 = (! ll_cmd_valid);
+  assign when_DmaSg_l1155 = (! ll_cmd_valid);
+  assign when_DmaSg_l1156 = (! ll_cmd_valid);
+  assign when_DmaSg_l1160 = (! ll_cmd_valid);
+  assign when_DmaSg_l1161 = (|{_zz_ll_arbiter_head_1,channels_0_ll_requestLl});
+  assign when_DmaSg_l1169 = (! ll_arbiter_isJustASink);
+  assign when_DmaSg_l1169_1 = (! ll_arbiter_isJustASink);
+  assign when_DmaSg_l1177 = (ll_cmd_writeFired && ll_cmd_readFired);
+  assign ll_cmd_context_channel = ll_cmd_oh_1;
+  assign io_sgRead_cmd_valid = ((ll_cmd_valid && (! ll_cmd_readFired)) && (! ll_cmd_onSgStream));
+  assign io_sgRead_cmd_payload_last = 1'b1;
+  assign io_sgRead_cmd_payload_fragment_address = {ll_cmd_ptrNext[31 : 5],5'h0};
+  assign io_sgRead_cmd_payload_fragment_length = 5'h1f;
+  assign io_sgRead_cmd_payload_fragment_opcode = 1'b0;
+  assign io_sgRead_cmd_payload_fragment_context = ll_cmd_context_channel;
+  assign io_sgWrite_cmd_valid = ((ll_cmd_valid && (! ll_cmd_writeFired)) && (! ll_cmd_onSgStream));
+  assign io_sgWrite_cmd_payload_last = 1'b1;
+  assign io_sgWrite_cmd_payload_fragment_address = {ll_cmd_ptr[31 : 5],5'h0};
+  assign io_sgWrite_cmd_payload_fragment_length = 2'b11;
+  assign io_sgWrite_cmd_payload_fragment_opcode = 1'b1;
+  assign io_sgWrite_cmd_payload_fragment_context = ll_cmd_context_channel;
+  assign ll_cmd_writeMaskSplit_0 = io_sgWrite_cmd_payload_fragment_mask[3 : 0];
+  assign ll_cmd_writeMaskSplit_1 = io_sgWrite_cmd_payload_fragment_mask[7 : 4];
+  assign ll_cmd_writeMaskSplit_2 = io_sgWrite_cmd_payload_fragment_mask[11 : 8];
+  assign ll_cmd_writeMaskSplit_3 = io_sgWrite_cmd_payload_fragment_mask[15 : 12];
+  assign ll_cmd_writeMaskSplit_4 = io_sgWrite_cmd_payload_fragment_mask[19 : 16];
+  assign ll_cmd_writeMaskSplit_5 = io_sgWrite_cmd_payload_fragment_mask[23 : 20];
+  assign ll_cmd_writeMaskSplit_6 = io_sgWrite_cmd_payload_fragment_mask[27 : 24];
+  assign ll_cmd_writeMaskSplit_7 = io_sgWrite_cmd_payload_fragment_mask[31 : 28];
+  assign ll_cmd_writeDataSplit_0 = io_sgWrite_cmd_payload_fragment_data[31 : 0];
+  assign ll_cmd_writeDataSplit_1 = io_sgWrite_cmd_payload_fragment_data[63 : 32];
+  assign ll_cmd_writeDataSplit_2 = io_sgWrite_cmd_payload_fragment_data[95 : 64];
+  assign ll_cmd_writeDataSplit_3 = io_sgWrite_cmd_payload_fragment_data[127 : 96];
+  assign ll_cmd_writeDataSplit_4 = io_sgWrite_cmd_payload_fragment_data[159 : 128];
+  assign ll_cmd_writeDataSplit_5 = io_sgWrite_cmd_payload_fragment_data[191 : 160];
+  assign ll_cmd_writeDataSplit_6 = io_sgWrite_cmd_payload_fragment_data[223 : 192];
+  assign ll_cmd_writeDataSplit_7 = io_sgWrite_cmd_payload_fragment_data[255 : 224];
+  assign _zz_4 = zz_io_sgWrite_cmd_payload_fragment_mask(1'b0);
+  always @(*) io_sgWrite_cmd_payload_fragment_mask = _zz_4;
+  always @(*) begin
+    io_sgWrite_cmd_payload_fragment_data[63 : 32] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[95 : 64] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[127 : 96] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[159 : 128] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[191 : 160] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[223 : 192] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[255 : 224] = 32'bxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx;
+    io_sgWrite_cmd_payload_fragment_data[31 : 0] = 32'h0;
+    io_sgWrite_cmd_payload_fragment_data[26 : 0] = ll_cmd_bytesDone;
+    io_sgWrite_cmd_payload_fragment_data[30] = ll_cmd_endOfPacket;
+    io_sgWrite_cmd_payload_fragment_data[31] = ((! ll_cmd_isJustASink) && ll_cmd_doDescriptorStall);
+  end
+
+  assign io_sgRead_cmd_fire = (io_sgRead_cmd_valid && io_sgRead_cmd_ready);
+  assign io_sgWrite_cmd_fire = (io_sgWrite_cmd_valid && io_sgWrite_cmd_ready);
+  assign ll_readRsp_context_channel = io_sgRead_rsp_payload_fragment_context[0 : 0];
+  assign _zz_ll_readRsp_oh_0 = (2'b01 <<< ll_readRsp_context_channel);
+  assign ll_readRsp_oh_0 = _zz_ll_readRsp_oh_0[0];
+  assign ll_readRsp_oh_1 = _zz_ll_readRsp_oh_0[1];
+  assign io_sgRead_rsp_ready = 1'b1;
+  assign io_sgRead_rsp_fire = (io_sgRead_rsp_valid && io_sgRead_rsp_ready);
+  assign when_DmaSg_l1248 = 1'b1;
+  assign when_DmaSg_l1248_1 = 1'b1;
+  assign when_DmaSg_l1248_2 = 1'b1;
+  assign when_DmaSg_l1248_3 = 1'b1;
+  assign when_DmaSg_l1248_4 = 1'b1;
+  assign when_DmaSg_l1248_5 = 1'b1;
+  assign when_DmaSg_l1248_6 = 1'b1;
+  assign when_DmaSg_l1271 = (io_sgRead_rsp_fire && io_sgRead_rsp_payload_last);
+  assign ll_writeRsp_context_channel = io_sgWrite_rsp_payload_fragment_context[0 : 0];
+  assign _zz_ll_writeRsp_oh_0 = (2'b01 <<< ll_writeRsp_context_channel);
+  assign ll_writeRsp_oh_0 = _zz_ll_writeRsp_oh_0[0];
+  assign ll_writeRsp_oh_1 = _zz_ll_writeRsp_oh_0[1];
+  assign io_sgWrite_rsp_ready = 1'b1;
+  assign io_sgWrite_rsp_fire = (io_sgWrite_rsp_valid && io_sgWrite_rsp_ready);
   always @(*) begin
     io_interrupts = 4'b0000;
     if(channels_0_interrupts_completion_valid) begin
       io_interrupts[0] = 1'b1;
     end
     if(channels_0_interrupts_onChannelCompletion_valid) begin
+      io_interrupts[0] = 1'b1;
+    end
+    if(channels_0_interrupts_onLinkedListUpdate_valid) begin
       io_interrupts[0] = 1'b1;
     end
     if(channels_0_interrupts_s2mPacket_valid) begin
@@ -6636,6 +7607,9 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       io_interrupts[1] = 1'b1;
     end
     if(channels_1_interrupts_onChannelCompletion_valid) begin
+      io_interrupts[1] = 1'b1;
+    end
+    if(channels_1_interrupts_onLinkedListUpdate_valid) begin
       io_interrupts[1] = 1'b1;
     end
     if(channels_2_interrupts_completion_valid) begin
@@ -6684,6 +7658,34 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
   assign when_BusSlaveFactory_l379_1 = io_ctrl_PWDATA[0];
   always @(*) begin
+    when_BusSlaveFactory_l377_2 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h002c : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_2 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_2 = io_ctrl_PWDATA[4];
+  always @(*) begin
+    when_BusSlaveFactory_l377_3 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h002c : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_3 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_3 = io_ctrl_PWDATA[4];
+  always @(*) begin
     when_BusSlaveFactory_l341 = 1'b0;
     case(io_ctrl_PADDR)
       14'h0054 : begin
@@ -6724,39 +7726,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_2 = io_ctrl_PWDATA[4];
-  always @(*) begin
-    when_BusSlaveFactory_l377_2 = 1'b0;
-    case(io_ctrl_PADDR)
-      14'h00ac : begin
-        if(ctrl_doWrite) begin
-          when_BusSlaveFactory_l377_2 = 1'b1;
-        end
-      end
-      default : begin
-      end
-    endcase
-  end
-
-  assign when_BusSlaveFactory_l379_2 = io_ctrl_PWDATA[0];
-  always @(*) begin
-    when_BusSlaveFactory_l377_3 = 1'b0;
-    case(io_ctrl_PADDR)
-      14'h00ac : begin
-        if(ctrl_doWrite) begin
-          when_BusSlaveFactory_l377_3 = 1'b1;
-        end
-      end
-      default : begin
-      end
-    endcase
-  end
-
-  assign when_BusSlaveFactory_l379_3 = io_ctrl_PWDATA[0];
+  assign when_BusSlaveFactory_l347_2 = io_ctrl_PWDATA[3];
   always @(*) begin
     when_BusSlaveFactory_l341_3 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h00d4 : begin
+      14'h0054 : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l341_3 = 1'b1;
         end
@@ -6766,25 +7740,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_3 = io_ctrl_PWDATA[0];
-  always @(*) begin
-    when_BusSlaveFactory_l341_4 = 1'b0;
-    case(io_ctrl_PADDR)
-      14'h00d4 : begin
-        if(ctrl_doWrite) begin
-          when_BusSlaveFactory_l341_4 = 1'b1;
-        end
-      end
-      default : begin
-      end
-    endcase
-  end
-
-  assign when_BusSlaveFactory_l347_4 = io_ctrl_PWDATA[2];
+  assign when_BusSlaveFactory_l347_3 = io_ctrl_PWDATA[4];
   always @(*) begin
     when_BusSlaveFactory_l377_4 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h012c : begin
+      14'h00ac : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l377_4 = 1'b1;
         end
@@ -6798,7 +7758,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   always @(*) begin
     when_BusSlaveFactory_l377_5 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h012c : begin
+      14'h00ac : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l377_5 = 1'b1;
         end
@@ -6810,9 +7770,51 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
   assign when_BusSlaveFactory_l379_5 = io_ctrl_PWDATA[0];
   always @(*) begin
+    when_BusSlaveFactory_l377_6 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h00ac : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_6 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_6 = io_ctrl_PWDATA[4];
+  always @(*) begin
+    when_BusSlaveFactory_l377_7 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h00ac : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_7 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_7 = io_ctrl_PWDATA[4];
+  always @(*) begin
+    when_BusSlaveFactory_l341_4 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h00d4 : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l341_4 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_4 = io_ctrl_PWDATA[0];
+  always @(*) begin
     when_BusSlaveFactory_l341_5 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h0154 : begin
+      14'h00d4 : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l341_5 = 1'b1;
         end
@@ -6822,11 +7824,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_5 = io_ctrl_PWDATA[0];
+  assign when_BusSlaveFactory_l347_5 = io_ctrl_PWDATA[2];
   always @(*) begin
     when_BusSlaveFactory_l341_6 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h0154 : begin
+      14'h00d4 : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l341_6 = 1'b1;
         end
@@ -6836,7 +7838,35 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_6 = io_ctrl_PWDATA[2];
+  assign when_BusSlaveFactory_l347_6 = io_ctrl_PWDATA[3];
+  always @(*) begin
+    when_BusSlaveFactory_l377_8 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h012c : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_8 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_8 = io_ctrl_PWDATA[0];
+  always @(*) begin
+    when_BusSlaveFactory_l377_9 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h012c : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_9 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_9 = io_ctrl_PWDATA[0];
   always @(*) begin
     when_BusSlaveFactory_l341_7 = 1'b0;
     case(io_ctrl_PADDR)
@@ -6850,39 +7880,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_7 = io_ctrl_PWDATA[4];
-  always @(*) begin
-    when_BusSlaveFactory_l377_6 = 1'b0;
-    case(io_ctrl_PADDR)
-      14'h01ac : begin
-        if(ctrl_doWrite) begin
-          when_BusSlaveFactory_l377_6 = 1'b1;
-        end
-      end
-      default : begin
-      end
-    endcase
-  end
-
-  assign when_BusSlaveFactory_l379_6 = io_ctrl_PWDATA[0];
-  always @(*) begin
-    when_BusSlaveFactory_l377_7 = 1'b0;
-    case(io_ctrl_PADDR)
-      14'h01ac : begin
-        if(ctrl_doWrite) begin
-          when_BusSlaveFactory_l377_7 = 1'b1;
-        end
-      end
-      default : begin
-      end
-    endcase
-  end
-
-  assign when_BusSlaveFactory_l379_7 = io_ctrl_PWDATA[0];
+  assign when_BusSlaveFactory_l347_7 = io_ctrl_PWDATA[0];
   always @(*) begin
     when_BusSlaveFactory_l341_8 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h01d4 : begin
+      14'h0154 : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l341_8 = 1'b1;
         end
@@ -6892,11 +7894,11 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_8 = io_ctrl_PWDATA[0];
+  assign when_BusSlaveFactory_l347_8 = io_ctrl_PWDATA[2];
   always @(*) begin
     when_BusSlaveFactory_l341_9 = 1'b0;
     case(io_ctrl_PADDR)
-      14'h01d4 : begin
+      14'h0154 : begin
         if(ctrl_doWrite) begin
           when_BusSlaveFactory_l341_9 = 1'b1;
         end
@@ -6906,16 +7908,74 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     endcase
   end
 
-  assign when_BusSlaveFactory_l347_9 = io_ctrl_PWDATA[2];
+  assign when_BusSlaveFactory_l347_9 = io_ctrl_PWDATA[4];
+  always @(*) begin
+    when_BusSlaveFactory_l377_10 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h01ac : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_10 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_10 = io_ctrl_PWDATA[0];
+  always @(*) begin
+    when_BusSlaveFactory_l377_11 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h01ac : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l377_11 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379_11 = io_ctrl_PWDATA[0];
+  always @(*) begin
+    when_BusSlaveFactory_l341_10 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h01d4 : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l341_10 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_10 = io_ctrl_PWDATA[0];
+  always @(*) begin
+    when_BusSlaveFactory_l341_11 = 1'b0;
+    case(io_ctrl_PADDR)
+      14'h01d4 : begin
+        if(ctrl_doWrite) begin
+          when_BusSlaveFactory_l341_11 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_11 = io_ctrl_PWDATA[2];
   assign when_Apb3SlaveFactory_l81 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0010);
-  assign when_Apb3SlaveFactory_l81_1 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0080);
-  assign when_Apb3SlaveFactory_l81_2 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0110);
-  assign when_Apb3SlaveFactory_l81_3 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0180);
+  assign when_Apb3SlaveFactory_l81_1 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0070);
+  assign when_Apb3SlaveFactory_l81_2 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0080);
+  assign when_Apb3SlaveFactory_l81_3 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h00f0);
+  assign when_Apb3SlaveFactory_l81_4 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0110);
+  assign when_Apb3SlaveFactory_l81_5 = ((io_ctrl_PADDR & (~ 14'h0003)) == 14'h0180);
   assign channels_0_fifo_push_ptrIncr_value = _zz_channels_0_fifo_push_ptrIncr_value;
   assign channels_0_fifo_pop_bytesIncr_value = _zz_channels_0_fifo_pop_bytesIncr_value_1;
   assign channels_0_fifo_pop_bytesDecr_value = channels_0_pop_b2m_decrBytes;
   assign channels_0_fifo_pop_ptrIncr_value = _zz_channels_0_fifo_pop_ptrIncr_value;
-  assign channels_1_fifo_push_ptrIncr_value = _zz_channels_1_fifo_push_ptrIncr_value;
+  assign channels_1_fifo_push_ptrIncr_value = _zz_channels_1_fifo_push_ptrIncr_value_1;
   assign channels_1_fifo_pop_bytesIncr_value = _zz_channels_1_fifo_pop_bytesIncr_value_1;
   assign channels_1_fifo_pop_bytesDecr_value = 16'h0;
   assign channels_1_fifo_pop_ptrIncr_value = _zz_channels_1_fifo_pop_ptrIncr_value;
@@ -6927,6 +7987,8 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign channels_3_fifo_pop_bytesIncr_value = _zz_channels_3_fifo_pop_bytesIncr_value_1;
   assign channels_3_fifo_pop_bytesDecr_value = 16'h0;
   assign channels_3_fifo_pop_ptrIncr_value = _zz_channels_3_fifo_pop_ptrIncr_value;
+  assign ll_0_descriptorUpdate = (channels_0_ll_descriptorUpdated && (! channels_0_ll_gotDescriptorStall));
+  assign ll_1_descriptorUpdate = (channels_1_ll_descriptorUpdated && (! channels_1_ll_gotDescriptorStall));
   always @(posedge clk) begin
     if(reset) begin
       channels_0_channelValid <= 1'b0;
@@ -6934,11 +7996,15 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       channels_0_priority <= 2'b00;
       channels_0_weight <= 2'b00;
       channels_0_ctrl_kick <= 1'b0;
+      channels_0_ll_valid <= 1'b0;
+      channels_0_ll_onSgStream <= 1'b0;
       channels_0_pop_b2m_memPending <= 4'b0000;
       channels_0_interrupts_completion_enable <= 1'b0;
       channels_0_interrupts_completion_valid <= 1'b0;
       channels_0_interrupts_onChannelCompletion_enable <= 1'b0;
       channels_0_interrupts_onChannelCompletion_valid <= 1'b0;
+      channels_0_interrupts_onLinkedListUpdate_enable <= 1'b0;
+      channels_0_interrupts_onLinkedListUpdate_valid <= 1'b0;
       channels_0_interrupts_s2mPacket_enable <= 1'b0;
       channels_0_interrupts_s2mPacket_valid <= 1'b0;
       channels_1_channelValid <= 1'b0;
@@ -6946,12 +8012,16 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       channels_1_priority <= 2'b00;
       channels_1_weight <= 2'b00;
       channels_1_ctrl_kick <= 1'b0;
+      channels_1_ll_valid <= 1'b0;
+      channels_1_ll_onSgStream <= 1'b0;
       channels_1_push_m2b_loadDone <= 1'b1;
       channels_1_push_m2b_memPending <= 4'b0000;
       channels_1_interrupts_completion_enable <= 1'b0;
       channels_1_interrupts_completion_valid <= 1'b0;
       channels_1_interrupts_onChannelCompletion_enable <= 1'b0;
       channels_1_interrupts_onChannelCompletion_valid <= 1'b0;
+      channels_1_interrupts_onLinkedListUpdate_enable <= 1'b0;
+      channels_1_interrupts_onLinkedListUpdate_valid <= 1'b0;
       channels_2_channelValid <= 1'b0;
       channels_2_descriptorValid <= 1'b0;
       channels_2_priority <= 2'b00;
@@ -7029,6 +8099,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       memory_core_io_reads_2_rsp_rValidN <= 1'b1;
       _zz_io_flush <= 1'b0;
       io_write_cmd_payload_first <= 1'b1;
+      ll_cmd_valid <= 1'b0;
     end else begin
       if(channels_0_channelStart) begin
         channels_0_channelValid <= 1'b1;
@@ -7046,6 +8117,19 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       if(channels_0_channelCompletion) begin
         channels_0_ctrl_kick <= 1'b0;
       end
+      if(when_DmaSg_l318) begin
+        if(when_DmaSg_l320) begin
+          if(!when_DmaSg_l322) begin
+            channels_0_ll_valid <= 1'b0;
+          end
+        end
+      end
+      if(channels_0_ll_sgStart) begin
+        channels_0_ll_valid <= 1'b1;
+      end
+      if(channels_0_channelCompletion) begin
+        channels_0_ll_valid <= 1'b0;
+      end
       channels_0_pop_b2m_memPending <= (_zz_channels_0_pop_b2m_memPending - _zz_channels_0_pop_b2m_memPending_3);
       if(when_DmaSg_l255) begin
         channels_0_interrupts_completion_valid <= 1'b1;
@@ -7059,10 +8143,16 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       if(when_DmaSg_l255_3) begin
         channels_0_interrupts_onChannelCompletion_valid <= 1'b0;
       end
+      if(channels_0_ll_descriptorUpdated) begin
+        channels_0_interrupts_onLinkedListUpdate_valid <= 1'b1;
+      end
+      if(when_DmaSg_l255_4) begin
+        channels_0_interrupts_onLinkedListUpdate_valid <= 1'b0;
+      end
       if(channels_0_pop_b2m_packetSync) begin
         channels_0_interrupts_s2mPacket_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_4) begin
+      if(when_DmaSg_l255_5) begin
         channels_0_interrupts_s2mPacket_valid <= 1'b0;
       end
       if(channels_1_channelStart) begin
@@ -7081,21 +8171,40 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       if(channels_1_channelCompletion) begin
         channels_1_ctrl_kick <= 1'b0;
       end
+      if(when_DmaSg_l318_1) begin
+        if(when_DmaSg_l320_1) begin
+          if(!when_DmaSg_l322_1) begin
+            channels_1_ll_valid <= 1'b0;
+          end
+        end
+      end
+      if(channels_1_ll_sgStart) begin
+        channels_1_ll_valid <= 1'b1;
+      end
+      if(channels_1_channelCompletion) begin
+        channels_1_ll_valid <= 1'b0;
+      end
       channels_1_push_m2b_memPending <= (_zz_channels_1_push_m2b_memPending - _zz_channels_1_push_m2b_memPending_3);
       if(channels_1_descriptorStart) begin
         channels_1_push_m2b_loadDone <= 1'b0;
       end
-      if(when_DmaSg_l255_5) begin
+      if(when_DmaSg_l255_6) begin
         channels_1_interrupts_completion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_6) begin
+      if(when_DmaSg_l255_7) begin
         channels_1_interrupts_completion_valid <= 1'b0;
       end
-      if(when_DmaSg_l255_7) begin
+      if(when_DmaSg_l255_8) begin
         channels_1_interrupts_onChannelCompletion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_8) begin
+      if(when_DmaSg_l255_9) begin
         channels_1_interrupts_onChannelCompletion_valid <= 1'b0;
+      end
+      if(channels_1_ll_descriptorUpdated) begin
+        channels_1_interrupts_onLinkedListUpdate_valid <= 1'b1;
+      end
+      if(when_DmaSg_l255_10) begin
+        channels_1_interrupts_onLinkedListUpdate_valid <= 1'b0;
       end
       if(channels_2_channelStart) begin
         channels_2_channelValid <= 1'b1;
@@ -7114,22 +8223,22 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
         channels_2_ctrl_kick <= 1'b0;
       end
       channels_2_pop_b2m_memPending <= (_zz_channels_2_pop_b2m_memPending - _zz_channels_2_pop_b2m_memPending_3);
-      if(when_DmaSg_l255_9) begin
+      if(when_DmaSg_l255_11) begin
         channels_2_interrupts_completion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_10) begin
+      if(when_DmaSg_l255_12) begin
         channels_2_interrupts_completion_valid <= 1'b0;
       end
-      if(when_DmaSg_l255_11) begin
+      if(when_DmaSg_l255_13) begin
         channels_2_interrupts_onChannelCompletion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_12) begin
+      if(when_DmaSg_l255_14) begin
         channels_2_interrupts_onChannelCompletion_valid <= 1'b0;
       end
       if(channels_2_pop_b2m_packetSync) begin
         channels_2_interrupts_s2mPacket_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_13) begin
+      if(when_DmaSg_l255_15) begin
         channels_2_interrupts_s2mPacket_valid <= 1'b0;
       end
       if(channels_3_channelStart) begin
@@ -7152,16 +8261,16 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       if(channels_3_descriptorStart) begin
         channels_3_push_m2b_loadDone <= 1'b0;
       end
-      if(when_DmaSg_l255_14) begin
+      if(when_DmaSg_l255_16) begin
         channels_3_interrupts_completion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_15) begin
+      if(when_DmaSg_l255_17) begin
         channels_3_interrupts_completion_valid <= 1'b0;
       end
-      if(when_DmaSg_l255_16) begin
+      if(when_DmaSg_l255_18) begin
         channels_3_interrupts_onChannelCompletion_valid <= 1'b1;
       end
-      if(when_DmaSg_l255_17) begin
+      if(when_DmaSg_l255_19) begin
         channels_3_interrupts_onChannelCompletion_valid <= 1'b0;
       end
       if(when_package_l12) begin
@@ -7354,6 +8463,15 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       if(io_write_cmd_fire) begin
         io_write_cmd_payload_first <= io_write_cmd_payload_last;
       end
+      if(when_DmaSg_l1160) begin
+        if(when_DmaSg_l1161) begin
+          ll_cmd_valid <= 1'b1;
+        end
+      end else begin
+        if(when_DmaSg_l1177) begin
+          ll_cmd_valid <= 1'b0;
+        end
+      end
       if(when_BusSlaveFactory_l377_1) begin
         if(when_BusSlaveFactory_l379_1) begin
           channels_0_ctrl_kick <= _zz_channels_0_ctrl_kick[0];
@@ -7371,60 +8489,75 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       end
       if(when_BusSlaveFactory_l341_2) begin
         if(when_BusSlaveFactory_l347_2) begin
-          channels_0_interrupts_s2mPacket_valid <= _zz_channels_0_interrupts_s2mPacket_valid[0];
-        end
-      end
-      if(when_BusSlaveFactory_l377_3) begin
-        if(when_BusSlaveFactory_l379_3) begin
-          channels_1_ctrl_kick <= _zz_channels_1_ctrl_kick[0];
+          channels_0_interrupts_onLinkedListUpdate_valid <= _zz_channels_0_interrupts_onLinkedListUpdate_valid[0];
         end
       end
       if(when_BusSlaveFactory_l341_3) begin
         if(when_BusSlaveFactory_l347_3) begin
-          channels_1_interrupts_completion_valid <= _zz_channels_1_interrupts_completion_valid[0];
-        end
-      end
-      if(when_BusSlaveFactory_l341_4) begin
-        if(when_BusSlaveFactory_l347_4) begin
-          channels_1_interrupts_onChannelCompletion_valid <= _zz_channels_1_interrupts_onChannelCompletion_valid[0];
+          channels_0_interrupts_s2mPacket_valid <= _zz_channels_0_interrupts_s2mPacket_valid[0];
         end
       end
       if(when_BusSlaveFactory_l377_5) begin
         if(when_BusSlaveFactory_l379_5) begin
-          channels_2_ctrl_kick <= _zz_channels_2_ctrl_kick[0];
+          channels_1_ctrl_kick <= _zz_channels_1_ctrl_kick[0];
+        end
+      end
+      if(when_BusSlaveFactory_l341_4) begin
+        if(when_BusSlaveFactory_l347_4) begin
+          channels_1_interrupts_completion_valid <= _zz_channels_1_interrupts_completion_valid[0];
         end
       end
       if(when_BusSlaveFactory_l341_5) begin
         if(when_BusSlaveFactory_l347_5) begin
-          channels_2_interrupts_completion_valid <= _zz_channels_2_interrupts_completion_valid[0];
+          channels_1_interrupts_onChannelCompletion_valid <= _zz_channels_1_interrupts_onChannelCompletion_valid[0];
         end
       end
       if(when_BusSlaveFactory_l341_6) begin
         if(when_BusSlaveFactory_l347_6) begin
-          channels_2_interrupts_onChannelCompletion_valid <= _zz_channels_2_interrupts_onChannelCompletion_valid[0];
+          channels_1_interrupts_onLinkedListUpdate_valid <= _zz_channels_1_interrupts_onLinkedListUpdate_valid[0];
+        end
+      end
+      if(when_BusSlaveFactory_l377_9) begin
+        if(when_BusSlaveFactory_l379_9) begin
+          channels_2_ctrl_kick <= _zz_channels_2_ctrl_kick[0];
         end
       end
       if(when_BusSlaveFactory_l341_7) begin
         if(when_BusSlaveFactory_l347_7) begin
-          channels_2_interrupts_s2mPacket_valid <= _zz_channels_2_interrupts_s2mPacket_valid[0];
-        end
-      end
-      if(when_BusSlaveFactory_l377_7) begin
-        if(when_BusSlaveFactory_l379_7) begin
-          channels_3_ctrl_kick <= _zz_channels_3_ctrl_kick[0];
+          channels_2_interrupts_completion_valid <= _zz_channels_2_interrupts_completion_valid[0];
         end
       end
       if(when_BusSlaveFactory_l341_8) begin
         if(when_BusSlaveFactory_l347_8) begin
-          channels_3_interrupts_completion_valid <= _zz_channels_3_interrupts_completion_valid[0];
+          channels_2_interrupts_onChannelCompletion_valid <= _zz_channels_2_interrupts_onChannelCompletion_valid[0];
         end
       end
       if(when_BusSlaveFactory_l341_9) begin
         if(when_BusSlaveFactory_l347_9) begin
+          channels_2_interrupts_s2mPacket_valid <= _zz_channels_2_interrupts_s2mPacket_valid[0];
+        end
+      end
+      if(when_BusSlaveFactory_l377_11) begin
+        if(when_BusSlaveFactory_l379_11) begin
+          channels_3_ctrl_kick <= _zz_channels_3_ctrl_kick[0];
+        end
+      end
+      if(when_BusSlaveFactory_l341_10) begin
+        if(when_BusSlaveFactory_l347_10) begin
+          channels_3_interrupts_completion_valid <= _zz_channels_3_interrupts_completion_valid[0];
+        end
+      end
+      if(when_BusSlaveFactory_l341_11) begin
+        if(when_BusSlaveFactory_l347_11) begin
           channels_3_interrupts_onChannelCompletion_valid <= _zz_channels_3_interrupts_onChannelCompletion_valid[0];
         end
       end
       case(io_ctrl_PADDR)
+        14'h0078 : begin
+          if(ctrl_doWrite) begin
+            channels_0_ll_onSgStream <= io_ctrl_PWDATA[0];
+          end
+        end
         14'h0044 : begin
           if(ctrl_doWrite) begin
             channels_0_priority <= io_ctrl_PWDATA[1 : 0];
@@ -7435,7 +8568,13 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
           if(ctrl_doWrite) begin
             channels_0_interrupts_completion_enable <= io_ctrl_PWDATA[0];
             channels_0_interrupts_onChannelCompletion_enable <= io_ctrl_PWDATA[2];
+            channels_0_interrupts_onLinkedListUpdate_enable <= io_ctrl_PWDATA[3];
             channels_0_interrupts_s2mPacket_enable <= io_ctrl_PWDATA[4];
+          end
+        end
+        14'h00f8 : begin
+          if(ctrl_doWrite) begin
+            channels_1_ll_onSgStream <= io_ctrl_PWDATA[0];
           end
         end
         14'h00c4 : begin
@@ -7448,6 +8587,7 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
           if(ctrl_doWrite) begin
             channels_1_interrupts_completion_enable <= io_ctrl_PWDATA[0];
             channels_1_interrupts_onChannelCompletion_enable <= io_ctrl_PWDATA[2];
+            channels_1_interrupts_onLinkedListUpdate_enable <= io_ctrl_PWDATA[3];
           end
         end
         14'h0144 : begin
@@ -7482,6 +8622,25 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   end
 
   always @(posedge clk) begin
+    if(channels_0_bytesProbe_incr_valid) begin
+      channels_0_bytesProbe_value <= (_zz_channels_0_bytesProbe_value + 27'h0000001);
+    end
+    if(channels_0_descriptorStart) begin
+      channels_0_ll_packet <= 1'b0;
+    end
+    if(channels_0_descriptorStart) begin
+      channels_0_ll_requireSync <= 1'b0;
+    end
+    if(when_DmaSg_l318) begin
+      channels_0_ll_waitDone <= 1'b0;
+      if(when_DmaSg_l320) begin
+        channels_0_ll_head <= 1'b0;
+      end
+    end
+    if(channels_0_channelStart) begin
+      channels_0_ll_waitDone <= 1'b0;
+      channels_0_ll_head <= 1'b1;
+    end
     channels_0_fifo_push_ptr <= (channels_0_fifo_push_ptr + channels_0_fifo_push_ptrIncr_value);
     if(channels_0_channelStart) begin
       channels_0_fifo_push_ptr <= 12'h0;
@@ -7514,6 +8673,14 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
     if(channels_0_pop_b2m_packetSync) begin
       channels_0_push_s2b_packetLock <= 1'b0;
+      if(when_DmaSg_l532) begin
+        if(!channels_0_push_s2b_completionOnLast) begin
+          if(when_DmaSg_l536) begin
+            channels_0_ll_requireSync <= 1'b1;
+          end
+        end
+        channels_0_ll_packet <= 1'b1;
+      end
     end
     if(channels_0_channelStart) begin
       channels_0_pop_b2m_bytesToSkip <= 5'h0;
@@ -7541,6 +8708,28 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       channels_0_fifo_push_ptr <= 12'h0;
       channels_0_fifo_push_available <= (channels_0_fifo_words + 12'h001);
       channels_0_fifo_pop_ptr <= 12'h0;
+    end
+    if(when_DmaSg_l625) begin
+      channels_0_bytesProbe_value <= 27'h0;
+    end
+    if(channels_1_bytesProbe_incr_valid) begin
+      channels_1_bytesProbe_value <= (_zz_channels_1_bytesProbe_value + 27'h0000001);
+    end
+    if(channels_1_descriptorStart) begin
+      channels_1_ll_packet <= 1'b0;
+    end
+    if(channels_1_descriptorStart) begin
+      channels_1_ll_requireSync <= 1'b0;
+    end
+    if(when_DmaSg_l318_1) begin
+      channels_1_ll_waitDone <= 1'b0;
+      if(when_DmaSg_l320_1) begin
+        channels_1_ll_head <= 1'b0;
+      end
+    end
+    if(channels_1_channelStart) begin
+      channels_1_ll_waitDone <= 1'b0;
+      channels_1_ll_head <= 1'b1;
     end
     channels_1_fifo_push_ptr <= (channels_1_fifo_push_ptr + channels_1_fifo_push_ptrIncr_value);
     if(channels_1_channelStart) begin
@@ -7582,6 +8771,9 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
       channels_1_fifo_push_ptr <= 12'h0;
       channels_1_fifo_push_available <= (channels_1_fifo_words + 12'h001);
       channels_1_fifo_pop_ptr <= 12'h0;
+    end
+    if(when_DmaSg_l625_1) begin
+      channels_1_bytesProbe_value <= 27'h0;
     end
     channels_2_fifo_push_ptr <= (channels_2_fifo_push_ptr + channels_2_fifo_push_ptrIncr_value);
     if(channels_2_channelStart) begin
@@ -7814,6 +9006,130 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
         channels_2_pop_b2m_bytesToSkip <= _zz_channels_0_pop_b2m_bytesToSkip;
       end
     end
+    if(when_DmaSg_l1149) begin
+      ll_cmd_oh_0 <= channels_0_ll_requestLl;
+      ll_cmd_oh_1 <= _zz_ll_arbiter_head_1;
+    end
+    if(when_DmaSg_l1148) begin
+      ll_cmd_ptr <= (_zz_ll_cmd_ptr[0] ? channels_0_ll_ptr : channels_1_ll_ptr);
+    end
+    if(when_DmaSg_l1148_1) begin
+      ll_cmd_ptrNext <= (_zz_ll_cmd_ptrNext[0] ? channels_0_ll_ptrNext : channels_1_ll_ptrNext);
+    end
+    if(when_DmaSg_l1148_2) begin
+      ll_cmd_bytesDone <= channels_0_bytesProbe_value;
+    end
+    if(when_DmaSg_l1148_3) begin
+      ll_cmd_endOfPacket <= (_zz_ll_cmd_endOfPacket[0] ? channels_0_ll_packet : channels_1_ll_packet);
+    end
+    if(when_DmaSg_l1154) begin
+      ll_cmd_isJustASink <= ll_arbiter_isJustASink;
+    end
+    if(when_DmaSg_l1155) begin
+      ll_cmd_doDescriptorStall <= ll_arbiter_doDescriptorStall;
+    end
+    if(when_DmaSg_l1156) begin
+      ll_cmd_onSgStream <= ll_arbiter_onSgStream;
+    end
+    if(when_DmaSg_l1160) begin
+      ll_cmd_oh_0 <= channels_0_ll_requestLl;
+      ll_cmd_oh_1 <= _zz_ll_arbiter_head_1;
+      if(channels_0_ll_requestLl) begin
+        channels_0_ll_waitDone <= 1'b1;
+        channels_0_ll_writeDone <= ll_arbiter_head;
+        channels_0_ll_justASync <= ll_arbiter_isJustASink;
+        channels_0_ll_packet <= 1'b0;
+        channels_0_ll_requireSync <= 1'b0;
+        if(when_DmaSg_l1169) begin
+          channels_0_ll_ptr <= channels_0_ll_ptrNext;
+        end
+        channels_0_ll_readDone <= ll_arbiter_isJustASink;
+      end
+      if(_zz_ll_arbiter_head_1) begin
+        channels_1_ll_waitDone <= 1'b1;
+        channels_1_ll_writeDone <= ll_arbiter_head;
+        channels_1_ll_justASync <= ll_arbiter_isJustASink;
+        channels_1_ll_packet <= 1'b0;
+        channels_1_ll_requireSync <= 1'b0;
+        if(when_DmaSg_l1169_1) begin
+          channels_1_ll_ptr <= channels_1_ll_ptrNext;
+        end
+        channels_1_ll_readDone <= ll_arbiter_isJustASink;
+      end
+      ll_cmd_readFired <= ll_arbiter_isJustASink;
+      ll_cmd_writeFired <= ll_arbiter_head;
+    end
+    if(io_sgRead_cmd_fire) begin
+      ll_cmd_readFired <= 1'b1;
+    end
+    if(io_sgWrite_cmd_fire) begin
+      ll_cmd_writeFired <= 1'b1;
+    end
+    if(io_sgRead_rsp_fire) begin
+      if(when_DmaSg_l1248) begin
+        if(ll_readRsp_oh_1) begin
+          channels_1_push_m2b_address <= io_sgRead_rsp_payload_fragment_data[95 : 64];
+        end
+      end
+      if(when_DmaSg_l1248_1) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_pop_b2m_address <= io_sgRead_rsp_payload_fragment_data[159 : 128];
+        end
+      end
+      if(when_DmaSg_l1248_2) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_ll_ptrNext <= io_sgRead_rsp_payload_fragment_data[223 : 192];
+        end
+        if(ll_readRsp_oh_1) begin
+          channels_1_ll_ptrNext <= io_sgRead_rsp_payload_fragment_data[223 : 192];
+        end
+      end
+      if(when_DmaSg_l1248_3) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_bytes <= io_sgRead_rsp_payload_fragment_data[57 : 32];
+        end
+        if(ll_readRsp_oh_1) begin
+          channels_1_bytes <= io_sgRead_rsp_payload_fragment_data[57 : 32];
+        end
+      end
+      if(when_DmaSg_l1248_4) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_ll_controlNoCompletion <= io_sgRead_rsp_payload_fragment_data[63];
+        end
+        if(ll_readRsp_oh_1) begin
+          channels_1_ll_controlNoCompletion <= io_sgRead_rsp_payload_fragment_data[63];
+        end
+      end
+      if(when_DmaSg_l1248_5) begin
+        if(ll_readRsp_oh_1) begin
+          channels_1_pop_b2s_last <= io_sgRead_rsp_payload_fragment_data[62];
+        end
+      end
+      if(when_DmaSg_l1248_6) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_ll_gotDescriptorStall <= io_sgRead_rsp_payload_fragment_data[31];
+        end
+        if(ll_readRsp_oh_1) begin
+          channels_1_ll_gotDescriptorStall <= io_sgRead_rsp_payload_fragment_data[31];
+        end
+      end
+      if(when_DmaSg_l1271) begin
+        if(ll_readRsp_oh_0) begin
+          channels_0_ll_readDone <= 1'b1;
+        end
+        if(ll_readRsp_oh_1) begin
+          channels_1_ll_readDone <= 1'b1;
+        end
+      end
+    end
+    if(io_sgWrite_rsp_fire) begin
+      if(ll_writeRsp_oh_0) begin
+        channels_0_ll_writeDone <= 1'b1;
+      end
+      if(ll_writeRsp_oh_1) begin
+        channels_1_ll_writeDone <= 1'b1;
+      end
+    end
     case(io_ctrl_PADDR)
       14'h000c : begin
         if(ctrl_doWrite) begin
@@ -7927,15 +9243,25 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
     end
     if(when_Apb3SlaveFactory_l81_1) begin
       if(ctrl_doWrite) begin
-        channels_1_push_m2b_address[31 : 0] <= io_ctrl_PWDATA[31 : 0];
+        channels_0_ll_ptrNext[31 : 0] <= io_ctrl_PWDATA[31 : 0];
       end
     end
     if(when_Apb3SlaveFactory_l81_2) begin
       if(ctrl_doWrite) begin
-        channels_2_pop_b2m_address[31 : 0] <= io_ctrl_PWDATA[31 : 0];
+        channels_1_push_m2b_address[31 : 0] <= io_ctrl_PWDATA[31 : 0];
       end
     end
     if(when_Apb3SlaveFactory_l81_3) begin
+      if(ctrl_doWrite) begin
+        channels_1_ll_ptrNext[31 : 0] <= io_ctrl_PWDATA[31 : 0];
+      end
+    end
+    if(when_Apb3SlaveFactory_l81_4) begin
+      if(ctrl_doWrite) begin
+        channels_2_pop_b2m_address[31 : 0] <= io_ctrl_PWDATA[31 : 0];
+      end
+    end
+    if(when_Apb3SlaveFactory_l81_5) begin
       if(ctrl_doWrite) begin
         channels_3_push_m2b_address[31 : 0] <= io_ctrl_PWDATA[31 : 0];
       end
@@ -7945,7 +9271,207 @@ module EfxDMA_Core_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_9_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamArbiter_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
+  input  wire          io_inputs_0_valid,
+  output wire          io_inputs_0_ready,
+  input  wire          io_inputs_0_payload_last,
+  input  wire [1:0]    io_inputs_0_payload_fragment_source,
+  input  wire [0:0]    io_inputs_0_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_0_payload_fragment_address,
+  input  wire [12:0]   io_inputs_0_payload_fragment_length,
+  input  wire [255:0]  io_inputs_0_payload_fragment_data,
+  input  wire [31:0]   io_inputs_0_payload_fragment_mask,
+  input  wire [14:0]   io_inputs_0_payload_fragment_context,
+  input  wire          io_inputs_1_valid,
+  output wire          io_inputs_1_ready,
+  input  wire          io_inputs_1_payload_last,
+  input  wire [1:0]    io_inputs_1_payload_fragment_source,
+  input  wire [0:0]    io_inputs_1_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_1_payload_fragment_address,
+  input  wire [12:0]   io_inputs_1_payload_fragment_length,
+  input  wire [255:0]  io_inputs_1_payload_fragment_data,
+  input  wire [31:0]   io_inputs_1_payload_fragment_mask,
+  input  wire [14:0]   io_inputs_1_payload_fragment_context,
+  output wire          io_output_valid,
+  input  wire          io_output_ready,
+  output wire          io_output_payload_last,
+  output wire [1:0]    io_output_payload_fragment_source,
+  output wire [0:0]    io_output_payload_fragment_opcode,
+  output wire [31:0]   io_output_payload_fragment_address,
+  output wire [12:0]   io_output_payload_fragment_length,
+  output wire [255:0]  io_output_payload_fragment_data,
+  output wire [31:0]   io_output_payload_fragment_mask,
+  output wire [14:0]   io_output_payload_fragment_context,
+  output wire [0:0]    io_chosen,
+  output wire [1:0]    io_chosenOH,
+  input  wire          clk,
+  input  wire          reset
+);
+
+  wire       [3:0]    _zz__zz_maskProposal_0_2;
+  wire       [3:0]    _zz__zz_maskProposal_0_2_1;
+  wire       [1:0]    _zz__zz_maskProposal_0_2_2;
+  reg                 locked;
+  wire                maskProposal_0;
+  wire                maskProposal_1;
+  reg                 maskLocked_0;
+  reg                 maskLocked_1;
+  wire                maskRouted_0;
+  wire                maskRouted_1;
+  wire       [1:0]    _zz_maskProposal_0;
+  wire       [3:0]    _zz_maskProposal_0_1;
+  wire       [3:0]    _zz_maskProposal_0_2;
+  wire       [1:0]    _zz_maskProposal_0_3;
+  wire                io_output_fire;
+  wire                when_Stream_l683;
+  wire                _zz_io_chosen;
+
+  assign _zz__zz_maskProposal_0_2 = (_zz_maskProposal_0_1 - _zz__zz_maskProposal_0_2_1);
+  assign _zz__zz_maskProposal_0_2_2 = {maskLocked_0,maskLocked_1};
+  assign _zz__zz_maskProposal_0_2_1 = {2'd0, _zz__zz_maskProposal_0_2_2};
+  assign maskRouted_0 = (locked ? maskLocked_0 : maskProposal_0);
+  assign maskRouted_1 = (locked ? maskLocked_1 : maskProposal_1);
+  assign _zz_maskProposal_0 = {io_inputs_1_valid,io_inputs_0_valid};
+  assign _zz_maskProposal_0_1 = {_zz_maskProposal_0,_zz_maskProposal_0};
+  assign _zz_maskProposal_0_2 = (_zz_maskProposal_0_1 & (~ _zz__zz_maskProposal_0_2));
+  assign _zz_maskProposal_0_3 = (_zz_maskProposal_0_2[3 : 2] | _zz_maskProposal_0_2[1 : 0]);
+  assign maskProposal_0 = _zz_maskProposal_0_3[0];
+  assign maskProposal_1 = _zz_maskProposal_0_3[1];
+  assign io_output_fire = (io_output_valid && io_output_ready);
+  assign when_Stream_l683 = (io_output_fire && io_output_payload_last);
+  assign io_output_valid = ((io_inputs_0_valid && maskRouted_0) || (io_inputs_1_valid && maskRouted_1));
+  assign io_output_payload_last = (maskRouted_0 ? io_inputs_0_payload_last : io_inputs_1_payload_last);
+  assign io_output_payload_fragment_source = (maskRouted_0 ? io_inputs_0_payload_fragment_source : io_inputs_1_payload_fragment_source);
+  assign io_output_payload_fragment_opcode = (maskRouted_0 ? io_inputs_0_payload_fragment_opcode : io_inputs_1_payload_fragment_opcode);
+  assign io_output_payload_fragment_address = (maskRouted_0 ? io_inputs_0_payload_fragment_address : io_inputs_1_payload_fragment_address);
+  assign io_output_payload_fragment_length = (maskRouted_0 ? io_inputs_0_payload_fragment_length : io_inputs_1_payload_fragment_length);
+  assign io_output_payload_fragment_data = (maskRouted_0 ? io_inputs_0_payload_fragment_data : io_inputs_1_payload_fragment_data);
+  assign io_output_payload_fragment_mask = (maskRouted_0 ? io_inputs_0_payload_fragment_mask : io_inputs_1_payload_fragment_mask);
+  assign io_output_payload_fragment_context = (maskRouted_0 ? io_inputs_0_payload_fragment_context : io_inputs_1_payload_fragment_context);
+  assign io_inputs_0_ready = (maskRouted_0 && io_output_ready);
+  assign io_inputs_1_ready = (maskRouted_1 && io_output_ready);
+  assign io_chosenOH = {maskRouted_1,maskRouted_0};
+  assign _zz_io_chosen = io_chosenOH[1];
+  assign io_chosen = _zz_io_chosen;
+  always @(posedge clk) begin
+    if(reset) begin
+      locked <= 1'b0;
+      maskLocked_0 <= 1'b0;
+      maskLocked_1 <= 1'b1;
+    end else begin
+      if(io_output_valid) begin
+        maskLocked_0 <= maskRouted_0;
+        maskLocked_1 <= maskRouted_1;
+      end
+      if(io_output_valid) begin
+        locked <= 1'b1;
+      end
+      if(when_Stream_l683) begin
+        locked <= 1'b0;
+      end
+    end
+  end
+
+
+endmodule
+
+module EfxDMA_StreamArbiter_9bdfdf1cb95c4a7d8530357860e1bb9e (
+  input  wire          io_inputs_0_valid,
+  output wire          io_inputs_0_ready,
+  input  wire          io_inputs_0_payload_last,
+  input  wire [1:0]    io_inputs_0_payload_fragment_source,
+  input  wire [0:0]    io_inputs_0_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_0_payload_fragment_address,
+  input  wire [12:0]   io_inputs_0_payload_fragment_length,
+  input  wire [24:0]   io_inputs_0_payload_fragment_context,
+  input  wire          io_inputs_1_valid,
+  output wire          io_inputs_1_ready,
+  input  wire          io_inputs_1_payload_last,
+  input  wire [1:0]    io_inputs_1_payload_fragment_source,
+  input  wire [0:0]    io_inputs_1_payload_fragment_opcode,
+  input  wire [31:0]   io_inputs_1_payload_fragment_address,
+  input  wire [12:0]   io_inputs_1_payload_fragment_length,
+  input  wire [24:0]   io_inputs_1_payload_fragment_context,
+  output wire          io_output_valid,
+  input  wire          io_output_ready,
+  output wire          io_output_payload_last,
+  output wire [1:0]    io_output_payload_fragment_source,
+  output wire [0:0]    io_output_payload_fragment_opcode,
+  output wire [31:0]   io_output_payload_fragment_address,
+  output wire [12:0]   io_output_payload_fragment_length,
+  output wire [24:0]   io_output_payload_fragment_context,
+  output wire [0:0]    io_chosen,
+  output wire [1:0]    io_chosenOH,
+  input  wire          clk,
+  input  wire          reset
+);
+
+  wire       [3:0]    _zz__zz_maskProposal_0_2;
+  wire       [3:0]    _zz__zz_maskProposal_0_2_1;
+  wire       [1:0]    _zz__zz_maskProposal_0_2_2;
+  reg                 locked;
+  wire                maskProposal_0;
+  wire                maskProposal_1;
+  reg                 maskLocked_0;
+  reg                 maskLocked_1;
+  wire                maskRouted_0;
+  wire                maskRouted_1;
+  wire       [1:0]    _zz_maskProposal_0;
+  wire       [3:0]    _zz_maskProposal_0_1;
+  wire       [3:0]    _zz_maskProposal_0_2;
+  wire       [1:0]    _zz_maskProposal_0_3;
+  wire                io_output_fire;
+  wire                when_Stream_l683;
+  wire                _zz_io_chosen;
+
+  assign _zz__zz_maskProposal_0_2 = (_zz_maskProposal_0_1 - _zz__zz_maskProposal_0_2_1);
+  assign _zz__zz_maskProposal_0_2_2 = {maskLocked_0,maskLocked_1};
+  assign _zz__zz_maskProposal_0_2_1 = {2'd0, _zz__zz_maskProposal_0_2_2};
+  assign maskRouted_0 = (locked ? maskLocked_0 : maskProposal_0);
+  assign maskRouted_1 = (locked ? maskLocked_1 : maskProposal_1);
+  assign _zz_maskProposal_0 = {io_inputs_1_valid,io_inputs_0_valid};
+  assign _zz_maskProposal_0_1 = {_zz_maskProposal_0,_zz_maskProposal_0};
+  assign _zz_maskProposal_0_2 = (_zz_maskProposal_0_1 & (~ _zz__zz_maskProposal_0_2));
+  assign _zz_maskProposal_0_3 = (_zz_maskProposal_0_2[3 : 2] | _zz_maskProposal_0_2[1 : 0]);
+  assign maskProposal_0 = _zz_maskProposal_0_3[0];
+  assign maskProposal_1 = _zz_maskProposal_0_3[1];
+  assign io_output_fire = (io_output_valid && io_output_ready);
+  assign when_Stream_l683 = (io_output_fire && io_output_payload_last);
+  assign io_output_valid = ((io_inputs_0_valid && maskRouted_0) || (io_inputs_1_valid && maskRouted_1));
+  assign io_output_payload_last = (maskRouted_0 ? io_inputs_0_payload_last : io_inputs_1_payload_last);
+  assign io_output_payload_fragment_source = (maskRouted_0 ? io_inputs_0_payload_fragment_source : io_inputs_1_payload_fragment_source);
+  assign io_output_payload_fragment_opcode = (maskRouted_0 ? io_inputs_0_payload_fragment_opcode : io_inputs_1_payload_fragment_opcode);
+  assign io_output_payload_fragment_address = (maskRouted_0 ? io_inputs_0_payload_fragment_address : io_inputs_1_payload_fragment_address);
+  assign io_output_payload_fragment_length = (maskRouted_0 ? io_inputs_0_payload_fragment_length : io_inputs_1_payload_fragment_length);
+  assign io_output_payload_fragment_context = (maskRouted_0 ? io_inputs_0_payload_fragment_context : io_inputs_1_payload_fragment_context);
+  assign io_inputs_0_ready = (maskRouted_0 && io_output_ready);
+  assign io_inputs_1_ready = (maskRouted_1 && io_output_ready);
+  assign io_chosenOH = {maskRouted_1,maskRouted_0};
+  assign _zz_io_chosen = io_chosenOH[1];
+  assign io_chosen = _zz_io_chosen;
+  always @(posedge clk) begin
+    if(reset) begin
+      locked <= 1'b0;
+      maskLocked_0 <= 1'b0;
+      maskLocked_1 <= 1'b1;
+    end else begin
+      if(io_output_valid) begin
+        maskLocked_0 <= maskRouted_0;
+        maskLocked_1 <= maskRouted_1;
+      end
+      if(io_output_valid) begin
+        locked <= 1'b1;
+      end
+      if(when_Stream_l683) begin
+        locked <= 1'b0;
+      end
+    end
+  end
+
+
+endmodule
+
+module EfxDMA_BufferCC_9_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [4:0]    io_dataIn,
   output wire [4:0]    io_dataOut,
   input  wire          dat3_o_clk,
@@ -7969,9 +9495,9 @@ module EfxDMA_BufferCC_9_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-//EfxDMA_BufferCC_8 replaced by EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd
+//EfxDMA_BufferCC_8 replaced by EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e
 
-module EfxDMA_BufferCC_7_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_7_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [4:0]    io_dataIn,
   output wire [4:0]    io_dataOut,
   input  wire          dat1_o_clk,
@@ -7995,11 +9521,11 @@ module EfxDMA_BufferCC_7_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-//EfxDMA_BufferCC_6 replaced by EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd
+//EfxDMA_BufferCC_6 replaced by EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e
 
-//EfxDMA_BufferCC_5 replaced by EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd
+//EfxDMA_BufferCC_5 replaced by EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e
 
-module EfxDMA_BufferCC_4_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_4_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [4:0]    io_dataIn,
   output wire [4:0]    io_dataOut,
   input  wire          dat2_i_clk,
@@ -8023,7 +9549,7 @@ module EfxDMA_BufferCC_4_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_3_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [4:0]    io_dataIn,
   output wire [4:0]    io_dataOut,
   input  wire          clk,
@@ -8047,7 +9573,7 @@ module EfxDMA_BufferCC_3_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_2_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire [4:0]    io_dataIn,
   output wire [4:0]    io_dataOut,
   input  wire          dat0_i_clk,
@@ -8071,7 +9597,7 @@ module EfxDMA_BufferCC_2_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbContextRemover_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output reg           io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
@@ -8080,12 +9606,12 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
   input  wire [511:0]  io_input_cmd_payload_fragment_data,
   input  wire [63:0]   io_input_cmd_payload_fragment_mask,
-  input  wire [15:0]   io_input_cmd_payload_fragment_context,
+  input  wire [16:0]   io_input_cmd_payload_fragment_context,
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
-  output wire [15:0]   io_input_rsp_payload_fragment_context,
+  output wire [16:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_cmd_valid,
   input  wire          io_output_cmd_ready,
   output wire          io_output_cmd_payload_last,
@@ -8105,7 +9631,7 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg                 fifoFork_thrown_translated_fifo_io_pop_ready;
   wire                fifoFork_thrown_translated_fifo_io_push_ready;
   wire                fifoFork_thrown_translated_fifo_io_pop_valid;
-  wire       [15:0]   fifoFork_thrown_translated_fifo_io_pop_payload_context;
+  wire       [16:0]   fifoFork_thrown_translated_fifo_io_pop_payload_context;
   wire       [2:0]    fifoFork_thrown_translated_fifo_io_occupancy;
   wire       [2:0]    fifoFork_thrown_translated_fifo_io_availability;
   wire                fifoFork_valid;
@@ -8116,7 +9642,7 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [12:0]   fifoFork_payload_fragment_length;
   wire       [511:0]  fifoFork_payload_fragment_data;
   wire       [63:0]   fifoFork_payload_fragment_mask;
-  wire       [15:0]   fifoFork_payload_fragment_context;
+  wire       [16:0]   fifoFork_payload_fragment_context;
   wire                cmdFork_valid;
   wire                cmdFork_ready;
   wire                cmdFork_payload_last;
@@ -8125,14 +9651,14 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [12:0]   cmdFork_payload_fragment_length;
   wire       [511:0]  cmdFork_payload_fragment_data;
   wire       [63:0]   cmdFork_payload_fragment_mask;
-  wire       [15:0]   cmdFork_payload_fragment_context;
+  wire       [16:0]   cmdFork_payload_fragment_context;
   reg                 io_input_cmd_fork2_logic_linkEnable_0;
   reg                 io_input_cmd_fork2_logic_linkEnable_1;
   wire                when_Stream_l1063;
   wire                when_Stream_l1063_1;
   wire                fifoFork_fire;
   wire                cmdFork_fire;
-  wire       [15:0]   pushCtx_context;
+  wire       [16:0]   pushCtx_context;
   reg                 fifoFork_payload_first;
   wire                when_Stream_l445;
   reg                 fifoFork_thrown_valid;
@@ -8143,25 +9669,25 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [12:0]   fifoFork_thrown_payload_fragment_length;
   wire       [511:0]  fifoFork_thrown_payload_fragment_data;
   wire       [63:0]   fifoFork_thrown_payload_fragment_mask;
-  wire       [15:0]   fifoFork_thrown_payload_fragment_context;
+  wire       [16:0]   fifoFork_thrown_payload_fragment_context;
   wire                fifoFork_thrown_translated_valid;
   wire                fifoFork_thrown_translated_ready;
-  wire       [15:0]   fifoFork_thrown_translated_payload_context;
+  wire       [16:0]   fifoFork_thrown_translated_payload_context;
   wire                popCtx_valid;
   wire                popCtx_ready;
-  wire       [15:0]   popCtx_payload_context;
+  wire       [16:0]   popCtx_payload_context;
   reg                 fifoFork_thrown_translated_fifo_io_pop_rValid;
-  reg        [15:0]   fifoFork_thrown_translated_fifo_io_pop_rData_context;
+  reg        [16:0]   fifoFork_thrown_translated_fifo_io_pop_rData_context;
   wire                when_Stream_l375;
   wire                _zz_io_input_rsp_valid;
 
-  EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd fifoFork_thrown_translated_fifo (
+  EfxDMA_StreamFifo_1_9bdfdf1cb95c4a7d8530357860e1bb9e fifoFork_thrown_translated_fifo (
     .io_push_valid           (fifoFork_thrown_translated_valid                            ), //i
     .io_push_ready           (fifoFork_thrown_translated_fifo_io_push_ready               ), //o
-    .io_push_payload_context (fifoFork_thrown_translated_payload_context[15:0]            ), //i
+    .io_push_payload_context (fifoFork_thrown_translated_payload_context[16:0]            ), //i
     .io_pop_valid            (fifoFork_thrown_translated_fifo_io_pop_valid                ), //o
     .io_pop_ready            (fifoFork_thrown_translated_fifo_io_pop_ready                ), //i
-    .io_pop_payload_context  (fifoFork_thrown_translated_fifo_io_pop_payload_context[15:0]), //o
+    .io_pop_payload_context  (fifoFork_thrown_translated_fifo_io_pop_payload_context[16:0]), //o
     .io_flush                (1'b0                                                        ), //i
     .io_occupancy            (fifoFork_thrown_translated_fifo_io_occupancy[2:0]           ), //o
     .io_availability         (fifoFork_thrown_translated_fifo_io_availability[2:0]        ), //o
@@ -8285,20 +9811,20 @@ module EfxDMA_BmbContextRemover_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BmbContextRemover_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_cmd_valid,
   output reg           io_input_cmd_ready,
   input  wire          io_input_cmd_payload_last,
   input  wire [0:0]    io_input_cmd_payload_fragment_opcode,
   input  wire [31:0]   io_input_cmd_payload_fragment_address,
   input  wire [12:0]   io_input_cmd_payload_fragment_length,
-  input  wire [27:0]   io_input_cmd_payload_fragment_context,
+  input  wire [28:0]   io_input_cmd_payload_fragment_context,
   output wire          io_input_rsp_valid,
   input  wire          io_input_rsp_ready,
   output wire          io_input_rsp_payload_last,
   output wire [0:0]    io_input_rsp_payload_fragment_opcode,
   output wire [511:0]  io_input_rsp_payload_fragment_data,
-  output wire [27:0]   io_input_rsp_payload_fragment_context,
+  output wire [28:0]   io_input_rsp_payload_fragment_context,
   output wire          io_output_cmd_valid,
   input  wire          io_output_cmd_ready,
   output wire          io_output_cmd_payload_last,
@@ -8317,7 +9843,7 @@ module EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   reg                 fifoFork_thrown_translated_fifo_io_pop_ready;
   wire                fifoFork_thrown_translated_fifo_io_push_ready;
   wire                fifoFork_thrown_translated_fifo_io_pop_valid;
-  wire       [27:0]   fifoFork_thrown_translated_fifo_io_pop_payload_context;
+  wire       [28:0]   fifoFork_thrown_translated_fifo_io_pop_payload_context;
   wire       [2:0]    fifoFork_thrown_translated_fifo_io_occupancy;
   wire       [2:0]    fifoFork_thrown_translated_fifo_io_availability;
   wire                fifoFork_valid;
@@ -8326,21 +9852,21 @@ module EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [0:0]    fifoFork_payload_fragment_opcode;
   wire       [31:0]   fifoFork_payload_fragment_address;
   wire       [12:0]   fifoFork_payload_fragment_length;
-  wire       [27:0]   fifoFork_payload_fragment_context;
+  wire       [28:0]   fifoFork_payload_fragment_context;
   wire                cmdFork_valid;
   wire                cmdFork_ready;
   wire                cmdFork_payload_last;
   wire       [0:0]    cmdFork_payload_fragment_opcode;
   wire       [31:0]   cmdFork_payload_fragment_address;
   wire       [12:0]   cmdFork_payload_fragment_length;
-  wire       [27:0]   cmdFork_payload_fragment_context;
+  wire       [28:0]   cmdFork_payload_fragment_context;
   reg                 io_input_cmd_fork2_logic_linkEnable_0;
   reg                 io_input_cmd_fork2_logic_linkEnable_1;
   wire                when_Stream_l1063;
   wire                when_Stream_l1063_1;
   wire                fifoFork_fire;
   wire                cmdFork_fire;
-  wire       [27:0]   pushCtx_context;
+  wire       [28:0]   pushCtx_context;
   reg                 fifoFork_payload_first;
   wire                when_Stream_l445;
   reg                 fifoFork_thrown_valid;
@@ -8349,25 +9875,25 @@ module EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire       [0:0]    fifoFork_thrown_payload_fragment_opcode;
   wire       [31:0]   fifoFork_thrown_payload_fragment_address;
   wire       [12:0]   fifoFork_thrown_payload_fragment_length;
-  wire       [27:0]   fifoFork_thrown_payload_fragment_context;
+  wire       [28:0]   fifoFork_thrown_payload_fragment_context;
   wire                fifoFork_thrown_translated_valid;
   wire                fifoFork_thrown_translated_ready;
-  wire       [27:0]   fifoFork_thrown_translated_payload_context;
+  wire       [28:0]   fifoFork_thrown_translated_payload_context;
   wire                popCtx_valid;
   wire                popCtx_ready;
-  wire       [27:0]   popCtx_payload_context;
+  wire       [28:0]   popCtx_payload_context;
   reg                 fifoFork_thrown_translated_fifo_io_pop_rValid;
-  reg        [27:0]   fifoFork_thrown_translated_fifo_io_pop_rData_context;
+  reg        [28:0]   fifoFork_thrown_translated_fifo_io_pop_rData_context;
   wire                when_Stream_l375;
   wire                _zz_io_input_rsp_valid;
 
-  EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd fifoFork_thrown_translated_fifo (
+  EfxDMA_StreamFifo_9bdfdf1cb95c4a7d8530357860e1bb9e fifoFork_thrown_translated_fifo (
     .io_push_valid           (fifoFork_thrown_translated_valid                            ), //i
     .io_push_ready           (fifoFork_thrown_translated_fifo_io_push_ready               ), //o
-    .io_push_payload_context (fifoFork_thrown_translated_payload_context[27:0]            ), //i
+    .io_push_payload_context (fifoFork_thrown_translated_payload_context[28:0]            ), //i
     .io_pop_valid            (fifoFork_thrown_translated_fifo_io_pop_valid                ), //o
     .io_pop_ready            (fifoFork_thrown_translated_fifo_io_pop_ready                ), //i
-    .io_pop_payload_context  (fifoFork_thrown_translated_fifo_io_pop_payload_context[27:0]), //o
+    .io_pop_payload_context  (fifoFork_thrown_translated_fifo_io_pop_payload_context[28:0]), //o
     .io_flush                (1'b0                                                        ), //i
     .io_occupancy            (fifoFork_thrown_translated_fifo_io_occupancy[2:0]           ), //o
     .io_availability         (fifoFork_thrown_translated_fifo_io_availability[2:0]        ), //o
@@ -8484,7 +10010,7 @@ module EfxDMA_BmbContextRemover_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_FlowCCUnsafeByToggle_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_FlowCCUnsafeByToggle_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   input  wire [31:0]   io_input_payload_PRDATA,
   input  wire          io_input_payload_PSLVERROR,
@@ -8510,7 +10036,7 @@ module EfxDMA_FlowCCUnsafeByToggle_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   (* async_reg = "true" *) reg        [31:0]   outputArea_flow_m2sPipe_payload_PRDATA;
   (* async_reg = "true" *) reg                 outputArea_flow_m2sPipe_payload_PSLVERROR;
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputArea_target_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_1_9bdfdf1cb95c4a7d8530357860e1bb9e inputArea_target_buffercc (
     .io_dataIn  (inputArea_target                    ), //i
     .io_dataOut (inputArea_target_buffercc_io_dataOut), //o
     .ctrl_clk   (ctrl_clk                            ), //i
@@ -8560,7 +10086,7 @@ module EfxDMA_FlowCCUnsafeByToggle_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_FlowCCUnsafeByToggle_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_FlowCCUnsafeByToggle_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   input  wire [13:0]   io_input_payload_PADDR,
   input  wire          io_input_payload_PWRITE,
@@ -8587,7 +10113,7 @@ module EfxDMA_FlowCCUnsafeByToggle_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                outputArea_flow_payload_PWRITE;
   wire       [31:0]   outputArea_flow_payload_PWDATA;
 
-  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd inputArea_target_buffercc (
+  (* keep_hierarchy = "TRUE" *) EfxDMA_BufferCC_9bdfdf1cb95c4a7d8530357860e1bb9e inputArea_target_buffercc (
     .io_dataIn  (inputArea_target                    ), //i
     .io_dataOut (inputArea_target_buffercc_io_dataOut), //o
     .clk        (clk                                 ), //i
@@ -8631,7 +10157,7 @@ module EfxDMA_FlowCCUnsafeByToggle_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_Aggregator_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_Aggregator_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_input_valid,
   output reg           io_input_ready,
   input  wire [255:0]  io_input_payload_data,
@@ -18606,7 +20132,7 @@ module EfxDMA_Aggregator_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_DmaMemoryCore_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_DmaMemoryCore_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_writes_0_cmd_valid,
   output wire          io_writes_0_cmd_ready,
   input  wire [10:0]   io_writes_0_cmd_payload_address,
@@ -19635,13 +21161,13 @@ module EfxDMA_DmaMemoryCore_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifo_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
-  input  wire [15:0]   io_push_payload_context,
+  input  wire [16:0]   io_push_payload_context,
   output wire          io_pop_valid,
   input  wire          io_pop_ready,
-  output wire [15:0]   io_pop_payload_context,
+  output wire [16:0]   io_pop_payload_context,
   input  wire          io_flush,
   output wire [2:0]    io_occupancy,
   output wire [2:0]    io_availability,
@@ -19649,7 +21175,7 @@ module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire          reset
 );
 
-  reg        [15:0]   logic_ram_spinal_port1;
+  reg        [16:0]   logic_ram_spinal_port1;
   wire       [2:0]    _zz_logic_ptr_notPow2_counter;
   wire       [2:0]    _zz_logic_ptr_notPow2_counter_1;
   wire       [0:0]    _zz_logic_ptr_notPow2_counter_2;
@@ -19673,7 +21199,7 @@ module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                io_pop_fire;
   wire                logic_push_onRam_write_valid;
   wire       [2:0]    logic_push_onRam_write_payload_address;
-  wire       [15:0]   logic_push_onRam_write_payload_data_context;
+  wire       [16:0]   logic_push_onRam_write_payload_data_context;
   wire                logic_pop_addressGen_valid;
   reg                 logic_pop_addressGen_ready;
   wire       [2:0]    logic_pop_addressGen_payload;
@@ -19686,13 +21212,13 @@ module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                when_Stream_l375;
   wire                logic_pop_sync_readPort_cmd_valid;
   wire       [2:0]    logic_pop_sync_readPort_cmd_payload;
-  wire       [15:0]   logic_pop_sync_readPort_rsp_context;
+  wire       [16:0]   logic_pop_sync_readPort_rsp_context;
   wire                logic_pop_sync_readArbitation_translated_valid;
   wire                logic_pop_sync_readArbitation_translated_ready;
-  wire       [15:0]   logic_pop_sync_readArbitation_translated_payload_context;
+  wire       [16:0]   logic_pop_sync_readArbitation_translated_payload_context;
   wire                logic_pop_sync_readArbitation_fire;
   reg        [2:0]    logic_pop_sync_popReg;
-  reg [15:0] logic_ram [0:6];
+  reg [16:0] logic_ram [0:6];
 
   assign _zz_logic_ptr_notPow2_counter = (logic_ptr_notPow2_counter + _zz_logic_ptr_notPow2_counter_1);
   assign _zz_logic_ptr_notPow2_counter_2 = io_push_fire;
@@ -19745,7 +21271,7 @@ module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign when_Stream_l375 = (! logic_pop_sync_readArbitation_valid);
   assign logic_pop_sync_readArbitation_valid = logic_pop_addressGen_rValid;
   assign logic_pop_sync_readArbitation_payload = logic_pop_addressGen_rData;
-  assign logic_pop_sync_readPort_rsp_context = logic_ram_spinal_port1[15 : 0];
+  assign logic_pop_sync_readPort_rsp_context = logic_ram_spinal_port1[16 : 0];
   assign logic_pop_sync_readPort_cmd_valid = logic_pop_addressGen_fire;
   assign logic_pop_sync_readPort_cmd_payload = logic_pop_addressGen_payload;
   assign logic_pop_sync_readArbitation_translated_valid = logic_pop_sync_readArbitation_valid;
@@ -19817,13 +21343,13 @@ module EfxDMA_StreamFifo_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_StreamFifo_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_push_valid,
   output wire          io_push_ready,
-  input  wire [27:0]   io_push_payload_context,
+  input  wire [28:0]   io_push_payload_context,
   output wire          io_pop_valid,
   input  wire          io_pop_ready,
-  output wire [27:0]   io_pop_payload_context,
+  output wire [28:0]   io_pop_payload_context,
   input  wire          io_flush,
   output wire [2:0]    io_occupancy,
   output wire [2:0]    io_availability,
@@ -19831,7 +21357,7 @@ module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   input  wire          reset
 );
 
-  reg        [27:0]   logic_ram_spinal_port1;
+  reg        [28:0]   logic_ram_spinal_port1;
   wire       [2:0]    _zz_logic_ptr_notPow2_counter;
   wire       [2:0]    _zz_logic_ptr_notPow2_counter_1;
   wire       [0:0]    _zz_logic_ptr_notPow2_counter_2;
@@ -19855,7 +21381,7 @@ module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                io_pop_fire;
   wire                logic_push_onRam_write_valid;
   wire       [2:0]    logic_push_onRam_write_payload_address;
-  wire       [27:0]   logic_push_onRam_write_payload_data_context;
+  wire       [28:0]   logic_push_onRam_write_payload_data_context;
   wire                logic_pop_addressGen_valid;
   reg                 logic_pop_addressGen_ready;
   wire       [2:0]    logic_pop_addressGen_payload;
@@ -19868,13 +21394,13 @@ module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   wire                when_Stream_l375;
   wire                logic_pop_sync_readPort_cmd_valid;
   wire       [2:0]    logic_pop_sync_readPort_cmd_payload;
-  wire       [27:0]   logic_pop_sync_readPort_rsp_context;
+  wire       [28:0]   logic_pop_sync_readPort_rsp_context;
   wire                logic_pop_sync_readArbitation_translated_valid;
   wire                logic_pop_sync_readArbitation_translated_ready;
-  wire       [27:0]   logic_pop_sync_readArbitation_translated_payload_context;
+  wire       [28:0]   logic_pop_sync_readArbitation_translated_payload_context;
   wire                logic_pop_sync_readArbitation_fire;
   reg        [2:0]    logic_pop_sync_popReg;
-  reg [27:0] logic_ram [0:6];
+  reg [28:0] logic_ram [0:6];
 
   assign _zz_logic_ptr_notPow2_counter = (logic_ptr_notPow2_counter + _zz_logic_ptr_notPow2_counter_1);
   assign _zz_logic_ptr_notPow2_counter_2 = io_push_fire;
@@ -19927,7 +21453,7 @@ module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
   assign when_Stream_l375 = (! logic_pop_sync_readArbitation_valid);
   assign logic_pop_sync_readArbitation_valid = logic_pop_addressGen_rValid;
   assign logic_pop_sync_readArbitation_payload = logic_pop_addressGen_rData;
-  assign logic_pop_sync_readPort_rsp_context = logic_ram_spinal_port1[27 : 0];
+  assign logic_pop_sync_readPort_rsp_context = logic_ram_spinal_port1[28 : 0];
   assign logic_pop_sync_readPort_cmd_valid = logic_pop_addressGen_fire;
   assign logic_pop_sync_readPort_cmd_payload = logic_pop_addressGen_payload;
   assign logic_pop_sync_readArbitation_translated_valid = logic_pop_sync_readArbitation_valid;
@@ -19999,7 +21525,7 @@ module EfxDMA_StreamFifo_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_1_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_dataIn,
   output wire          io_dataOut,
   input  wire          ctrl_clk,
@@ -20023,7 +21549,7 @@ module EfxDMA_BufferCC_1_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
 
 endmodule
 
-module EfxDMA_BufferCC_cdb5ea15dd2e4fa5952d6b2dfdf0d5bd (
+module EfxDMA_BufferCC_9bdfdf1cb95c4a7d8530357860e1bb9e (
   input  wire          io_dataIn,
   output wire          io_dataOut,
   input  wire          clk,

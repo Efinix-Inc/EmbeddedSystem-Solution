@@ -24,9 +24,9 @@
     },
     "channels": {
         "c0": {
-            "progress_probe": false,
+            "progress_probe": true,
             "direct_ctrl_capable": true,
-            "linked_list_capable": false,
+            "linked_list_capable": true,
             "memory_to_memory": false,
             "inputs": [
                 "dat0_i"
@@ -38,9 +38,9 @@
             "buffer_size": 8192
         },
         "c1": {
-            "progress_probe": false,
+            "progress_probe": true,
             "direct_ctrl_capable": true,
-            "linked_list_capable": false,
+            "linked_list_capable": true,
             "memory_to_memory": false,
             "outputs": [
                 "dat1_o"

@@ -178,6 +178,14 @@ output          userInterruptM,
 output          userInterruptN,
 output          userInterruptO,
 output          userInterruptP,
+output          userInterruptQ,
+output          userInterruptR,
+output          userInterruptS,
+output          userInterruptT,
+output          userInterruptU,
+output          userInterruptV,
+output          userInterruptW,
+output          userInterruptX,
 
 //Peripherals
 input [3:0]     system_gpio_0_io_read,
@@ -539,23 +547,31 @@ assign axi4Interrupt_or = w_axiAInterrupt | axiAInterrupt_slb;
 assign vision_dma_ctrl_interrupt    = | vision_dma_interrupts; // changed
 
 //Interrupts
-assign userInterruptA = vision_dma_ctrl_interrupt;  
-assign userInterruptB = dma_interrupts[0]; 
-assign userInterruptC = dma_interrupts[1]; 
-assign userInterruptD = sd_int;  
-assign userInterruptE = 1'b0; 
-assign userInterruptF = 1'b0; 
-assign userInterruptG = 1'b0; 
-assign userInterruptH = userInterrupt_watchdog; 
-assign userInterruptI = userInterrupt_uart;                     
-assign userInterruptJ = userInterrupt_i2c0;
-assign userInterruptK = userInterrupt_i2c1; 
-assign userInterruptL = userInterrupt_spi0; 
-assign userInterruptM = userInterrupt_spi1; 
-assign userInterruptN = userInterrupt_gpio0;
-assign userInterruptO = userInterrupt_gpio1;
-assign userInterruptP = 1'b0;
+assign userInterruptA = userInterrupt_uart; 
+assign userInterruptB = userInterrupt_i2c0;
+assign userInterruptC = userInterrupt_spi0; 
+assign userInterruptD = userInterrupt_gpio0; 
+assign userInterruptE = userInterrupt_gpio1; 
+assign userInterruptF = userInterrupt_watchdog; 
+assign userInterruptG = userInterrupt_i2c1; 
+assign userInterruptH = userInterrupt_spi1;
+assign userInterruptI = 1'b0;                         
+assign userInterruptJ = 1'b0;
+assign userInterruptK = 1'b0; 
+assign userInterruptL = 1'b0; 
+assign userInterruptM = 1'b0; 
+assign userInterruptN = 1'b0;
+assign userInterruptO = 1'b0;
 
+assign userInterruptP = vision_dma_ctrl_interrupt;
+assign userInterruptQ = dma_interrupts[0];
+assign userInterruptR = dma_interrupts[1];
+assign userInterruptS = sd_int;
+assign userInterruptT = 1'b0;
+assign userInterruptU = 1'b0;
+assign userInterruptV = 1'b0;
+assign userInterruptW = 1'b0;
+assign userInterruptX = 1'b0;
 //DDR
 assign dma_arid = 8'hE0;
 assign dma_awid = 8'hE1;

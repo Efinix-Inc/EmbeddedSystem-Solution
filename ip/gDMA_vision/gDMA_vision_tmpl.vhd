@@ -98,6 +98,7 @@ port (
     dat1_o_tkeep : out std_logic_vector(7 downto 0);
     dat1_o_tdest : out std_logic_vector(3 downto 0);
     dat1_o_tlast : out std_logic;
+    io_0_descriptorUpdate : out std_logic;
     dat3_o_clk : in std_logic;
     dat3_o_reset : in std_logic;
     dat2_i_clk : in std_logic;
@@ -118,7 +119,8 @@ port (
     dat0_i_tkeep : in std_logic_vector(7 downto 0);
     dat0_i_tdest : in std_logic_vector(3 downto 0);
     dat0_i_tlast : in std_logic;
-    read_rresp : in std_logic_vector(1 downto 0)
+    read_rresp : in std_logic_vector(1 downto 0);
+    io_1_descriptorUpdate : out std_logic
 );
 end component gDMA_vision;
 
@@ -185,6 +187,7 @@ port map (
     dat1_o_tkeep => dat1_o_tkeep,
     dat1_o_tdest => dat1_o_tdest,
     dat1_o_tlast => dat1_o_tlast,
+    io_0_descriptorUpdate => io_0_descriptorUpdate,
     dat3_o_clk => dat3_o_clk,
     dat3_o_reset => dat3_o_reset,
     dat2_i_clk => dat2_i_clk,
@@ -205,7 +208,8 @@ port map (
     dat0_i_tkeep => dat0_i_tkeep,
     dat0_i_tdest => dat0_i_tdest,
     dat0_i_tlast => dat0_i_tlast,
-    read_rresp => read_rresp
+    read_rresp => read_rresp,
+    io_1_descriptorUpdate => io_1_descriptorUpdate
 );
 
 ------------------------ End INSTANTIATION Template ---------

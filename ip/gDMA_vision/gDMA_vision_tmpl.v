@@ -104,6 +104,7 @@ gDMA_vision u_gDMA_vision
     .dat1_o_tkeep ( dat1_o_tkeep ),
     .dat1_o_tdest ( dat1_o_tdest ),
     .dat1_o_tlast ( dat1_o_tlast ),
+    .io_0_descriptorUpdate ( io_0_descriptorUpdate ),
     .dat3_o_clk ( dat3_o_clk ),
     .dat3_o_reset ( dat3_o_reset ),
     .dat2_i_clk ( dat2_i_clk ),
@@ -124,5 +125,6 @@ gDMA_vision u_gDMA_vision
     .dat0_i_tkeep ( dat0_i_tkeep ),
     .dat0_i_tdest ( dat0_i_tdest ),
     .dat0_i_tlast ( dat0_i_tlast ),
-    .read_rresp ( read_rresp )
+    .read_rresp ( read_rresp ),
+    .io_1_descriptorUpdate ( io_1_descriptorUpdate )
 );
