@@ -1,7 +1,26 @@
-////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+//  Copyright (c) 2025 SaxonSoc contributors
+//  SPDX license identifier: MIT
+//  Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+///////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file riscv.h 
+*
+* @brief Header file containing RISC-V related functions and definitions.
+*
+* Functions:
+*   csr_read(csr_name): Accessing registers.
+*   csr_read_set(csr, val): reading and setting a CSR with a specified value.
+*   csr_read_clear(csr, val) for performing a read-clear operation on the specified CSR.
+*   csr_write(csr_name): Accessing registers.
+*   csr_clear(csr, val) for clearing a CSR.
+*   csr_set(csr_name, new_value): Setting CSR.
+*   csr_swap(csr_name, new_value): Swapping a CSR.
+*   opcode_R(opcode, func3, func7, rs1, rs2): Performing R-type instruction operation.
+	
+******************************************************************************/
 
 #pragma once
 
@@ -78,6 +97,23 @@
 //Read-only instreth Upper 32 bits of instret, RV32I only.
 #define RDINSTRETH                      0xC82 
 
+
+/*******************************************************************************
+*
+* @brief This function is used to swap the value of a CSR with a specified value.
+*
+* @param   csr: The name of the CSR to be swapped.
+* @param   val: The value to be swapped with the CSR.
+*
+* @return  The previous value of the CSR.
+*
+* This macro performs a swap operation using CSR instructions in RISC-V assembly. It reads the
+* current value of the CSR, writes the specified value to the CSR, and returns the previous value
+* of the CSR before the write operation. It allows for efficient manipulation of CSRs in RISC-V
+* assembly code.
+*
+******************************************************************************/
+
 #define csr_swap(csr, val)                    \
 ({                                \
     unsigned long __v = (unsigned long)(val);        \
@@ -85,6 +121,20 @@
                   : "=r" (__v) : "rK" (__v));    \
     __v;                            \
 })
+
+/*******************************************************************************
+*
+* @brief This function is used to read the value of a CSR.
+*
+* @param   csr: The name of the CSR to be read.
+*
+* @return  The value of the CSR.
+*
+* This macro reads the current value of the specified CSR using CSR instructions in RISC-V
+* assembly. It returns the value of the CSR, allowing for efficient access to CSRs in RISC-V
+* assembly code.
+*
+******************************************************************************/
 
 #define csr_read(csr)                        \
 ({                                \
@@ -94,12 +144,41 @@
     __v;                            \
 })
 
+
+/*******************************************************************************
+*
+* @brief This function is used to write a value to a CSR.
+*
+* @param   csr: The name of the CSR to which the value will be written.
+* @param   val: The value to be written to the CSR.
+*
+* This macro writes the specified value to the specified CSR using CSR instructions
+* in RISC-V assembly. It allows for efficient modification of CSRs in RISC-V assembly
+* code.
+*
+******************************************************************************/
+
 #define csr_write(csr, val)                    \
 ({                                \
     unsigned long __v = (unsigned long)(val);        \
     __asm__ __volatile__ ("csrw " #csr ", %0"        \
                   : : "rK" (__v));            \
 })
+
+/*******************************************************************************
+*
+* @brief This function is used to read and set a CSR with a specified value.
+*
+* @param   csr: The name of the CSR to be read and set.
+* @param   val: The value to be ORed with the current value of the CSR.
+*
+* @return  The previous value of the CSR before the set operation.
+*
+* This macro reads the current value of the specified CSR, ORs it with the specified value,
+* and writes the result back to the CSR using CSR instructions in RISC-V assembly. It returns
+* the previous value of the CSR before the set operation.
+*
+******************************************************************************/
 
 #define csr_read_set(csr, val)                    \
 ({                                \
@@ -109,12 +188,30 @@
     __v;                            \
 })
 
+/*******************************************************************************
+*
+* @brief This function is used to set a CSR to a specified value.
+*
+* @param   csr: The name of the CSR to be set.
+* @param   val: The value to be set for the CSR.
+*
+******************************************************************************/
 #define csr_set(csr, val)                    \
 ({                                \
     unsigned long __v = (unsigned long)(val);        \
     __asm__ __volatile__ ("csrs " #csr ", %0"        \
                   : : "rK" (__v));            \
 })
+
+/*******************************************************************************
+*
+* @brief This function is used for performing a read-clear operation on the specified CSR.
+*
+* @param csr The Control and Status Register (CSR) to read-clear.
+* @param val The value to use for the operation.
+* @return The previous value of the CSR before the read-clear operation.
+*
+******************************************************************************/
 
 #define csr_read_clear(csr, val)                \
 ({                                \
@@ -124,6 +221,19 @@
     __v;                            \
 })
 
+/********************************************************************************
+*
+* @brief This function is used to clear a CSR.
+*
+* @param csr: The name of the CSR to be cleared.
+* @param val: The value to be used for the operation (unused in clearing).
+*
+* @note This macro clears the specified CSR using the "csrc" instruction in RISC-V assembly.
+*       It takes the CSR name and a value as parameters, but the value parameter is unused
+*       as clearing a CSR typically does not involve any additional value.
+*
+******************************************************************************/
+
 #define csr_clear(csr, val)                    \
 ({                                \
     unsigned long __v = (unsigned long)(val);        \
@@ -131,6 +241,23 @@
                   : : "rK" (__v));            \
 })
 
+
+/*******************************************************************************
+* @brief Definition of symbolic constants for RISC-V registers.
+*
+* General-purpose registers (x0-x31):
+*   Lines 1-32 define constants regnum_x0 through regnum_x31 for the 32 general-
+*   purpose registers.
+*
+* Special-purpose registers:
+*   Lines 34-63 define constants for special-purpose registers such as zero, ra,
+*   sp, gp, tp, and the temporary registers t0-t6.
+*
+* Custom register:
+*   Line 65 defines a symbolic constant CUSTOM0 for a custom register, which
+*   could be used for a specific purpose defined by the programmer.
+*
+******************************************************************************/
 asm(".set regnum_x0  ,  0");
 asm(".set regnum_x1  ,  1");
 asm(".set regnum_x2  ,  2");
@@ -198,6 +325,27 @@ asm(".set regnum_t5  , 30");
 asm(".set regnum_t6  , 31");
 
 asm(".set CUSTOM0  , 0x0B");
+asm(".set CUSTOM1  , 0x2B");
+asm(".set CUSTOM2  , 0x5B");
+
+/********************************************************************************
+* @brief opcode_R(opcode, func3, func7, rs1, rs2)  for generating the opcode of an R-type instruction.
+*
+* @param   opcode: The base opcode value for the instruction.
+* @param   func3: The 3-bit function field.
+* @param   func7: The 7-bit function field.
+* @param   rs1: Register number for source register 1.
+* @param   rs2: Register number for source register 2.
+*
+* @return  The generated opcode for the R-type instruction.
+*
+* @note    This macro generates the opcode for an R-type instruction in RISC-V assembly. It takes
+*          the base opcode value, function field values (func3 and func7), and register numbers
+*          for source registers rs1 and rs2. The resulting opcode is formed by combining the
+*          provided values according to the R-type instruction encoding format and returned as
+*          an unsigned long integer.
+*
+******************************************************************************/
 
 #define opcode_R(opcode, func3, func7, rs1, rs2)   \
 ({                                             \
@@ -206,6 +354,20 @@ asm(".set CUSTOM0  , 0x0B");
      ".word ((" #opcode ") | (regnum_%0 << 7) | (regnum_%1 << 15) | (regnum_%2 << 20) | ((" #func3 ") << 12) | ((" #func7 ") << 25));"   \
      : [rd] "=r" (__v)                          \
      : "r" (rs1), "r" (rs2)        \
+    );                                         \
+    __v;                                       \
+})
+
+#define cfu_type_R(func3, func7, rs1, rs2)  opcode_R(CUSTOM0, func3, func7, rs1, rs2)
+#define cfu_push(func3, func7, rs1, rs2)    opcode_R(CUSTOM1, func3, func7, rs1, rs2)
+#define cfu_pop2() ({ register unsigned long __v; asm volatile( ".word ((0x5B) | (regnum_%0 << 7));" : [rd] "=r" (__v) :   ); __v; })
+#define cfu_pop() \
+({                                             \
+	register unsigned long __v;                \
+	asm volatile(                              \
+	".word ((0x5B) | (regnum_%0 << 7));"       \
+     : [rd] "=r" (__v)                          \
+     :                                          \
     );                                         \
     __v;                                       \
 })

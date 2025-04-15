@@ -1,7 +1,22 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.              
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file efx_tse_phy.h
+*
+* @brief Header file containing PHY functions for the TSE (Triple-Speed Ethernet)
+*
+* Functions:
+* - Phy_Wr: Writes data to a PHY register.
+* - Phy_Rd: Reads data from a PHY register.
+* - PhyDlySetRXTX: Sets the RX and TX delays for the PHY.
+* - PhyNormalInit: Initializes the PHY in normal mode.
+* - PhyLoopInit: Initializes the PHY in loopback mode.
+*
+******************************************************************************/
 #pragma once
 
 #include "bsp.h"
@@ -11,7 +26,15 @@
 
 #define RTL8211F_RX_DELAY			BIT_3
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function writes data to a specified PHY register.
+*
+* @param RegAddr The address of the PHY register to write to.
+* 
+* @return The data to be written to PHY register.
+* 
+******************************************************************************/
 static void Phy_Wr(u32 RegAddr, u32 Data)
 {
     write_u32(((PHY_ADDR&0x1f)<<8)|(RegAddr&0x1f), (TSEMAC_BASE+REG_PHY_ADDR));
@@ -24,6 +47,15 @@ static void Phy_Wr(u32 RegAddr, u32 Data)
     }
 }
 
+/*******************************************************************************
+*
+* @brief This function reads data from a specified PHY register.
+*
+* @param RegAddr The address of the PHY register to read from.
+* 
+* @return The data read from the PHY register.
+* 
+******************************************************************************/
 static u32 Phy_Rd(u32 RegAddr)
 {
     u32 Value;
@@ -91,7 +123,13 @@ static void PhyDlySetRXTX(int RX_delay, int TX_delay)
     if(DEBUG_PRINTF_EN == 1) bsp_printf("Read New Value =%x \r\n", Value);
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+* 
+* @brief This function initializes the PHY in normal mode and waits for the Ethernet link to be up.
+* 
+* @return The speed of the Ethernet link (0x01: 10Mbps, 0x02: 100Mbps, 0x04: 1000Mbps).
+* 
+******************************************************************************/
 static u32 PhyNormalInit()
 {
 	PhyDlySetRXTX(15, 8);
@@ -136,7 +174,13 @@ static u32 PhyNormalInit()
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+* 
+* @brief This function initializes the PHY in loopback mode based on the specified speed.
+* 
+* @param speed The speed at which to initialize the PHY (0x01: 10Mbps, 0x02: 100Mbps, 0x04: 1000Mbps).
+* 
+******************************************************************************/
 static void PhyLoopInit(u32 speed)
 {
 	PhyDlySetRXTX(15, 15);

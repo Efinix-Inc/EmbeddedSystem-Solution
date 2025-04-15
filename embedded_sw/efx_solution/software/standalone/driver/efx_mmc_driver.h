@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -31,7 +31,6 @@
 #pragma once
 
 #include "bsp.h"
-#include "device_config.h"
 #include "mmc.h" 
 #include "userDef.h"
 
@@ -467,7 +466,7 @@ static int sd_ctrl_data(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *d
 				if(sd_ctrl_read(dev,SDHC_ADDR+REG_PRESENT_STATE)&0x800) {
 					break;
 				}
-				bsp_uDelay(1);
+				//bsp_uDelay(1);
 			}
 			//Read One Block
 			for(int j=0; j<(BLOCK_SIZE/4); j++) {
@@ -478,9 +477,11 @@ static int sd_ctrl_data(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *d
 				data->dest[tmp++]=(buf>>16) & 0xFF;
 				data->dest[tmp++]=(buf>>24) & 0xFF;
 
-				bsp_uDelay(1);//Must ensure that the read rate is lower than the SD clock rate.
+				//bsp_uDelay(1);//Must ensure that the read rate is lower than the SD clock rate.
 			}
-			bsp_uDelay(1);
+            //clear read buffer ready in the end of transfer if the signal asserted in the middle of transfer
+            sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS0,0x20);
+			//bsp_uDelay(1);
 		}
 	}
 

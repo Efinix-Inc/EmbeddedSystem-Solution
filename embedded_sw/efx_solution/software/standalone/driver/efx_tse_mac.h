@@ -1,7 +1,27 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.              
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.              
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file efx_tse_mac.h
+*
+* @brief Header file contain Mac function for the TSE (Triple-Speed Ethernet)
+*
+* Functions:
+* - MacTxEn: Sets the transmit enable (TxEn) bit in the TSEMAC control/status register.
+* - MacRxEn: Sets the receive enable (RxEn) bit in the TSEMAC control/status register.
+* - MacSpeedSet: Sets the speed mode in the TSEMAC control/status register.
+* - MacLoopbackSet: Sets the loopback mode in the TSEMAC control/status register.
+* - MacIpgSet: Sets the Inter-Packet Gap (IPG) value in the TSEMAC IPG register.
+* - MacAddrSet: Sets the destination and source MAC addresses in the TSEMAC registers.
+* - Pause_XOn: Sets the transmit pause frame (XON) generation in the TSEMAC control/status register.
+* - MacCntClean: Resets the statistics counters in the TSEMAC control/status register.
+* - CntMonitor: Monitors and prints various statistics counters from the TSEMAC registers.
+* - MacNormalInit: Initializes the TSEMAC with normal settings.
+*
+******************************************************************************/
 #pragma once
 
 #include "bsp.h"
@@ -63,13 +83,16 @@
 #define PAT_SRC_DST_PORT			0x022C	//[31:16] pat_dst_port [15:0] pat_src_port
 #define PAT_UDP_DLEN				0x0230	//[15:0] pat_udp_dlen
 
-struct cmn_reset {
-	uint8_t mac_rst : 1;
-	uint8_t phy_rst : 1;
-	uint32_t rs	: 30;
-} cmn_reset;
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the transmit enable (TxEn) bit in the TSEMAC control/status register.
+*
+* @param tx_en The value to set for the transmit enable bit.
+*             - 0: Disable transmit.
+*             - 1: Enable transmit.
+*
+******************************************************************************/
 static void MacTxEn(u32 tx_en)
 {
 	u32 Value;
@@ -82,7 +105,15 @@ static void MacTxEn(u32 tx_en)
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the transmit enable (RxEn) bit in the TSEMAC control/status register.
+*
+* @param tx_en The value to set for the receive enable bit.
+*             - 0: Disable receive.
+*             - 1: Enable receive.
+*
+******************************************************************************/
 static void MacRxEn(u32 rx_en)
 {
 	u32 Value;
@@ -95,7 +126,16 @@ static void MacRxEn(u32 rx_en)
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the Ethernet Speed 
+*
+* @param speed The value to set for the Ethernet Speed.
+*             - 0x01: 10Mbps
+*             - 0x02: 100Mbps
+*             - 0x04: 1000Mbps
+*
+******************************************************************************/
 static void MacSpeedSet(u32 speed)
 {
 	u32 Value;
@@ -108,7 +148,15 @@ static void MacSpeedSet(u32 speed)
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the loopback mode in the TSEMAC control/status register.
+*
+* @param loopback_en The value to set for the loopback mode.
+*                    - 0: Disable loopback.
+*                    - 1: Enable loopback.
+*
+******************************************************************************/
 static void MacLoopbackSet(u32 loopback_en)
 {
 	u32 Value;
@@ -121,7 +169,13 @@ static void MacLoopbackSet(u32 loopback_en)
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the inter-packet gap (IPG) value in the TSEMAC IPG register.
+*
+* @param ipg The value of the inter-packet gap to be set.
+*
+******************************************************************************/
 static void MacIpgSet(u32 ipg)
 {
 	//Set Mac IPG
@@ -131,7 +185,14 @@ static void MacIpgSet(u32 ipg)
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets the destination and source MAC addresses in the TSEMAC control/status register.
+*
+* @param dst_addr_ins The value to be written to the destination MAC address insert register.
+* @param src_addr_ins The value to be written to the source MAC address insert register.
+*
+******************************************************************************/
 static void MacAddrSet(u32 dst_addr_ins, u32 src_addr_ins)
 {
 	u32 Value;
@@ -157,7 +218,11 @@ static void MacAddrSet(u32 dst_addr_ins, u32 src_addr_ins)
 	}
 }
 
-/********************************* Function **********************************/
+/********************************* Function **********************************
+* 
+* @brief This function sets the XON/XOFF pause frame control in the TSEMAC control/status register.
+*
+******************************************************************************/
 static void Pause_XOn()
 {
 	u32 Value;
@@ -171,7 +236,11 @@ static void Pause_XOn()
 	write_u32(Value, (TSEMAC_BASE+COMMAND_CONFIG));
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function sets and clears the statistics counters in the TSEMAC control/status register.
+*
+******************************************************************************/
 static void MacCntClean()
 {
 	u32 Value;
@@ -189,7 +258,13 @@ static void MacCntClean()
 	}
 }
 
-/************************** Function File ***************************/
+/*******************************************************************************
+*
+* @brief This function prints the values of various statistics counters in the TSEMAC control/status register.
+*
+* @note This function is usefult to track trasmit/receive frame error such as CRC errors, etc
+*
+******************************************************************************/
 static void CntMonitor()
 {
 	bsp_printf("--------------------\r\n");
@@ -207,8 +282,21 @@ static void CntMonitor()
 	bsp_printf("--------------------\r\n");
 }
 
-/************************** Function File ***************************/
 
+/*******************************************************************************
+*
+* @brief This function initializes the MAC by setting IPG and Speed.
+*
+* @param speed The speed setting to be applied to the TSEMAC.
+*
+******************************************************************************/
+static void MacNormalInit(u32 speed)
+{
+	MacSpeedSet(speed);
+	MacIpgSet(0x0C);
+}
+
+/************************** Function File ***************************/
 static void MacRst(u8 macRst, u8 phyRst)
 {
 	write_u32((phyRst & 0x01), TSEMAC_BASE+ETHERNET_CTRL_PHY_RST);
@@ -219,15 +307,3 @@ static void MacRst(u8 macRst, u8 phyRst)
 	write_u32(0, TSEMAC_BASE+ETHERNET_CTRL_PHY_RST);
 	bsp_uDelay(100*1000);  // 100ms delay
 }
-
-static void MacNormalInit(u32 speed)
-{
-	MacSpeedSet(speed);
-	MacIpgSet(0x0C);
-}
-
-/************************** Function File ***************************/
-
-
-
-

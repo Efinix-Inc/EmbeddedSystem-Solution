@@ -1,7 +1,28 @@
-////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+//  Copyright (c) 2025 SaxonSoc contributors
+//  SPDX license identifier: MIT
+//  Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+///////////////////////////////////////////////////////////////////////////////////
+
+/*****************************************************************************
+*
+* @file io.h 
+*
+* @brief Header file contains basic read and write function with different data types.
+*
+* Functions:
+* - read_u32: Reads a 32-bit unsigned integer value from a memory address.
+* - read_u16: Reads a 16-bit unsigned integer value from a memory address.
+* - read_u8 : Reads a 8-bit unsigned integer value from a memory address.
+* - write_u32: Writes a 32-bit unsigned integer value to a memory address.
+* - write_u16: Writes a 16-bit unsigned integer value to a memory address.
+* - write_u8 : Writes a 8-bit unsigned integer value to a memory address.
+* - writeReg_u32: Defines a function for writing a 32-bit unsigned integer value
+*                 to a register at a specific offset from a base address.
+* - readReg_u32: Defines a function for reading a 32-bit unsigned integer value
+*                from a register at a specific offset from a base address.
+*
+******************************************************************************/
 
 #pragma once
 
