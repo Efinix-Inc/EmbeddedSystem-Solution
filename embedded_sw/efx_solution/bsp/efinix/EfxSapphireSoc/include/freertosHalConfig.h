@@ -1,3 +1,16 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************
+*
+* @file freertosHalConfig.h
+*
+* @brief Header file define external interrupt for FreeRTOS.
+*
+******************************************************************************/
+
+
 #pragma once
 #include "bsp.h"
 

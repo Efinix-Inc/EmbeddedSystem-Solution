@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 // \author (c) Marco Paland (info@paland.com)
-//             2014-2019, PALANDesign Hannover, Germany
+//             2014-2025, PALANDesign Hannover, Germany
 //
 // \license The MIT License (MIT)
 //
@@ -30,6 +30,15 @@
 //
 // Github: https://github.com/mpaland
 ///////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file print_full.h
+*
+* @brief Header file contain all necessary print function that fully support for printf,
+*        including flags and precisions. Uses the most RAM resources.
+*
+******************************************************************************/
 
 
 #pragma once
@@ -248,8 +257,19 @@ typedef struct {
   void* arg;
 } out_fct_wrap_type;
 
+/*******************************************************************************
+*
+* @brief This internal function is an inline helper function used by the vsnprintf 
+*        function to output a single character to a buffer at a specified index.
+*
+* @param character  The character to be written to the buffer.
+* @param buffer     Pointer to the buffer where the character will be stored.
+* @param idx        Index indicating the position in the buffer where the 
+*                   character will be written.
+* @param maxlen     Maximum length of the buffer to prevent buffer overflow.
+*
+******************************************************************************/
 
-// internal buffer output
 static inline void _out_buffer(char character, void* buffer, size_t idx, size_t maxlen)
 {
   if (idx < maxlen) {
@@ -258,14 +278,37 @@ static inline void _out_buffer(char character, void* buffer, size_t idx, size_t 
 }
 
 
-// internal null output
+
+/*******************************************************************************
+*
+* @brief This internal function is an inline helper function used as a null output 
+*        function. It is used to discard any output without performing any 
+*        operation.
+*
+* @param character  The character that would be discarded (unused).
+* @param buffer     Pointer to the buffer (unused).
+* @param idx        Index indicating the position in the buffer (unused).
+* @param maxlen     Maximum length of the buffer (unused).
+*
+******************************************************************************/
 static inline void _out_null(char character, void* buffer, size_t idx, size_t maxlen)
 {
   (void)character; (void)buffer; (void)idx; (void)maxlen;
 }
 
 
-// internal _putchar wrapper
+/*******************************************************************************
+*
+* @brief This function is an inline wrapper for the putchar function. It outputs 
+*        a single character to the standard output if the character is valid.
+*
+* @param character  The character to be output.
+* @param buffer     Pointer to the buffer (unused).
+* @param idx        Index indicating the position in the buffer (unused).
+* @param maxlen     Maximum length of the buffer (unused).
+*
+******************************************************************************/
+
 static inline void _out_char(char character, void* buffer, size_t idx, size_t maxlen)
 {
   (void)buffer; (void)idx; (void)maxlen;
@@ -274,9 +317,18 @@ static inline void _out_char(char character, void* buffer, size_t idx, size_t ma
   }
 }
 
-
-
-// internal output function wrapper
+/*******************************************************************************
+*
+* @brief Internal output function wrapper. This function serves as a wrapper for 
+*        an output function. It takes a'character' and uses a pointer to a function 
+*        stored in 'buffer' to output it.
+*
+* @param character  Character to be outputted.
+* @param buffer     Pointer to the output function and its argument.
+* @param idx        Current index (unused in this function).
+* @param maxlen     Maximum length (unused in this function).
+*
+******************************************************************************/
 static inline void _out_fct(char character, void* buffer, size_t idx, size_t maxlen)
 {
   (void)idx; (void)maxlen;
@@ -286,8 +338,17 @@ static inline void _out_fct(char character, void* buffer, size_t idx, size_t max
   }
 }
 
-// internal secure strlen
-// \return The length of the string (excluding the terminating 0) limited by 'maxsize'
+/*******************************************************************************
+*
+* @brief This funciton calculate the length of a string, limited by a maximum size.
+*
+* @param str      Pointer to the string to be measured.
+* @param maxsize  Maximum number of characters to count.
+*
+* @return The length of the string (excluding the terminating null character), 
+*         limited by 'maxsize'.
+*
+******************************************************************************/
 static inline unsigned int _strnlen_s(const char* str, size_t maxsize)
 {
   const char* s;
@@ -296,15 +357,33 @@ static inline unsigned int _strnlen_s(const char* str, size_t maxsize)
 }
 
 
-// internal test if char is a digit (0-9)
-// \return true if char is a digit
+
+/*******************************************************************************
+*
+* @brief This function checks if the given character is a digit (0-9).
+*
+* @param ch  Character to be checked.
+*
+* @return True if the character is a digit, otherwise false.
+*
+******************************************************************************/
 static inline bool _is_digit(char ch)
 {
   return (ch >= '0') && (ch <= '9');
 }
 
 
-// internal ASCII string to unsigned int conversion
+/*******************************************************************************
+*
+* @brief Internal ASCII string to unsigned int conversion.
+*
+* This function converts an ASCII string to an unsigned integer.
+*
+* @param str  Pointer to a pointer to the string to be converted.
+*
+* @return Converted unsigned integer value.
+*
+******************************************************************************/
 static unsigned int _atoi(const char** str)
 {
   unsigned int i = 0U;
@@ -314,7 +393,24 @@ static unsigned int _atoi(const char** str)
   return i;
 }
 
-// output the specified string in reverse, taking care of any zero-padding
+/*******************************************************************************
+*
+* @brief This function outputs the specified string in reverse with zero-padding and alignment.
+*
+* @param out       Custom output function that takes a character, buffer index, 
+*                  and other parameters.
+* @param buffer    Pointer to the buffer where the formatted string will be stored.
+* @param idx       Current index in the buffer.
+* @param maxlen    Maximum length of the buffer.
+* @param buf       Pointer to the string to be outputted.
+* @param len       Length of the string to be outputted.
+* @param width     Minimum width of the output string. Padding is added if necessary.
+* @param flags     Formatting flags (e.g., 'FLAGS_LEFT' for left alignment, 
+*                  'FLAGS_ZEROPAD' for zero-padding).
+*
+* @return Updated index in the buffer after outputting the string.
+*
+******************************************************************************/
 static size_t _out_rev(out_fct_type out, char* buffer, size_t idx, size_t maxlen, const char* buf, size_t len, unsigned int width, unsigned int flags)
 {
   const size_t start_idx = idx;
@@ -342,7 +438,26 @@ static size_t _out_rev(out_fct_type out, char* buffer, size_t idx, size_t maxlen
 }
 
 
-// internal itoa format
+/*******************************************************************************
+*
+* @brief This internal function to format the output string based on formatting flags.
+*
+* @param out       Custom output function that takes a character, buffer index, 
+*                  and other parameters.
+* @param buffer    Pointer to the buffer where the formatted string will be stored.
+* @param idx       Current index in the buffer.
+* @param maxlen    Maximum length of the buffer.
+* @param buf       Pointer to the formatted number string.
+* @param len       Length of the formatted number string.
+* @param negative  Flag indicating if the number is negative.
+* @param base      Base of the number system (e.g., 10 for decimal, 16 for hexadecimal).
+* @param prec      Number of decimal places.
+* @param width     Minimum width of the output string. Padding is added if necessary.
+* @param flags     Formatting flags (e.g., '#' for alternate form, '+' to show sign).
+*
+* @return Number of characters written to the buffer.
+*
+******************************************************************************/
 static size_t _ntoa_format(out_fct_type out, char* buffer, size_t idx, size_t maxlen, char* buf, size_t len, bool negative, unsigned int base, unsigned int prec, unsigned int width, unsigned int flags)
 {
   // pad leading zeros
@@ -396,7 +511,28 @@ static size_t _ntoa_format(out_fct_type out, char* buffer, size_t idx, size_t ma
 }
 
 
-// internal itoa for 'long' type
+
+/*******************************************************************************
+*
+* @brief This internal function to format an unsigned long integer to a string 
+*        representation in a given base.
+*
+* @param out       Custom output function that takes a character, buffer index, 
+*                  and other parameters.
+* @param buffer    Pointer to the buffer where the formatted string will be stored.
+* @param idx       Current index in the buffer.
+* @param maxlen    Maximum length of the buffer.
+* @param value     Unsigned long integer value to be formatted.
+* @param negative  Flag indicating if the number is negative.
+* @param base      Base of the number system (e.g., 10 for decimal, 16 for hexadecimal).
+* @param prec      Number of decimal places.
+* @param width     Minimum width of the output string. Padding is added if necessary.
+* @param flags     Formatting flags (e.g., '#' for alternate form, '+' to show sign).
+*
+* @return Number of characters written to the buffer.
+*
+*
+******************************************************************************/
 static size_t _ntoa_long(out_fct_type out, char* buffer, size_t idx, size_t maxlen, unsigned long value, bool negative, unsigned long base, unsigned int prec, unsigned int width, unsigned int flags)
 {
   char buf[PRINTF_NTOA_BUFFER_SIZE];
@@ -422,6 +558,26 @@ static size_t _ntoa_long(out_fct_type out, char* buffer, size_t idx, size_t maxl
 
 // internal itoa for 'long long' type
 #if defined(PRINTF_SUPPORT_LONG_LONG)
+/*******************************************************************************
+*
+* @brief This internal function to format an unsigned long long integer to a string 
+*        representation in a given base.
+*
+* @param out       Custom output function that takes a character, buffer index, 
+*                  and other parameters.
+* @param buffer    Pointer to the buffer where the formatted string will be stored.
+* @param idx       Current index in the buffer.
+* @param maxlen    Maximum length of the buffer.
+* @param value     Unsigned long long integer value to be formatted.
+* @param negative  Flag indicating if the number is negative.
+* @param base      Base of the number system (e.g., 10 for decimal, 16 for hexadecimal).
+* @param prec      Number of decimal places.
+* @param width     Minimum width of the output string. Padding is added if necessary.
+* @param flags     Formatting flags (e.g., '#' for alternate form, '+' to show sign).
+*
+* @return Number of characters written to the buffer.
+*
+******************************************************************************/
 static size_t _ntoa_long_long(out_fct_type out, char* buffer, size_t idx, size_t maxlen, unsigned long long value, bool negative, unsigned long long base, unsigned int prec, unsigned int width, unsigned int flags)
 {
   char buf[PRINTF_NTOA_BUFFER_SIZE];
@@ -454,7 +610,25 @@ static size_t _etoa(out_fct_type out, char* buffer, size_t idx, size_t maxlen, d
 #endif
 
 
-// internal ftoa for fixed decimal floating point
+
+/*******************************************************************************
+*
+* @brief This internal function to format a floating-point number for fixed decimal 
+*        floating point representation.
+*
+* @param out    Custom output function that takes a character, buffer index, 
+*               and other parameters.
+* @param buffer Pointer to the buffer where the formatted string will be stored.
+* @param idx    Current index in the buffer.
+* @param maxlen Maximum length of the buffer.
+* @param value  Floating-point value to be formatted.
+* @param prec   Number of decimal places.
+* @param width  Minimum width of the output string. Padding is added if necessary.
+* @param flags  Formatting flags (like '+' to show sign).
+*
+* @return Number of characters written to the buffer.
+*
+******************************************************************************/
 static size_t _ftoa(out_fct_type out, char* buffer, size_t idx, size_t maxlen, double value, unsigned int prec, unsigned int width, unsigned int flags)
 {
   char buf[PRINTF_FTOA_BUFFER_SIZE];
@@ -582,7 +756,26 @@ static size_t _ftoa(out_fct_type out, char* buffer, size_t idx, size_t maxlen, d
 
 
 #if defined(PRINTF_SUPPORT_EXPONENTIAL)
-// internal ftoa variant for exponential floating-point type, contributed by Martijn Jasperse <m.jasperse@gmail.com>
+/*******************************************************************************
+*
+* @brief This function is an internal variant of ftoa designed to handle exponential 
+*        floating-point numbers. It follows the algorithm by David Gay for logarithmic 
+*        calculations and the exponential function computation using continued fractions.
+*
+* @param out      Output function.
+* @param buffer   Pointer to the buffer where the output will be stored.
+* @param idx      Current index in the buffer.
+* @param maxlen   Maximum length of the buffer.
+* @param value    Floating-point value to convert.
+* @param prec     Precision (number of decimal places).
+* @param width    Minimum width of the output.
+* @param flags    Flags indicating formatting options.
+*
+* @return         The index after writing to the buffer.
+*
+* @note           Contributed by: Martijn Jasperse <m.jasperse@gmail.com>
+*
+******************************************************************************/
 static size_t _etoa(out_fct_type out, char* buffer, size_t idx, size_t maxlen, double value, unsigned int prec, unsigned int width, unsigned int flags)
 {
   // check for NaN and special values
@@ -691,8 +884,24 @@ static size_t _etoa(out_fct_type out, char* buffer, size_t idx, size_t maxlen, d
 #endif  // PRINTF_SUPPORT_EXPONENTIAL
 #endif  // PRINTF_SUPPORT_FLOAT
 
-
-// internal vsnprintf
+/*******************************************************************************
+*
+* @brief This function is an internal variant of vsnprintf designed to format
+*        and output data based on a given format string and variable arguments.
+*        It supports various format specifiers for integers, characters, strings,
+*        and floating-point numbers.
+*
+* @param out      Output function.
+* @param buffer   Pointer to the buffer where the formatted output will be stored.
+* @param maxlen   Maximum length of the buffer.
+* @param format   Format string specifying the format of the output.
+* @param va       Variable arguments list.
+*
+* @return         The number of characters written to the buffer (excluding the
+*                 terminating null character), or a negative value if an error
+*                 occurred.
+*
+******************************************************************************/
 static int _vsnprintf(out_fct_type out, char* buffer, const size_t maxlen, const char* format, va_list va)
 {
   unsigned int flags, width, precision, n;
@@ -1026,6 +1235,21 @@ static int _vsnprintf(out_fct_type out, char* buffer, const size_t maxlen, const
 
 ///////////////////////////////////////////////////////////////////////////////
 
+/*******************************************************************************
+*
+* @brief This function prints formatted data to the standard output device.
+*
+* @param format Format string followed by the arguments to be formatted.
+* @param ... Variable arguments corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `printf` in the standard C library.
+* It formats the string according to the format string and prints the result 
+* to the standard output device.
+*
+* @return Number of characters printed or formatted (excluding the null byte).
+*
+******************************************************************************/
 static int printf_(const char* format, ...)
 {
   va_list va;
@@ -1045,6 +1269,20 @@ static int printf_(const char* format, ...)
 }
 
 
+/*******************************************************************************
+*
+* @brief This function formats a string and stores the result in a buffer.
+*
+* @param buffer Pointer to the buffer where the formatted string will be stored.
+* @param format Format string followed by the arguments to be formatted.
+* @param ... Variable arguments corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `sprintf` in the standard C library.
+* It formats the string according to the format string and stores the result 
+* in the provided buffer.
+*
+******************************************************************************/
 static int sprintf_(char* buffer, const char* format, ...)
 {
   va_list va;
@@ -1054,6 +1292,24 @@ static int sprintf_(char* buffer, const char* format, ...)
   return ret;
 }
 
+/*******************************************************************************
+*
+* @brief This function prints formatted data to a buffer with a specified size.
+*
+* @param buffer Pointer to the buffer where the resulting formatted string is stored.
+* @param count Maximum number of characters to write to the buffer, including the null terminator.
+* @param format Format string followed by the arguments to be formatted.
+* @param ... Variable arguments corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `snprintf` in the standard C library.
+* It formats the string according to the format string and writes the result 
+* to the provided buffer with a specified maximum size.
+*
+* @return Number of characters printed or formatted (excluding the null byte). 
+*         If the return value is equal to or greater than 'count', the output was truncated.
+*
+******************************************************************************/
 
 static int snprintf_(char* buffer, size_t count, const char* format, ...)
 {
@@ -1065,18 +1321,70 @@ static int snprintf_(char* buffer, size_t count, const char* format, ...)
 }
 
 
+/*******************************************************************************
+*
+* @brief This function prints formatted data to the standard output using a variable argument list.
+*
+* @param format Format string followed by the arguments to be formatted.
+* @param va Variable argument list corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `vprintf` in the standard C library.
+* It formats the string according to the format string and writes the result 
+* to the standard output using a variable argument list.
+*
+* @return Number of characters printed or formatted (excluding the null byte).
+*
+******************************************************************************/
 static int vprintf_(const char* format, va_list va)
 {
   char buffer[1];
   return _vsnprintf(_out_char, buffer, (size_t)-1, format, va);
 }
 
+/*******************************************************************************
+*
+* @brief This function writes formatted data to a string using a variable argument list.
+*
+* @param buffer Pointer to the buffer where the formatted string will be written.
+* @param count Maximum number of characters to write to the buffer, including the null byte.
+* @param format Format string followed by the arguments to be formatted.
+* @param va Variable argument list corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `vsnprintf` in the standard C library.
+* It formats the string according to the format string and writes the result 
+* to the provided buffer using a variable argument list.
+*
+* @return Number of characters printed or formatted (excluding the null byte).
+*         If the return value is greater than or equal to 'count', it indicates
+*         that the output was truncated.
+*
+******************************************************************************/
 
 static int vsnprintf_(char* buffer, size_t count, const char* format, va_list va)
 {
   return _vsnprintf(_out_buffer, buffer, count, format, va);
 }
 
+/*******************************************************************************
+*
+* @brief Formatted print function that uses a custom output function.
+*
+* @param out Pointer to the custom output function that takes a character and 
+*            a void pointer as arguments.
+* @param arg Argument to be passed to the custom output function.
+* @param format Format string followed by the arguments to be formatted.
+* @param va Variable argument list corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* This function behaves similarly to `vsnprintf` but allows for custom output 
+* through a user-defined output function. The formatted data is passed to this 
+* output function character by character.
+*
+* @return Number of characters sent to the custom output function.
+*
+******************************************************************************/
 
 static int fctprintf(void (*out)(char character, void* arg), void* arg, const char* format, ...)
 {
