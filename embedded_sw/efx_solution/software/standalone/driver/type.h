@@ -1,11 +1,39 @@
-////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+//  Copyright (c) 2025 SaxonSoc contributors
+//  SPDX license identifier: MIT
+//  Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+///////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file type.h 
+*
+* @brief Header file defines common types and bit macros.
+*
+******************************************************************************/
 
 #pragma once
 
 #include <stdint.h>
+
+/*******************************************************************************
+*
+* Types defined:
+*   - u64: Unsigned 64-bit integer.
+*   - s64: Signed 64-bit integer.
+*   - u32: Unsigned 32-bit integer.
+*   - s32: Signed 32-bit integer.
+*   - u16: Unsigned 16-bit integer.
+*   - s16: Signed 16-bit integer.
+*   - u8:  Unsigned 8-bit integer.
+*   - s8:  Signed 8-bit integer.
+*
+* Bit Macros defined:
+*   - BIT_0  through BIT_31: Macros representing individual bits, where BIT_0
+*     represents bit position 0, BIT_1 represents bit position 1, and so on.
+*
+******************************************************************************/
+
 
 typedef uint64_t    u64;
 typedef int64_t     s64;

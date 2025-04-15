@@ -1,49 +1,41 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2023 Efinix Inc. All rights reserved.              
-//
-// This   document  contains  proprietary information  which   is        
-// protected by  copyright. All rights  are reserved.  This notice       
-// refers to original work by Efinix, Inc. which may be derivitive       
-// of other work distributed under license of the authors.  In the       
-// case of derivative work, nothing in this notice overrides the         
-// original author's license agreement.  Where applicable, the           
-// original license agreement is included in it's original               
-// unmodified form immediately below this header.                        
-//                                                                       
-// WARRANTY DISCLAIMER.                                                  
-//     THE  DESIGN, CODE, OR INFORMATION ARE PROVIDED “AS IS” AND        
-//     EFINIX MAKES NO WARRANTIES, EXPRESS OR IMPLIED WITH               
-//     RESPECT THERETO, AND EXPRESSLY DISCLAIMS ANY IMPLIED WARRANTIES,  
-//     INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF          
-//     MERCHANTABILITY, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR    
-//     PURPOSE.  SOME STATES DO NOT ALLOW EXCLUSIONS OF AN IMPLIED       
-//     WARRANTY, SO THIS DISCLAIMER MAY NOT APPLY TO LICENSEE.           
-//                                                                       
-// LIMITATION OF LIABILITY.                                              
-//     NOTWITHSTANDING ANYTHING TO THE CONTRARY, EXCEPT FOR BODILY       
-//     INJURY, EFINIX SHALL NOT BE LIABLE WITH RESPECT TO ANY SUBJECT    
-//     MATTER OF THIS AGREEMENT UNDER TORT, CONTRACT, STRICT LIABILITY   
-//     OR ANY OTHER LEGAL OR EQUITABLE THEORY (I) FOR ANY INDIRECT,      
-//     SPECIAL, INCIDENTAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES OF ANY    
-//     CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF      
-//     GOODWILL, DATA OR PROFIT, WORK STOPPAGE, OR COMPUTER FAILURE OR   
-//     MALFUNCTION, OR IN ANY EVENT (II) FOR ANY AMOUNT IN EXCESS, IN    
-//     THE AGGREGATE, OF THE FEE PAID BY LICENSEE TO EFINIX HEREUNDER    
-//     (OR, IF THE FEE HAS BEEN WAIVED, $100), EVEN IF EFINIX SHALL HAVE 
-//     BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES.  SOME STATES DO 
-//     NOT ALLOW THE EXCLUSION OR LIMITATION OF INCIDENTAL OR            
-//     CONSEQUENTIAL DAMAGES, SO THIS LIMITATION AND EXCLUSION MAY NOT   
-//     APPLY TO LICENSEE.                                                
-//
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
 #ifndef EFX_SEMIHOSTING_H
 #define EFX_SEMIHOSTING_H
 
+/*******************************************************************************
+/**
+* @file semihosting.h
+*
+* @brief Header file for ARM semihosting functions that allow input and output operations 
+*        with the debug console of ARM-based systems using semihosting operations.
+*
+* The available functions are:
+* - sh_write0: Writes a zero-terminated string to the debug console.
+* - sh_writec: Writes a single character to the debug console.
+* - sh_readc: Reads a single character from the debug console.
+*
+* @note    The exact behavior of these functions may depend on the underlying
+*          semihosting implementation and debugger.
+*
+******************************************************************************/
+
 
 #include "bsp.h"
 #include "vexriscv.h"
 
+/*******************************************************************************
+* @brief Definitions of ARM semihosting operation numbers.
+*
+* @note This enumeration defines the ARM semihosting operation numbers along with their
+*       corresponding hexadecimal values. These operation numbers are used to identify
+*       different semihosting operations when making semihosting system calls. This
+*       enumeration contains the ARM semihosting operations in lexicographic order.
+*
+******************************************************************************/
 
 #define RISCV_SEMIHOSTING_CALL_NUMBER 7
 enum semihosting_operation_numbers {
@@ -78,6 +70,19 @@ enum semihosting_operation_numbers {
     SEMIHOSTING_SYS_WRITE0          = 0x04,
 };
 
+/*******************************************************************************
+* @brief This function is used for making a semihosting call to the host.
+*
+* @param reason: The reason code for the semihosting call.
+* @param arg: A pointer to an argument to be passed to the host.
+*
+* @return The return value from the semihosting call.
+*
+* @note This function uses inline assembly to issue a sequence of RISC-V instructions
+*       to perform the semihosting call. It ensures that the call is always inlined
+*       into the calling code using the "always_inline" attribute.
+*
+******************************************************************************/
 static inline int __attribute__ ((always_inline)) call_host(int reason, void* arg) {
     register int value asm ("a0") = reason;
     register void* ptr asm ("a1") = arg;
@@ -94,6 +99,7 @@ static inline int __attribute__ ((always_inline)) call_host(int reason, void* ar
         " srai x0, x0, %[swi] \n"
         " .option pop \n"
         " nop \n"
+
         : "=r" (value) /* Outputs */
         : "0" (value), "r" (ptr), [swi] "i" (RISCV_SEMIHOSTING_CALL_NUMBER) /* Inputs */
         : "memory" /* Clobbers */
@@ -101,17 +107,52 @@ static inline int __attribute__ ((always_inline)) call_host(int reason, void* ar
     return value;
 }
 
+/*******************************************************************************
+* @brief This function write a zero-terminated string to the debug console.
+*
+* @param   buf: Pointer to the zero-terminated string to be written.
+*
+* @return  None.
+*
+* @note    None.
+*
+******************************************************************************/
+
 static void sh_write0(char* buf)
 {
     // Print zero-terminated string
     call_host(SEMIHOSTING_SYS_WRITE0, (void*) buf);
 }
 
+/*******************************************************************************
+*
+* @brief This function writes a single character to the debug console using the ARM
+*        semihosting system call for writing a character.
+*
+* @param   c: The character to be written to the debug console.
+*
+* @return  None.
+*
+* @note    None.
+*
+******************************************************************************/
 static void sh_writec(char c)
 {
     // Print single character
     call_host(SEMIHOSTING_SYS_WRITEC, (void*)&c);
 }
+
+/*******************************************************************************
+*
+* @brief This function reads a single character from the debug console using the ARM
+*        semihosting system call for reading a character. Note that this is a blocking
+*        operation.
+*
+* @return  The character read from the debug console.
+*
+* @note    None.
+*
+******************************************************************************/
 
 static char sh_readc(void)
 {

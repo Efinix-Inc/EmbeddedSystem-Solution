@@ -1,6 +1,6 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+//
 ////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
@@ -27,12 +27,6 @@
 #define BSP_CLINT_HZ        SYSTEM_CLINT_HZ
 #define bsp_uDelay(usec)    clint_uDelay(usec, SYSTEM_CLINT_HZ, SYSTEM_CLINT_CTRL);
 
-// Freertos specifics
-#define configMTIME_BASE_ADDRESS        (BSP_CLINT + 0xBFF8)
-#define configMTIMECMP_BASE_ADDRESS     (BSP_CLINT + 0x4000)
-#define configCPU_CLOCK_HZ              ( ( uint32_t ) ( BSP_CLINT_HZ ) )
-#define BSP_LED_GPIO                    SYSTEM_GPIO_0_IO_CTRL
-#define BSP_LED_MASK                    0xf
 ////////////////////////////////////////////////////////////////////////////////
     /*
     *   Support printing for char, string , decimal and hexadecinaml specifier.
@@ -85,34 +79,34 @@
 
 #if (ENABLE_BSP_PRINTF)
     #include "print.h"
-#endif
+#endif //#if (ENABLE_BSP_PRINTF)
 
 #if (ENABLE_BSP_PRINTF_FULL)
     #if (!ENABLE_FLOATING_POINT_SUPPORT)
         #define PRINTF_DISABLE_SUPPORT_FLOAT 1
-    #endif 
-
+    #endif //#if (ENABLE_FLOATING_POINT_SUPPORT)
+    
     #if (!ENABLE_FP_EXPONENTIAL_SUPPORT)
         #define PRINTF_DISABLE_SUPPORT_EXPONENTIAL 1
-    #endif 
-
+    #endif //#if (ENABLE_FP_EXPONENTIAL_SUPPORT)
+    
     #if (!ENABLE_PTRDIFF_SUPPORT)
         #define PRINTF_DISABLE_SUPPORT_PTRDIFF_T 1
-    #endif 
-
+    #endif //#if (ENABLE_PTRDIFF_SUPPORT)
+    
     #if (!ENABLE_LONG_LONG_SUPPORT)
         #define PRINTF_DISABLE_SUPPORT_LONG_LONG 1
-    #endif 
-
+    #endif //#if (ENABLE_LONG_LONG_SUPPORT)
+    
     #if(ENABLE_BRIDGE_FULL_TO_LITE)
         #if (!ENABLE_BSP_PRINTF)
             #define bsp_printf bsp_printf_full
-        #endif 
-    #endif 
-
+        #endif // #if (!ENABLE_BSP_PRINTF)
+    #endif //#if(ENABLE_BRIDGE_EFX_TO_BSP)
     #include "print_full.h"
+    
+#endif //#if (ENABLE_BSP_PRINTF_FULL)
 
-#endif 
 
 ////////////////////////////////////////////////////////////////////////////////
     /*

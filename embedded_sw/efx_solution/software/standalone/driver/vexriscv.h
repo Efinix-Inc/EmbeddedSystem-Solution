@@ -1,7 +1,22 @@
-////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
-////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+//  Copyright (c) 2025 SaxonSoc contributors
+//  SPDX license identifier: MIT
+//  Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+///////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************
+*
+* @file vexriscv.h
+*
+* @brief Header file containing cache manipulation macros for RISC-V architecture.
+*
+* Functions:
+* - data_cache_invalidate_all: Invalidate the entire data cache.
+* - data_cache_invalidate_address: Invalidate cache lines corresponding
+*                                  to the given memory address.
+* - instruction_cache_invalidate: Invalidate the entire instruction cache.
+*
+******************************************************************************/
 
 #pragma once
 
@@ -20,6 +35,9 @@
     );                                         \
 })
 
+//Invalidate the whole instruction cache
+#define instruction_cache_invalidate() asm("fence.i");
+
 //Write buffer flush
 #define soc_write_buffer_flush()     \
 ({                                   \
@@ -34,5 +52,3 @@
     ); \
 })
 
-//Invalidate the whole instruction cache
-#define instruction_cache_invalidate() asm("fence.i");

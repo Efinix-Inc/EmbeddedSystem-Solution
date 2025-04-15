@@ -1,42 +1,16 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2023 Efinix Inc. All rights reserved.
-//
-// This   document  contains  proprietary information  which   is
-// protected by  copyright. All rights  are reserved.  This notice
-// refers to original work by Efinix, Inc. which may be derivitive
-// of other work distributed under license of the authors.  In the
-// case of derivative work, nothing in this notice overrides the
-// original author's license agreement.  Where applicable, the
-// original license agreement is included in it's original
-// unmodified form immediately below this header.
-//
-// WARRANTY DISCLAIMER.
-//     THE  DESIGN, CODE, OR INFORMATION ARE PROVIDED “AS IS” AND
-//     EFINIX MAKES NO WARRANTIES, EXPRESS OR IMPLIED WITH
-//     RESPECT THERETO, AND EXPRESSLY DISCLAIMS ANY IMPLIED WARRANTIES,
-//     INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF
-//     MERCHANTABILITY, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR
-//     PURPOSE.  SOME STATES DO NOT ALLOW EXCLUSIONS OF AN IMPLIED
-//     WARRANTY, SO THIS DISCLAIMER MAY NOT APPLY TO LICENSEE.
-//
-// LIMITATION OF LIABILITY.
-//     NOTWITHSTANDING ANYTHING TO THE CONTRARY, EXCEPT FOR BODILY
-//     INJURY, EFINIX SHALL NOT BE LIABLE WITH RESPECT TO ANY SUBJECT
-//     MATTER OF THIS AGREEMENT UNDER TORT, CONTRACT, STRICT LIABILITY
-//     OR ANY OTHER LEGAL OR EQUITABLE THEORY (I) FOR ANY INDIRECT,
-//     SPECIAL, INCIDENTAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES OF ANY
-//     CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF
-//     GOODWILL, DATA OR PROFIT, WORK STOPPAGE, OR COMPUTER FAILURE OR
-//     MALFUNCTION, OR IN ANY EVENT (II) FOR ANY AMOUNT IN EXCESS, IN
-//     THE AGGREGATE, OF THE FEE PAID BY LICENSEE TO EFINIX HEREUNDER
-//     (OR, IF THE FEE HAS BEEN WAIVED, $100), EVEN IF EFINIX SHALL HAVE
-//     BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGES.  SOME STATES DO
-//     NOT ALLOW THE EXCLUSION OR LIMITATION OF INCIDENTAL OR
-//     CONSEQUENTIAL DAMAGES, SO THIS LIMITATION AND EXCLUSION MAY NOT
-//     APPLY TO LICENSEE.
-//
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
+/*******************************************************************************
+*
+* @file print.h
+*
+* @brief Header file contain all necessary print function that supports char, string, 
+*        decimal, and hexadecimal specifiers. Uses medium RAM resources.
+*
+******************************************************************************/
 #pragma once
 
 #include <stdarg.h>
@@ -87,7 +61,18 @@
     }
 
     #if (ENABLE_FLOATING_POINT_SUPPORT)
-    /* reverse:  reverse string s in place */
+/*******************************************************************************
+*
+* @brief This function takes a character array as input and reverses its content.
+*
+* @param s[] Character array to be reversed.
+*
+* @notes:
+* - Initializes two indices, i and j, for the start and end of the string respectively.
+* - Iterates through the string from both ends towards the middle.
+* - Swaps the characters at positions i and j in each iteration.
+*
+******************************************************************************/
      static void reverse(char s[])
      {
           int i, j, len;
@@ -100,7 +85,21 @@
           }
      }
     
-    /* itos:  convert integer n to characters in s */
+/*******************************************************************************
+*
+* @brief This function converts an integer to its corresponding string representation
+*        and stores it in the provided character array.
+*
+* @param n Integer to be converted.
+* @param s[] Character array to store the resulting string.
+*
+* @notes:
+* - Checks the sign of the integer and records it.
+* - Converts the absolute value of the integer to its string representation in reverse order.
+* - If the integer was negative, adds a '-' character to the string.
+* - Reverses the resulting string to get the correct order.
+*
+******************************************************************************/   
      static void itos(int n, char s[])
      {
          int i, sign;
@@ -117,7 +116,26 @@
          reverse(s);
     }
     
-    // Converts a floating-point/double number to a string.
+
+/*******************************************************************************
+*
+* @brief This function converts a double number to its string representation with a
+*        specified number of decimal places and stores the integer and fractional parts
+*        in separate character arrays.
+*
+* @param n Double number to be converted.
+* @param res1 Character array to store the integer part of the number.
+* @param res2 Character array to store the fractional part of the number.
+*
+* @notes:
+* - Extracts the integer part of the double number.
+* - Calculates the fractional part of the double number.
+* - Converts the integer part to its string representation using the 'itos' function.
+* - Adds a dot to the 'res2' array.
+* - Converts the fractional part to its string representation with a specified
+*   number of decimal places.
+*
+******************************************************************************/
     static void ftoa(double n, char* res1, char* res2)
     {
         float fpart_f;
@@ -157,6 +175,14 @@
         itos((int)fpart_f, res2);
     }
     
+/*******************************************************************************
+*
+* @brief This function converts an unsigned 32-bit integer to its string representation
+*        and prints it using the '_putchar_s' function.
+*
+* @param val Unsigned 32-bit integer value to be printed.
+*
+******************************************************************************/    
     static void print_dec(uint32_t val)
     {
         char sval[10];
@@ -164,6 +190,21 @@
         _putchar_s(sval);
 
     }
+
+/*******************************************************************************
+*
+* @brief This function prints a floating-point value.
+*
+* @param val Double precision floating-point value to be printed.
+*
+* @notes:
+* - Converts the double precision floating-point value to its string 
+*   representation using the 'ftoa' function.
+* - Adjusts the string representation to handle negative signs and proper 
+*   placement of decimal points.
+* - Prints the adjusted string representation using the '_putchar_s' function.
+*
+******************************************************************************/
     static void print_float(double val)
     {
         int i, j, neg;
@@ -197,20 +238,42 @@
 
     #endif //#if (ENABLE_FLOATING_POINT_SUPPORT)
 
-    
-
+/*******************************************************************************
+*  
+* @brief This function is used to output a single character.
+*
+* @param c: The character to be output.
+*
+******************************************************************************/
     static void bsp_printf_c(int c)
     {
         _putchar(c);
     }
 
+/*******************************************************************************
+* @brief This function is used to outputs a null-terminated string. 
+*
+* @param s: A pointer to the null-terminated string to be output.
+*
+*******************************************************************************/
     static void bsp_printf_s(char *p)
     {
         _putchar_s(p);
     }
 
 
-
+/*******************************************************************************
+*
+* @brief This function prints an integer to the output.
+*
+* @param val Integer value to be printed.
+*
+* @notes:
+* - Converts the integer to a string representation by extracting digits.
+* - Handles negative numbers by printing a '-' sign.
+* - Uses the 'bsp_printf_c' function to print each character.
+*
+******************************************************************************/
     static void bsp_printf_d(int val)
     {
         char buffer[32];
@@ -227,6 +290,18 @@
             bsp_printf_c(*(--p));
     }
 
+/*******************************************************************************
+*
+* @brief This function prints an integer in hexadecimal format to the output.
+*
+* @param val Integer value to be printed in hexadecimal format.
+*
+* @notes:
+* - Determines the number of hexadecimal digits required for the given value.
+* - Calls 'bsp_printHex_lower' to print the hexadecimal representation.
+* - Determines the number of leading zeros to be printed based on the value.
+*
+******************************************************************************/
     static void bsp_printf_x(int val)
     {
         int i,digi=2;
@@ -242,6 +317,18 @@
         bsp_printHex_lower(val);
     }
 
+/*******************************************************************************
+*
+* @brief This function prints an integer in uppercase hexadecimal format to the output.
+*
+* @param val Integer value to be printed in uppercase hexadecimal format.
+*
+* @notes:
+* - Determines the number of hexadecimal digits required for the given value.
+* - Calls 'bsp_printHex' to print the uppercase hexadecimal representation.
+* - Determines the number of leading zeros to be printed based on the value.
+*
+******************************************************************************/
     static void bsp_printf_X(int val)
         {
             int i,digi=2;
@@ -257,6 +344,22 @@
             bsp_printHex(val);
         }
 #if (ENABLE_SEMIHOSTING_PRINT == 0)
+/*******************************************************************************
+*
+* @brief This function is a Printf-like function to print formatted data to the output.
+*        which acts similar to the standard 'printf' function but supports a 
+*        limited set of format specifiers: 'c', 's', 'd', 'x', 'X', and 'f'.
+*
+* @param format Format string followed by the arguments to be formatted.
+* @param ... Variable arguments corresponding to the format specifiers in 'format'.
+*
+* @notes:
+* - Iterates over each character in the format string.
+* - Recognizes '%' as the start of a format specifier.
+* - Handles each format specifier by calling the appropriate helper function.
+* - If floating-point support is disabled, prints a warning for the 'f' specifier.
+*
+******************************************************************************/
     static void bsp_printf(const char *format, ...)
     {
         int i;
@@ -307,6 +410,15 @@
 
 #else // #if (ENABLE_SEMIHOSTING_PRINT == 1)
     #include "print_full.h"
+/*******************************************************************************
+*
+* @brief This function is printf-like function to print formatted data to the output
+*        when semihosting is enabled. 
+*
+* @param format Format string followed by the arguments to be formatted.
+* @param ... Variable arguments corresponding to the format specifiers in 'format'.
+*
+******************************************************************************/
     static int bsp_printf(const char* format, ...)
     {
       va_list va;
