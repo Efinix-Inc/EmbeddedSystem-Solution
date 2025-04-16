@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="Ti375C529_devkit" description="" last_change="1741684354" sw_version="2024.2.294.3.14" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="true" design_ood="sync" place_ood="change" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="Ti375C529_devkit" description="" last_change="1744781547" sw_version="2025.1.96" last_run_state="fail" last_run_flow="syn" config_result_in_sync="true" design_ood="change" place_ood="change" route_ood="change" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Titanium"/>
         <efx:device name="Ti375C529"/>
@@ -8,9 +8,9 @@
     <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008" unified_flow="false">
         <efx:top_module name="top_soc"/>
         <efx:design_file name="source/top_soc.v" version="default" library="default"/>
-        <efx:design_file name="source/tseCore.v" version="default" library="default"/>
         <efx:design_file name="source/design_modules.v" version="default" library="default"/>
         <efx:design_file name="source/efx_isg_vision_wrapper.sv" version="default" library="default"/>
+        <efx:design_file name="source/submodules/eth.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/cam.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/common.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/display.f" version="na" library="default"/>
@@ -21,35 +21,34 @@
         <efx:sdc_file name="constraints.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
-    <efx:isf_info/>
     <efx:sim_info/>
     <efx:misc_info/>
     <efx:ip_info>
-        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json">
+        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json" ooc="false">
             <efx:ip_src_file name="gSDHC.v"/>
         </efx:ip>
-        <efx:ip instance_name="gTSE" path="ip/gTSE/settings.json">
-            <efx:ip_src_file name="gTSE.v"/>
+        <efx:ip instance_name="gTSE" path="ip/gTSE/settings.json" ooc="false">
+            <efx:ip_src_file name="gTSE.sv"/>
         </efx:ip>
-        <efx:ip instance_name="gTSE_1to2_switch" path="ip/gTSE_1to2_switch/settings.json">
+        <efx:ip instance_name="gTSE_1to2_switch" path="ip/gTSE_1to2_switch/settings.json" ooc="false">
             <efx:ip_src_file name="gTSE_1to2_switch.v"/>
         </efx:ip>
-        <efx:ip instance_name="gDMA" path="ip/gDMA/settings.json">
+        <efx:ip instance_name="gDMA" path="ip/gDMA/settings.json" ooc="false">
             <efx:ip_src_file name="gDMA.v"/>
         </efx:ip>
-        <efx:ip instance_name="gAXIM_2to1_switch" path="ip/gAXIM_2to1_switch/settings.json">
+        <efx:ip instance_name="gAXIM_2to1_switch" path="ip/gAXIM_2to1_switch/settings.json" ooc="false">
             <efx:ip_src_file name="gAXIM_2to1_switch.v"/>
         </efx:ip>
-        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json">
+        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json" ooc="false">
             <efx:ip_src_file name="gDMA_vision.v"/>
         </efx:ip>
-        <efx:ip instance_name="EfxSapphireHpSoc_slb" path="ip/EfxSapphireHpSoc_slb/settings.json">
+        <efx:ip instance_name="EfxSapphireHpSoc_slb" path="ip/EfxSapphireHpSoc_slb/settings.json" ooc="false">
             <efx:ip_src_file name="EfxSapphireHpSoc_slb.v"/>
         </efx:ip>
-        <efx:ip instance_name="gAXIS_1to4_switch" path="ip/gAXIS_1to4_switch/settings.json">
+        <efx:ip instance_name="gAXIS_1to4_switch" path="ip/gAXIS_1to4_switch/settings.json" ooc="false">
             <efx:ip_src_file name="gAXIS_1to4_switch.v"/>
         </efx:ip>
-        <efx:ip instance_name="csi2_mipi_rx" path="ip/csi2_mipi_rx/settings.json">
+        <efx:ip instance_name="csi2_mipi_rx" path="ip/csi2_mipi_rx/settings.json" ooc="false">
             <efx:ip_src_file name="csi2_mipi_rx.sv"/>
         </efx:ip>
     </efx:ip_info>
@@ -101,6 +100,7 @@
         <efx:param name="ram-decomp-mode" value="0" value_type="e_option"/>
         <efx:param name="max_threads" value="-1" value_type="e_integer"/>
         <efx:param name="max-bit-blast-mem-size" value="10240" value_type="e_integer"/>
+        <efx:param name="mark-debug" value="1" value_type="e_option"/>
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
         <efx:param name="work_dir" value="work_pnr" value_type="e_string"/>
