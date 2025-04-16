@@ -3,13 +3,13 @@
         "-o",
         "gTSE",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "ethernet",
             "name": "efx_tsemac",
-            "version": "6.3"
+            "version": "6.4"
         }
     ],
     "conf": {
@@ -25,12 +25,13 @@
     },
     "output": {
         "external_source_source": [
-            "gTSE\\gTSE.v",
-            "gTSE\\gTSE_define.vh",
-            "gTSE\\gTSE_tmpl.vhd",
-            "gTSE\\gTSE_tmpl.v"
+            "gTSE/gTSE.sv",
+            "gTSE/gTSE_define.svh",
+            "gTSE/gTSE_tmpl.sv",
+            "gTSE/gTSE_tmpl.vhd"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:40:24.791754+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.96",
+    "generated_date": "2025-04-16T05:18:56.899597+00:00"
 }

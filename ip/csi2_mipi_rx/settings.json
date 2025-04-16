@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "mipi",
             "name": "efx_csi2_rx",
-            "version": "5.9"
+            "version": "5.11"
         }
     ],
     "conf": {
@@ -37,12 +37,13 @@
     },
     "output": {
         "external_source_source": [
+            "csi2_mipi_rx/csi2_mipi_rx.sv",
             "csi2_mipi_rx/csi2_mipi_rx_define.svh",
             "csi2_mipi_rx/csi2_mipi_rx_tmpl.sv",
-            "csi2_mipi_rx/csi2_mipi_rx_tmpl.vhd",
-            "csi2_mipi_rx/csi2_mipi_rx.sv"
+            "csi2_mipi_rx/csi2_mipi_rx_tmpl.vhd"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2025-03-06T09:08:25.600521+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.96",
+    "generated_date": "2025-04-16T05:22:20.533220+00:00"
 }

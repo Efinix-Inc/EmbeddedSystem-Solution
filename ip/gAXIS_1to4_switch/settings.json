@@ -3,13 +3,13 @@
         "-o",
         "gAXIS_1to4_switch",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace\\GitLab\\SapphireSoC_SW_Demo\\Ti375C529\\Ti375C529_devkit\\ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "axi_infra",
             "name": "efx_axi_interconnect",
-            "version": "5.3"
+            "version": "5.4"
         }
     ],
     "conf": {
@@ -41,12 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch.v",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_define.vh",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.vhd",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.v"
+            "gAXIS_1to4_switch/gAXIS_1to4_switch_tmpl.v",
+            "gAXIS_1to4_switch/gAXIS_1to4_switch_define.vh",
+            "gAXIS_1to4_switch/gAXIS_1to4_switch.v",
+            "gAXIS_1to4_switch/gAXIS_1to4_switch_tmpl.vhd"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T08:46:38.654389+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.96",
+    "generated_date": "2025-04-16T05:22:16.781866+00:00"
 }

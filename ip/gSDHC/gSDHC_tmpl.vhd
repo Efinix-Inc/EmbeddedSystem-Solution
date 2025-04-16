@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Copyright (C) 2013-2024 Efinix Inc. All rights reserved.              
+-- Copyright (C) 2013-2025 Efinix Inc. All rights reserved.              
 --
 -- This   document  contains  proprietary information  which   is        
 -- protected by  copyright. All rights  are reserved.  This notice       

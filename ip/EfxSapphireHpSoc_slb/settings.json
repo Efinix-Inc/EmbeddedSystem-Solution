@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "soc",
             "name": "efx_hard_soc",
-            "version": "1.17"
+            "version": "1.19"
         }
     ],
     "conf": {
@@ -112,20 +112,23 @@
         "SW_FRTOS_APP_SIZE": "16380",
         "SW_FRTOS_APP_SIZE_CUSTOM": "0",
         "SW_FRTOS_STACK_SIZE": "4",
-        "SW_FRTOS_STACK_SIZE_CUSTOM": "0"
+        "SW_FRTOS_STACK_SIZE_CUSTOM": "0",
+        "PACKAGE_TYPE": "\"529\"",
+        "FAMILY_TYPE": "\"TITANIUM\""
     },
     "output": {
         "external_script_Peripheral_Generator": [],
         "external_source_source": [
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb.v",
+            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.v",
             "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_define.vh",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.vhd",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.v"
+            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb.v",
+            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.vhd"
         ],
         "external_script_PT_Configuration": [],
         "external_script_Peripheral_Post_Script": [],
         "external_script_Embedded_SW": []
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2025-03-06T09:08:21.514992+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.96",
+    "generated_date": "2025-04-16T05:22:10.754485+00:00"
 }
