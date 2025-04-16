@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +40,7 @@
 /* Efinix includes. */
 #include "userDef.h"
 #include "dmasg.h"
-#include "rtl8211fd.h"
+#include "efx_tse_phy.h"
 #include "efx_tse_mac.h"
 #include "plic.h"
 #include "riscv.h"
@@ -55,8 +55,7 @@
 #endif
 
 #define FRAME_PACKET  	256
-#define BUFFER_SIZE 	1514
-#define mem ((u32*)0xA00000)
+#define BUFFER_SIZE 	1519
 
 #define EMAC_IF_RX_EVENT        1UL
 #define EMAC_IF_TX_EVENT        2UL
@@ -84,8 +83,8 @@ void freertos_risc_v_application_interrupt_handler();
 u32 rx_cur_desc = 0;
 u32 tx_cur_desc = 0;
 u32 ulPHYLinkStatus = 0;
-struct dmasg_descriptor rx_dmasg_desc[FRAME_PACKET]  __attribute__ ((aligned (64)));
-struct dmasg_descriptor tx_dmasg_desc[FRAME_PACKET]  __attribute__ ((aligned (64)));
+volatile struct dmasg_descriptor rx_dmasg_desc[FRAME_PACKET]  __attribute__ ((aligned (64)));
+volatile struct dmasg_descriptor tx_dmasg_desc[FRAME_PACKET]  __attribute__ ((aligned (64)));
 
 static TaskHandle_t xRxTaskHandle = NULL;
 
@@ -105,28 +104,30 @@ BaseType_t xNetworkInterfaceInitialise( void )
 BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxDescriptor,
                                     BaseType_t xReleaseAfterSend )
 {
+	// Currently, hardware only supports TCP/UDP checksums, IP and ICMP checksum still need to be done in software
+	#if ( ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM != 0 )
+	{
+		ProtocolPacket_t * xProtPacket = ( ProtocolPacket_t * ) pxDescriptor->pucEthernetBuffer;
+
+		if( xProtPacket->xICMPPacket.xIPHeader.ucProtocol == ( uint8_t ) ipPROTOCOL_ICMP ) {
+			IPHeader_t * pxIPHeader = &( xProtPacket->xICMPPacket.xIPHeader );
+			usGenerateProtocolChecksum( ( uint8_t * ) &( xProtPacket->xICMPPacket ), pxDescriptor->xDataLength, pdTRUE );
+		} else if( xProtPacket->xTCPPacket.xEthernetHeader.usFrameType == ipIPv4_FRAME_TYPE ) {
+			IPHeader_t * pxIPHeader = &( xProtPacket->xTCPPacket.xIPHeader );
+			pxIPHeader->usHeaderChecksum = 0x00;
+			pxIPHeader->usHeaderChecksum = usGenerateChecksum( 0U, ( uint8_t * ) &( pxIPHeader->ucVersionHeaderLength ), ipSIZE_OF_IPv4_HEADER );
+			pxIPHeader->usHeaderChecksum = ~FreeRTOS_htons( pxIPHeader->usHeaderChecksum );
+		}
+	}
+	#endif /* ipconfigDRIVER_INCLUDED_TX_IP_CHECKSUM */
+
 	struct dmasg_descriptor *pxTransmitBuffer = pxGetNextTransmitBuffer();
 
-	if(pxTransmitBuffer == NULL) {
-		FreeRTOS_debug_printf( ("xNetworkInterfaceOutput: No more TX buffers available\n") );
-		if(xReleaseAfterSend != pdFALSE) {
-			vReleaseNetworkBufferAndDescriptor(pxDescriptor);
-		}
-		return pdFAIL;
-	}
+	pxTransmitBuffer->from = (u32)pxDescriptor->pucEthernetBuffer;
+	pxTransmitBuffer->control = (u32)((pxDescriptor->xDataLength)-1)  | 1 << 30;
+	pxTransmitBuffer->status  = 0;
 
-	uint8_t* previousBuffer = (u8*)(u32)pxTransmitBuffer->from;
-
-	struct dmasg_descriptor newBuffer;
-
-	newBuffer.from = (u32)pxDescriptor->pucEthernetBuffer;
-	newBuffer.control = (u32)((pxDescriptor->xDataLength)-1)  | 1 << 30;
-	newBuffer.to  = 0;
-	newBuffer.next  = 0;
-	newBuffer.status  = 0;
-
-	*pxTransmitBuffer = newBuffer;
-
+	while(dmasg_busy(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH));
 	dmasg_input_memory (TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH,  pxTransmitBuffer->from, 64);
 	dmasg_output_stream(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, 0, 0, 0, 1);
 	dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_TX_CH, DMASG_CHANNEL_INTERRUPT_DESCRIPTOR_COMPLETION_MASK);
@@ -135,12 +136,7 @@ BaseType_t xNetworkInterfaceOutput( NetworkBufferDescriptor_t * const pxDescript
     iptraceNETWORK_INTERFACE_TRANSMIT();
 
 	if(xReleaseAfterSend != pdFALSE) {
-		pxDescriptor->pucEthernetBuffer = NULL;
 		vReleaseNetworkBufferAndDescriptor(pxDescriptor);
-	}
-
-	if(previousBuffer != NULL) {
-		vReleaseNetworkBuffer(previousBuffer);
 	}
 
     return pdTRUE;
@@ -167,7 +163,7 @@ static BaseType_t InitialiseNetwork( void )
 	rtl8211_drv_init();
 	speed=rtl8211_drv_linkup();
 
-	if((speed == Speed_1000Mhz) || (speed == Speed_100Mhz) || (speed == Speed_10Mhz)) {
+	if((speed == TSE_Speed_1000Mhz) || (speed == TSE_Speed_100Mhz) || (speed == TSE_Speed_10Mhz)) {
 		MacNormalInit(speed);
 
 		ulPHYLinkStatus=1;
@@ -201,16 +197,12 @@ static void program_descriptor()
 	size_t uRequestedBytes = BUFFER_SIZE;
 	for (int j=0; j<FRAME_PACKET; j++) {
 		rx_dmasg_desc[j].control = (u32)((BUFFER_SIZE)-1)  | 1 << 30;
-		rx_dmasg_desc[j].from    = 0;
 		rx_dmasg_desc[j].to      = (u32)pucGetNetworkBuffer(&uRequestedBytes);
 		rx_dmasg_desc[j].next    = (u32) (rx_dmasg_desc + (j+1));
 		rx_dmasg_desc[j].status  = 0;
 	}
 
 	for (int j=0; j<FRAME_PACKET; j++) {
-		tx_dmasg_desc[j].control = (u32)((BUFFER_SIZE)-1)  | 1 << 30;
-		tx_dmasg_desc[j].from    = 0;
-		tx_dmasg_desc[j].to      = 0;
 		tx_dmasg_desc[j].next    = (u32) (tx_dmasg_desc + (j+1));
 		tx_dmasg_desc[j].status  = DMASG_DESCRIPTOR_STATUS_COMPLETED;
 	}
@@ -219,7 +211,7 @@ static void program_descriptor()
 	tx_dmasg_desc[FRAME_PACKET-1].next = (u32)(tx_dmasg_desc);
 
 	dmasg_interrupt_pending_clear(TSEMAC_DMASG_BASE,TSE_DMASG_RX_CH,0xFFFFFFFF);
-	dmasg_output_memory (TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH,  (u32)mem, 64);
+	dmasg_output_memory (TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH,  0, 64);
 	dmasg_input_stream(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, 0, 1, 1);
 	dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
 	dmasg_linked_list_start(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, (u32)rx_dmasg_desc);
@@ -253,11 +245,11 @@ static void userInterrupt()
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)) {
 		switch(claim){
 		case TSE_RX_INTR:
+			dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
 			if( xRxTaskHandle != NULL ) {
 		        xTaskNotifyFromISR( xRxTaskHandle, EMAC_IF_RX_EVENT, eSetBits, &( xHigherPriorityTaskWoken ) );
 		        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
 		    }
-			dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
 			break;
 		case TSE_TX_INTR:
     		tx_dmasg_desc[tx_cur_desc].status  = DMASG_DESCRIPTOR_STATUS_COMPLETED;
@@ -278,13 +270,7 @@ static void crash(){
 }
 
 static struct dmasg_descriptor* pxGetNextTransmitBuffer(void) {
-	for(BaseType_t x = 0; x < FRAME_PACKET; x++) {
-		if(tx_dmasg_desc[x].status == DMASG_DESCRIPTOR_STATUS_COMPLETED) {
-			return &tx_dmasg_desc[x];
-		}
-	}
-
-	return NULL;
+	return (struct dmasg_descriptor*)&tx_dmasg_desc[tx_cur_desc];
 }
 
 static void prvEMACDeferredInterruptHandlerTask( void *pvParameters )
@@ -347,5 +333,5 @@ static void prvNetworkInterfaceInput( void )
 }
 
 static struct dmasg_descriptor* pxGetNextReceiveBuffer(void) {
-	return &rx_dmasg_desc[rx_cur_desc];
+	return (struct dmasg_descriptor*)&rx_dmasg_desc[rx_cur_desc];
 }

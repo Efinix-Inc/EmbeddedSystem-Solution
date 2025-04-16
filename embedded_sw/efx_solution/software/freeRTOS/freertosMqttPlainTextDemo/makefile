@@ -1,7 +1,6 @@
 PROJ_NAME=freertosMqttPlainTextDemo
 
 STANDALONE = ..
-CFLAGS+=-DSMP
 
 FREERTOS=${FreeRTOS_KERNEL_SRC}/FreeRTOS/${FreeRTOS_KERNEL_SRC_DIR}
 FREERTOS_RISCV=${FREERTOS}/portable/GCC/RISC-V
@@ -45,4 +44,4 @@ include ${STANDALONE}/common/bsp.mk
 include ${STANDALONE}/common/riscv64-unknown-elf.mk
 include ${STANDALONE}/common/standalone.mk
 
-LDSCRIPT ?= ${BSP_PATH}/linker/freertos.ld
+LDSCRIPT = ${BSP_PATH}/linker/freertos.ld
