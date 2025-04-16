@@ -1,29 +1,34 @@
 PROJ_NAME=lwipIperfServer
 
-STANDALONE = ../../
+STANDALONE = ../..
+
 CFLAGS+=-DSMP
 
-SRCS = 	$(wildcard src/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/user/arch/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/api/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/ppp/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/ppp/polarssl/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/core/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/core/ipv4/*.c) \
-    	$(wildcard src/*.cpp) \
-    	$(wildcard src/*.S) \
-        ${STANDALONE}/common/start.S\
-        ${STANDALONE}/common/trap.S
+DEBUG?=yes
+BENCH?=yes
 
-CFLAGS += -I${BSP_PATH}/app/lwip
-CFLAGS += -I${BSP_PATH}/app/lwip/include
-CFLAGS += -I${BSP_PATH}/app/lwip/user/arch
-CFLAGS += -I${BSP_PATH}/app/lwip/user/
+SRCS = $(wildcard src/*.c) \
+	$(wildcard ${LWIP_PATH}/*.c) \
+	$(wildcard ${LWIP_PATH}/user/arch/*.c) \
+	$(wildcard ${LWIP_PATH}/api/*.c) \
+	$(wildcard ${LWIP_PATH}/netif/*.c) \
+	$(wildcard ${LWIP_PATH}/netif/ppp/*.c) \
+	$(wildcard ${LWIP_PATH}/netif/ppp/polarssl/*.c) \
+	$(wildcard ${LWIP_PATH}/core/*.c) \
+	$(wildcard ${LWIP_PATH}/core/ipv4/*.c) \
+    $(wildcard src/*.cpp) \
+    $(wildcard src/*.S) \
+    ${STANDALONE}/common/start.S  \
+    ${STANDALONE}/common/trap.S
+
 CFLAGS += -Isrc
-CFLAGS += -DportasmHANDLE_INTERRUPT=external_interrupt_handler
+CFLAGS += -I${LWIP_PATH}
+CFLAGS += -I${LWIP_PATH}/include
+CFLAGS += -I${LWIP_PATH}/user/arch
+CFLAGS += -I${LWIP_PATH}/user/
 
 include ${STANDALONE}/common/bsp.mk
 include ${STANDALONE}/common/riscv64-unknown-elf.mk
 include ${STANDALONE}/common/standalone.mk
+
+LDSCRIPT = ${BSP_PATH}/linker/default.ld

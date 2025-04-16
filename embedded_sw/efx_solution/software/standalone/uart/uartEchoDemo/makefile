@@ -1,6 +1,7 @@
 PROJ_NAME=uartEchoDemo
 
-STANDALONE = ../..
+STANDALONE =../..
+
 CFLAGS+=-DSMP
 
 SRCS = 	$(wildcard src/*.c) \
@@ -8,7 +9,8 @@ SRCS = 	$(wildcard src/*.c) \
 		$(wildcard src/*.S) \
 		${STANDALONE}/common/start.S
 
-
 include ${STANDALONE}/common/bsp.mk
 include ${STANDALONE}/common/riscv64-unknown-elf.mk
 include ${STANDALONE}/common/standalone.mk
+
+LDSCRIPT = ${BSP_PATH}/linker/default.ld
