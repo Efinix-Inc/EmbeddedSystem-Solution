@@ -1,41 +1,3 @@
-///////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2024 github-efx
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in all
-// copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-// SOFTWARE.
-///////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////////////////////////////////////////////////////
-//           _____       
-//          / _______    Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
-//         / /       \   
-//        / /  ..    /   tseCore.v
-//       / / .'     /    
-//    __/ /.'      /     Description:
-//   __   \       /      Core module controlling the TSEMAC
-//  /_/ /\ \_____/ /     
-// ____/  \_______/      
-//
-// ***********************************************************************
-// Revisions:
-// 1.0 Initial rev
-// ***********************************************************************
-
 
 `timescale 1 ns / 1 ns
 
@@ -274,6 +236,50 @@ gTSE_streamControl #(
     .dma_descriptor_update  (dma_tx_descriptorUpdate)
 );
 
+wire           lso_eth_tx_tvalid;
+wire           lso_eth_tx_tready;
+wire    [7:0]  lso_eth_tx_tdata;
+wire           lso_eth_tx_tlast;
+
+MacTxLso lso0
+(
+  .io_input_valid(m_eth_tx_tvalid),
+  .io_input_ready(m_eth_tx_tready),
+  .io_input_payload_last(m_eth_tx_tlast),
+  .io_input_payload_fragment_data(m_eth_tx_tdata),
+  
+  .io_output_valid(lso_eth_tx_tvalid),
+  .io_output_ready(lso_eth_tx_tready),
+  .io_output_payload_last(lso_eth_tx_tlast),
+  .io_output_payload_fragment_data(lso_eth_tx_tdata),
+  .clk(tx_axis_clk),
+  .reset(mac_ext_srst)
+);
+
+wire           rx0_eth_rx_tvalid;
+wire           rx0_eth_rx_tready;
+wire    [7:0]  rx0_eth_rx_tdata;
+wire           rx0_eth_rx_tlast;
+
+MacRxCheckSumChecker rx0
+(
+
+  .io_input_valid(rx0_eth_rx_tvalid),
+  .io_input_ready(rx0_eth_rx_tready),
+  .io_input_payload_last(rx0_eth_rx_tlast),
+  .io_input_payload_fragment_error(1'b0),
+  .io_input_payload_fragment_data(rx0_eth_rx_tdata),
+  
+  .io_output_valid(s_eth_rx_tvalid),
+  .io_output_ready(s_eth_rx_tready),
+  .io_output_payload_last(s_eth_rx_tlast),
+  .io_output_payload_fragment_error(),
+  .io_output_payload_fragment_data(s_eth_rx_tdata),
+  .clk(rgmii_rxc),
+  .reset(mac_ext_srst)
+
+);
+
 gTSE u_gTSE (
     .mac_reset              ( mac_ext_srst ),
     .proto_reset            ( mac_ext_srst || proto_reset ),
@@ -282,20 +288,20 @@ gTSE u_gTSE (
     .eth_speed              ( eth_speed  ),
     // MAC RX
     .rx_axis_clk            ( rgmii_rxc ),
-    .rx_axis_mac_tdata      ( s_eth_rx_tdata ),
-    .rx_axis_mac_tvalid     ( s_eth_rx_tvalid ),
+    .rx_axis_mac_tdata      ( rx0_eth_rx_tdata ),
+    .rx_axis_mac_tvalid     ( rx0_eth_rx_tvalid ),
     .rx_axis_mac_tstrb      ( s_eth_rx_tstrb ),
-    .rx_axis_mac_tlast      ( s_eth_rx_tlast ),
+    .rx_axis_mac_tlast      ( rx0_eth_rx_tlast ),
     .rx_axis_mac_tuser      (  ),
-    .rx_axis_mac_tready     ( s_eth_rx_tready ),
+    .rx_axis_mac_tready     ( rx0_eth_rx_tready ),
     // MAC TX
     .tx_axis_clk            ( tx_axis_clk ),
-    .tx_axis_mac_tdata      ( m_eth_tx_tdata ),
-    .tx_axis_mac_tvalid     ( m_eth_tx_tvalid ),
+    .tx_axis_mac_tdata      ( lso_eth_tx_tdata ),
+    .tx_axis_mac_tvalid     ( lso_eth_tx_tvalid ),
     .tx_axis_mac_tstrb      ( 1'b1 ),
-    .tx_axis_mac_tlast      ( m_eth_tx_tlast ),
+    .tx_axis_mac_tlast      ( lso_eth_tx_tlast ),
     .tx_axis_mac_tuser      ( 1'b0 ),
-    .tx_axis_mac_tready     ( m_eth_tx_tready ),
+    .tx_axis_mac_tready     ( lso_eth_tx_tready ),
     // AXI CSR
     .s_axi_aclk             ( io_peripheralClk ),
     .s_axi_awaddr           ( gTSE_m_awaddr[MAC*32 +: ADDR_WIDTH] ),

@@ -8,9 +8,9 @@
     <efx:design_info def_veri_version="verilog_2k" def_vhdl_version="vhdl_2008" unified_flow="false">
         <efx:top_module name="top_soc"/>
         <efx:design_file name="source/top_soc.v" version="default" library="default"/>
-        <efx:design_file name="source/tseCore.v" version="default" library="default"/>
         <efx:design_file name="source/design_modules.v" version="default" library="default"/>
         <efx:design_file name="source/efx_isg_vision_wrapper.sv" version="default" library="default"/>
+        <efx:design_file name="source/submodules/eth.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/cam.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/common.f" version="na" library="default"/>
         <efx:design_file name="source/submodules/display.f" version="na" library="default"/>
@@ -21,11 +21,10 @@
         <efx:sdc_file name="constraints.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
-    <efx:isf_info/>
     <efx:sim_info/>
     <efx:misc_info/>
     <efx:ip_info>
-        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json">
+        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json" ooc="false">
             <efx:ip_src_file name="gSDHC.v"/>
         </efx:ip>
         <efx:ip instance_name="csi2_hard_mipi_rx" path="ip/csi2_hard_mipi_rx/settings.json">
@@ -34,7 +33,7 @@
         <efx:ip instance_name="EfxSapphireSoc" path="ip/EfxSapphireSoc/settings.json">
             <efx:ip_src_file name="EfxSapphireSoc.v"/>
         </efx:ip>
-        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json">
+        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json" ooc="false">
             <efx:ip_src_file name="gDMA_vision.v"/>
         </efx:ip>
         <efx:ip instance_name="gDMA" path="ip/gDMA/settings.json">
