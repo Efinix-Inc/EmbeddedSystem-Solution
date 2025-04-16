@@ -1,3 +1,9 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+////////////////////////////////////////////////////////////////////////////////
+
+#pragma once
 #include "soc.h"
 
 #define STACK_PER_HART 4096
@@ -11,6 +17,5 @@
 #else
 	#define HART_COUNT 1
 #endif
-
-
+#define SMP_INUSE       (HART_COUNT > 1)
 

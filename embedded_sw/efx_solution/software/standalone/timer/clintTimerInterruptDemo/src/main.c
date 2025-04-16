@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////
-//  Copyright (c) 2024 SaxonSoc contributors
+//  Copyright (c) 2025 SaxonSoc contributors
 //  SPDX license identifier: MIT
 //  Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ///////////////////////////////////////////////////////////////////////////////////
@@ -21,13 +21,28 @@ void main();
 // Store the next interrupt time
 uint64_t timerCmp; 
 
-// Used on unexpected trap/interrupt codes
+/******************************************************************************
+*
+* @brief This function handles the system crash scenario by printing a crash message
+* 		 and entering an infinite loop.
+*
+******************************************************************************/
 void crash(){
     bsp_printf("\r\n*** CRASH ***\r\n");
     while(1);
 }
 
-// Called by trap_entry on both exceptions and interrupts events
+/******************************************************************************
+*
+* @brief This function handles exceptions and interrupts in the system.
+*
+* @note It is called by the trap_entry function on both exceptions and interrupts 
+* 		events. If the cause of the trap is an interrupt, it checks the cause of 
+* 		the interrupt and calls corresponding interrupt handler functions. If 
+* 		the cause is an exception or an unhandled interrupt, it calls a 
+*		crash function to handle the error.
+*
+******************************************************************************/
 void trap(){
     int32_t mcause = csr_read(mcause);
     // Interrupt if true, exception if false
@@ -43,6 +58,11 @@ void trap(){
     }
 }
 
+/******************************************************************************
+*
+* @brief This function handles the timer interrupt event. 
+*
+******************************************************************************/
 void timerIsr(){
     static uint32_t counter = 0;
     scheduleTimer();
@@ -51,17 +71,32 @@ void timerIsr(){
     if(++counter == 59) counter = 0;
 }
 
-// Make the timer tick in 1 second.
+/******************************************************************************
+*
+* @brief This function make the timer tick in 1 second.
+*
+* @note For simulation, the timer tick faster as to avoid having to wait too long. 
+*
+******************************************************************************/
 void scheduleTimer(){
     timerCmp += TIMER_TICK_DELAY;
     clint_setCmp(BSP_CLINT, timerCmp, 0);
 }
 
+/******************************************************************************
+*
+* @brief This function initialize timer.  
+*
+******************************************************************************/
 void initTimer(){
     timerCmp = clint_getTime(BSP_CLINT);
     scheduleTimer();
 }
-
+/******************************************************************************
+*
+* @brief This function initialize timer and enable machine timer interrupts. 
+*
+******************************************************************************/
 void isrInit(){
     // Configure timer
     initTimer();
@@ -76,6 +111,12 @@ void isrInit(){
     csr_write(mstatus, csr_read(mstatus) | MSTATUS_MPP | MSTATUS_MIE);
 }
 
+/******************************************************************************
+*
+* @brief This main function initialize the system and waiting to be interrupted
+*        by the core timer.
+*
+******************************************************************************/
 void main() {
     bsp_init();
     bsp_printf("***Starting Clint Timer Interrupt Demo*** \r\n");

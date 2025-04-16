@@ -1,6 +1,7 @@
 PROJ_NAME=gpioDemo
 
-STANDALONE = ../..
+STANDALONE=../..
+
 CFLAGS+=-DSMP
 
 SRCS = 	$(wildcard src/*.c) \
@@ -14,5 +15,5 @@ include ${STANDALONE}/common/bsp.mk
 include ${STANDALONE}/common/riscv64-unknown-elf.mk
 include ${STANDALONE}/common/standalone.mk
 
+LDSCRIPT = ${BSP_PATH}/linker/default.ld
 
-LDSCRIPT ?= ${BSP_PATH}/linker/default.ld
