@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.              
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -7,25 +7,22 @@
 *
 * @file main.c: customInstructionDemo
 *
-* @brief  This demo shows how to use a custom instruction to accelerate the processing
+* @brief  This demo shows how to use a custom instruction to accelerate the processing 
 *         time of an algorithm. It demonstrates how performing an algorithm
-*         in hardware can provide significant acceleration vs, using software only.
-*         This demo uses the Tiny encryption algorithm to encrypt two 32-bit unsigned
+*         in hardware can provide significant acceleration vs, using software only. 
+*         This demo uses the Tiny encryption algorithm to encrypt two 32-bit unsigned 
 *         integers with a 128-bit key. The encryption is 1,024 cycles.
 *
-* @note   Please ensure that the custom instruction is enabled in Sapphire Soc.
+* @note   Please ensure that the custom instruction is enabled in Sapphire Soc. 
 *
 ******************************************************************************/
 #include <stdint.h>
 #include <stdlib.h>
 #include "bsp.h"
+#include "userDef.h"
 #include "device_config.h"
 #include "riscv.h"
-#include "soc.h"
-#include "print.h"
 
-#define tea_l(rs1, rs2) opcode_R(CUSTOM0, 0x00, 0x00, rs1, rs2)
-#define tea_u(rs1, rs2) opcode_R(CUSTOM0, 0x01, 0x00, rs1, rs2)
 
 /*******************************************************************************
  *
@@ -37,7 +34,8 @@
  * @param rv1 Pointer to store the result of v1 after encryption
  *
  ******************************************************************************/
-void soft_tea (uint32_t v0, uint32_t v1, uint32_t *rv0, uint32_t *rv1) {
+
+void software_tinyEncrypt (uint32_t v0, uint32_t v1, uint32_t *rv0, uint32_t *rv1) {
     uint32_t sum=0, i;
 
     uint32_t delta=0x9e3779b9;
@@ -64,7 +62,7 @@ void soft_tea (uint32_t v0, uint32_t v1, uint32_t *rv0, uint32_t *rv1) {
 *
 ******************************************************************************/
 void error_state() {
-    bsp_printf("Failed! \r\n");
+    bsp_printf("Custom instruction and software output results are not matched .. \r\n");
     while (1) {}
 }
 
@@ -74,7 +72,7 @@ void error_state() {
 *
 * @param ts1 First timestamp.
 * @param ts2 Second timestamp.
-* @param s Character
+* @param s Character  
 *
 ******************************************************************************/
 void printPTime(uint64_t ts1, uint64_t ts2, char *s) {
@@ -86,9 +84,9 @@ void printPTime(uint64_t ts1, uint64_t ts2, char *s) {
 
 /*******************************************************************************
 *
-* @brief This main function initializes variables, performs custom instruction
+* @brief This main function initializes variables, performs custom instruction 
 *        TEA encryption, software TEA encryption, and compares the results in
-*        terms of the processing time.
+*        terms of the processing time. 
 *
  ******************************************************************************/
 void main() {
@@ -103,23 +101,27 @@ void main() {
 #if (SYSTEM_CORES_0_CFU == 1)
     bsp_printf("***Starting Custom Instruction Demo*** \r\n");
     timerCmp0 = clint_getTime(BSP_CLINT);
-    result_ci0=tea_l(num1,num2);
-    result_ci1=tea_u(0x0, 0x0);
+    result_ci0=tinyEncryption_lowerword(num1,num2);
+    result_ci1=tinyEncryption_upperword(0x0, 0x0);
     timerCmp1 = clint_getTime(BSP_CLINT);
-    printPTime(timerCmp0,timerCmp1,"Custom instruction processing clock cycles:");
+    bsp_printf("Custom instruction method");
+    printPTime(timerCmp0,timerCmp1," processing clock cycles:");
 
     timerCmp0 = clint_getTime(BSP_CLINT);
-    soft_tea(num1, num2, &result_s0, &result_s1);
+    software_tinyEncrypt(num1, num2, &result_s0, &result_s1);
     timerCmp1 = clint_getTime(BSP_CLINT);
-    printPTime(timerCmp0,timerCmp1,"Software processing clock cycles:");
+    bsp_printf("Software method");
+    printPTime(timerCmp0,timerCmp1," processing clock cycles:");
 
     if(result_ci0 != result_s0 || result_ci1 != result_s1) {
         error_state();
     } else {
-    	bsp_printf("***Successfully Ran Demo*** \r\n");
+        bsp_printf("Custom instruction and software output results are matched .. \r\n");
     }
+
+    bsp_printf("***Succesfully Ran Demo*** \r\n");
 #else
         bsp_printf("Custom instruction plugin is disabled, please enable it to run this app \r\n");
-#endif
+#endif 
 
 }

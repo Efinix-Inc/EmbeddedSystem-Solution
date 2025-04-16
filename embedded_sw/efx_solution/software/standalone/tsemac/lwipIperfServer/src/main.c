@@ -54,66 +54,65 @@ void trap_entry();
  ip4_addr_t client_addr;
 
 struct netif gnetif;
-
 int incoming_packet=0;
 
 //Used on unexpected trap/interrupt codes
 void crash(){
-	bsp_printf("\n*** CRASH ***\n");
-	while(1);
+   bsp_printf("\n*** CRASH ***\n");
+   while(1);
 }
 
 void isrRoutine(){
-	uint32_t claim;
+   uint32_t claim;
    // While there is pending interrupts
-	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
-		switch(claim){
+   while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
+      switch(claim){
 	  // TSE DMA INTERRUPT
-		  case TSE_RX_INTR:
-			dmasg_interrupt_config(TSEMAC_DMASG_BASE, 0, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
-				data_cache_invalidate_all();
-			break;
-
-			default: crash(); break;
-		}
+		  case TSE_TX_INTR:
+				dmasg_interrupt_config(TSEMAC_DMASG_BASE, 0, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
+				//flush_data_cache();
+				break;
+         
+      default: crash(); break;
+      }
       plic_release(BSP_PLIC, BSP_PLIC_CPU_0, claim); //unmask the claimed interrupt
-	}
+   }
 }
 
 //Called by trap_entry on both exceptions and interrupts events
 void trap(){
-	int32_t mcause = csr_read(mcause);
-	int32_t interrupt = mcause < 0;
-	int32_t cause     = mcause & 0xF;
-	if(interrupt){
-		switch(cause){
-		case CAUSE_MACHINE_EXTERNAL: isrRoutine(); break;
-		default: crash(); break;
-		}
-	} else {
-		crash();
-	}
+   int32_t mcause = csr_read(mcause);
+   int32_t interrupt = mcause < 0; 
+   int32_t cause     = mcause & 0xF;
+   if(interrupt){
+      switch(cause){
+      case CAUSE_MACHINE_EXTERNAL: isrRoutine(); break;
+      default: crash(); break;
+      }
+   } else {
+      crash();
+   }
 }
 
 void isrInit(){
 
 	// RX FIFO not empty interrupt enable
-   	//uart_status_write(BSP_UART_TERMINAL,uart_status_read(BSP_UART_TERMINAL) | 0x02);
-
+   	uart_status_write(BSP_UART_TERMINAL,uart_status_read(BSP_UART_TERMINAL) | 0x02);   
+   
    	// Configure PLIC
 	// Cpu 0 accept all interrupts with priority above 0
-	plic_set_threshold(BSP_PLIC, BSP_PLIC_CPU_0, 0);
+   	plic_set_threshold(BSP_PLIC, BSP_PLIC_CPU_0, 0); 
 
-	// TSE RX interrupt
-	plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, TSE_RX_INTR, 1);
- 	plic_set_priority(BSP_PLIC, TSE_RX_INTR, 1);
+	// TSE TX interrupt
+	plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, TSE_TX_INTR, 1);
+ 	plic_set_priority(BSP_PLIC, TSE_TX_INTR, 1);
 
    // Enable interrupts
    // Set the machine trap vector (../common/trap.S)
-	csr_write(mtvec, trap_entry);
+   csr_write(mtvec, trap_entry); 
    // Enable external interrupts
-    csr_set(mie, MIE_MEIE);
-    csr_write(mstatus, csr_read(mstatus) | MSTATUS_MPP | MSTATUS_MIE);
+   csr_set(mie, MIE_MEIE);       
+   csr_write(mstatus, csr_read(mstatus) | MSTATUS_MPP | MSTATUS_MIE);
 }
 
 void additionalSetting(void){
@@ -136,7 +135,6 @@ void additionalSetting(void){
 	write_u32(0x0000FFFF, (TSEMAC_BASE+MAC_ADDR_MAKE_HI));
 }
 
-
 u64_t sys_jiffies(void)
 {
 	u64 get_time;
@@ -154,46 +152,40 @@ u64_t sys_now(void)
 	return ((get_time)/(BSP_CLINT_HZ/1000));
 
 }
-
  
  void LwIP_Init(void)
  {
  
      IP4_ADDR(&ipaddr,IP_ADDR0,IP_ADDR1,IP_ADDR2,IP_ADDR3);
      IP4_ADDR(&netmask,NETMASK_ADDR0,NETMASK_ADDR1,NETMASK_ADDR2,NETMASK_ADDR3);
-     IP4_ADDR(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3);
-
-
+     IP4_ADDR(&gw,GW_ADDR0,GW_ADDR1,GW_ADDR2,GW_ADDR3); 
      /* Initilialize the LwIP stack without RTOS */
      lwip_init();
-
      /* add the network interface (IPv4/IPv6) without RTOS */
      netif_add(&gnetif, &ipaddr, &netmask, &gw, NULL,
                &ethernetif_init, &ethernet_input);
-
      /* Registers the default network interface */
      netif_set_default(&gnetif);
-
      if (netif_is_link_up(&gnetif))
      {
-      /*When the netif is fully configured this function must be called */
-         netif_set_up(&gnetif);
+      	/*When the netif is fully configured this function must be called */
+    	netif_set_up(&gnetif);
 
      }
      else
      {
          /* When the netif link is down this function must be called */
          netif_set_down(&gnetif);
-     }
+     } 
  }
-
+ 
 void clock_sel(int speed)
 {
 	int val=0;
 
-	if(speed == TSE_Speed_1000Mhz)
+	if(speed == TSE_Speed_1000Mhz)	
 		val=0x03;
-	else
+	else 
 		val=0x00;
 }
 
@@ -250,7 +242,7 @@ void main() {
 	bsp_printf("=========================================\n\r");
 	bsp_printf("======Lwip Raw Mode Iperf TCP Server ====\n\r");
 	bsp_printf("=========================================\n\r");
-
+	
 	bsp_printf("======IP: \t\t");
 	bsp_printf("%d",IP_ADDR0);
 	bsp_printf(".");
@@ -286,7 +278,7 @@ void main() {
 	bsp_printf(" Mbps\n\r");
 
 	bsp_printf("=========================================\n\r");
-
+	
 
     while (1) {
         /************************* TSE *****************************/
