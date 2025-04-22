@@ -108,18 +108,18 @@ set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~33
 # JTAG Constraints
 ####################
 # create_clock -period <USER_PERIOD> [get_ports {jtag_inst1_TCK}]
-set_output_delay -clock jtag_inst1_TCK -max 0.117 [get_ports {jtag_inst1_TDO}]
-set_output_delay -clock jtag_inst1_TCK -min -0.075 [get_ports {jtag_inst1_TDO}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.280 [get_ports {jtag_inst1_CAPTURE}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.187 [get_ports {jtag_inst1_CAPTURE}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.280 [get_ports {jtag_inst1_RESET}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.187 [get_ports {jtag_inst1_RESET}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.243 [get_ports {jtag_inst1_SEL}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.162 [get_ports {jtag_inst1_SEL}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.280 [get_ports {jtag_inst1_UPDATE}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.187 [get_ports {jtag_inst1_UPDATE}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.337 [get_ports {jtag_inst1_SHIFT}]
-set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.225 [get_ports {jtag_inst1_SHIFT}]
+set_output_delay -clock jtag_inst1_TCK -max 1.387 [get_ports {jtag_inst1_TDO}]
+set_output_delay -clock jtag_inst1_TCK -min 0.555 [get_ports {jtag_inst1_TDO}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.603 [get_ports {jtag_inst1_CAPTURE}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.282 [get_ports {jtag_inst1_CAPTURE}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -max 1.191 [get_ports {jtag_inst1_RESET}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.682 [get_ports {jtag_inst1_RESET}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.593 [get_ports {jtag_inst1_SEL}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.344 [get_ports {jtag_inst1_SEL}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.564 [get_ports {jtag_inst1_UPDATE}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.362 [get_ports {jtag_inst1_UPDATE}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -max 0.575 [get_ports {jtag_inst1_SHIFT}]
+set_input_delay -clock_fall -clock jtag_inst1_TCK -min 0.294 [get_ports {jtag_inst1_SHIFT}]
 
 # MIPI DPHY RX Constraints
 #####################################

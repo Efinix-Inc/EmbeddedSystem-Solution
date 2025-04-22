@@ -3,13 +3,13 @@
         "-o",
         "gTSE_1to2_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/SapphireSoC_SW_Demo/Ti180J484_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti180/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "axi_infra",
             "name": "efx_axi_interconnect",
-            "version": "5.3"
+            "version": "5.4"
         }
     ],
     "conf": {
@@ -41,12 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd",
             "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v",
             "gTSE_1to2_switch/gTSE_1to2_switch.v",
-            "gTSE_1to2_switch/gTSE_1to2_switch_define.vh",
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd"
+            "gTSE_1to2_switch/gTSE_1to2_switch_define.vh"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T09:02:56.000301+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.102",
+    "generated_date": "2025-04-22T08:03:29.903263+00:00"
 }
