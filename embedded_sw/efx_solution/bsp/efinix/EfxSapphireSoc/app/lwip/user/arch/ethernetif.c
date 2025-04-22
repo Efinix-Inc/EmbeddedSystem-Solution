@@ -60,10 +60,8 @@
 #define IFNAME0 'e'
 #define IFNAME1 'n'
 //define out of 512KB heap memory size
-#define mem ((uint32_t*)0x80000)	
-#define memtx ((uint32_t*)0x2000000)
+#define mem ((uint32_t*)0x80000)
 
-#define ETH_TX_BUF_SIZE 1519
 #define LINK_SPEED_OF_YOUR_NETIF_IN_BPS 1000
 
 //struct cmn_rx_ctrl 	rxctrl ={0};
@@ -198,29 +196,13 @@ low_level_output(struct netif *netif, struct pbuf *p)
   pbuf_remove_header(p, ETH_PAD_SIZE); /* drop the padding word */
 #endif
 
-  uint32_t framelength = 0;
-  uint32_t bufferoffset = 0;
-  uint32_t byteslefttocopy = 0;
-  uint32_t payloadoffset = 0;
   for (q = p; q != NULL; q = q->next) {
-      /* Get bytes in current lwIP buffer */
-      byteslefttocopy = q->len;
-      payloadoffset = 0;
+    /* Send the data from the pbuf to the interface, one pbuf at a
+       time. The size of the data in each pbuf is kept in the ->len
+       variable. */
+//    send data from(q->payload, q->len);
 
-      /* Check if the length of data to copy is bigger than Tx buffer size*/
-      while( (byteslefttocopy + bufferoffset) > ETH_TX_BUF_SIZE ) {
-        /* Copy data to Tx buffer*/
-        memcpy( (uint8_t*)((uint8_t*)memtx + bufferoffset), (uint8_t*)((uint8_t*)q->payload + payloadoffset), (ETH_TX_BUF_SIZE - bufferoffset) );
-        byteslefttocopy = byteslefttocopy - (ETH_TX_BUF_SIZE - bufferoffset);
-        payloadoffset = payloadoffset + (ETH_TX_BUF_SIZE - bufferoffset);
-        framelength = framelength + (ETH_TX_BUF_SIZE - bufferoffset);
-        bufferoffset = 0;
-      }
-
-      /* Copy the remaining bytes */
-      memcpy( (uint8_t*)((uint8_t*)memtx + bufferoffset), (uint8_t*)((uint8_t*)q->payload + payloadoffset), byteslefttocopy );
-      bufferoffset = bufferoffset + byteslefttocopy;
-      framelength = framelength + byteslefttocopy;
+      SendData(q->payload, q->len);
   }
 
 //  signal that packet should be sent();
@@ -240,7 +222,6 @@ low_level_output(struct netif *netif, struct pbuf *p)
 #endif
 
   LINK_STATS_INC(link.xmit);
-  SendData(memtx, framelength);
 
   return ERR_OK;
 }
