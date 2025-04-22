@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "soc",
             "name": "efx_soc",
-            "version": "3.2.0"
+            "version": "3.2.1"
         }
     ],
     "conf": {
@@ -162,19 +162,21 @@
         "BARREL_SHIFTER": "1'b0",
         "REDUCED_CSR": "1'b1",
         "DDRCLK_DOMAIN": "1",
-        "DDR_OPT": "1"
+        "DDR_OPT": "1",
+        "SW_REMOVED": "1'b0"
     },
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v",
             "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd",
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.v",
             "EfxSapphireSoc/EfxSapphireSoc.v",
             "EfxSapphireSoc/EfxSapphireSoc_define.vh"
         ],
         "external_script_script": [],
         "external_script_embedded_sw": []
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-12-26T08:26:42.977696+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.102",
+    "generated_date": "2025-04-22T05:41:08.260538+00:00"
 }

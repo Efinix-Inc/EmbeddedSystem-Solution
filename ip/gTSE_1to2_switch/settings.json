@@ -3,13 +3,13 @@
         "-o",
         "gTSE_1to2_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "axi_infra",
             "name": "efx_axi_interconnect",
-            "version": "5.3"
+            "version": "5.4"
         }
     ],
     "conf": {
@@ -41,12 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gTSE_1to2_switch/gTSE_1to2_switch.v",
-            "gTSE_1to2_switch/gTSE_1to2_switch_define.vh",
             "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd",
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v"
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v",
+            "gTSE_1to2_switch/gTSE_1to2_switch.v",
+            "gTSE_1to2_switch/gTSE_1to2_switch_define.vh"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T07:05:37.175472+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.102",
+    "generated_date": "2025-04-22T05:42:27.688334+00:00"
 }

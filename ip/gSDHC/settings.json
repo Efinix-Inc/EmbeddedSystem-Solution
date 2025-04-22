@@ -3,13 +3,13 @@
         "-o",
         "gSDHC",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "memory_controller",
             "name": "efx_sd_host_controller",
-            "version": "5.3"
+            "version": "5.3.1"
         }
     ],
     "conf": {
@@ -19,12 +19,13 @@
     "output": {
         "external_script_reference_design": [],
         "external_source_source": [
-            "gSDHC/gSDHC.v",
-            "gSDHC/gSDHC_define.vh",
             "gSDHC/gSDHC_tmpl.vhd",
-            "gSDHC/gSDHC_tmpl.v"
+            "gSDHC/gSDHC_tmpl.v",
+            "gSDHC/gSDHC.v",
+            "gSDHC/gSDHC_define.vh"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T07:02:18.821063+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.102",
+    "generated_date": "2025-04-22T05:41:09.838887+00:00"
 }

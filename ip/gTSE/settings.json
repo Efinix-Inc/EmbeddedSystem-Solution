@@ -3,13 +3,13 @@
         "-o",
         "gTSE",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/T120F576/T120F576_devkit/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/T120/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "ethernet",
             "name": "efx_tsemac",
-            "version": "6.3"
+            "version": "6.4"
         }
     ],
     "conf": {
@@ -25,12 +25,13 @@
     },
     "output": {
         "external_source_source": [
-            "gTSE/gTSE.v",
-            "gTSE/gTSE_define.vh",
             "gTSE/gTSE_tmpl.vhd",
-            "gTSE/gTSE_tmpl.v"
+            "gTSE/gTSE.sv",
+            "gTSE/gTSE_define.svh",
+            "gTSE/gTSE_tmpl.sv"
         ]
     },
-    "sw_version": "2024.2.294",
-    "generated_date": "2024-11-29T07:04:53.758923+00:00"
+    "ooc_synthesis": {},
+    "sw_version": "2025.1.102",
+    "generated_date": "2025-04-22T05:42:16.495563+00:00"
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efx:project name="T120F576_devkit" description="" last_change="1736145628" sw_version="2024.2.294.1.19" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="sync" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
+<efx:project name="T120F576_devkit" description="" last_change="1745301935" sw_version="2025.1.102" last_run_state="pass" last_run_flow="bitstream" config_result_in_sync="sync" design_ood="sync" place_ood="sync" route_ood="sync" xmlns:efx="http://www.efinixinc.com/enf_proj" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/enf_proj enf_proj.xsd">
     <efx:device_info>
         <efx:family name="Trion"/>
         <efx:device name="T120F576"/>
@@ -21,32 +21,31 @@
         <efx:sdc_file name="constraints.sdc"/>
         <efx:inter_file name=""/>
     </efx:constraint_info>
-    <efx:isf_info/>
     <efx:sim_info/>
     <efx:misc_info/>
     <efx:ip_info>
-        <efx:ip instance_name="ddr_reset_seq" path="ip/ddr_reset_seq/settings.json">
+        <efx:ip instance_name="ddr_reset_seq" path="ip/ddr_reset_seq/settings.json" ooc="false">
             <efx:ip_src_file name="ddr_reset_seq.v"/>
         </efx:ip>
-        <efx:ip instance_name="EfxSapphireSoc" path="ip/EfxSapphireSoc/settings.json">
+        <efx:ip instance_name="EfxSapphireSoc" path="ip/EfxSapphireSoc/settings.json" ooc="false">
             <efx:ip_src_file name="EfxSapphireSoc.v"/>
         </efx:ip>
-        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json">
+        <efx:ip instance_name="gSDHC" path="ip/gSDHC/settings.json" ooc="false">
             <efx:ip_src_file name="gSDHC.v"/>
         </efx:ip>
-        <efx:ip instance_name="gDMA" path="ip/gDMA/settings.json">
+        <efx:ip instance_name="gDMA" path="ip/gDMA/settings.json" ooc="false">
             <efx:ip_src_file name="gDMA.v"/>
         </efx:ip>
-        <efx:ip instance_name="gTSE" path="ip/gTSE/settings.json">
-            <efx:ip_src_file name="gTSE.v"/>
+        <efx:ip instance_name="gTSE" path="ip/gTSE/settings.json" ooc="false">
+            <efx:ip_src_file name="gTSE.sv"/>
         </efx:ip>
-        <efx:ip instance_name="gAXIS_1to3_switch" path="ip/gAXIS_1to3_switch/settings.json">
+        <efx:ip instance_name="gAXIS_1to3_switch" path="ip/gAXIS_1to3_switch/settings.json" ooc="false">
             <efx:ip_src_file name="gAXIS_1to3_switch.v"/>
         </efx:ip>
-        <efx:ip instance_name="gTSE_1to2_switch" path="ip/gTSE_1to2_switch/settings.json">
+        <efx:ip instance_name="gTSE_1to2_switch" path="ip/gTSE_1to2_switch/settings.json" ooc="false">
             <efx:ip_src_file name="gTSE_1to2_switch.v"/>
         </efx:ip>
-        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json">
+        <efx:ip instance_name="gDMA_vision" path="ip/gDMA_vision/settings.json" ooc="false">
             <efx:ip_src_file name="gDMA_vision.v"/>
         </efx:ip>
     </efx:ip_info>
@@ -97,6 +96,8 @@
         <efx:param name="include" value="ip/gTSE_1to2_switch" value_type="e_string"/>
         <efx:param name="include" value="source/cam" value_type="e_string"/>
         <efx:param name="include" value="ip/gDMA_vision" value_type="e_string"/>
+        <efx:param name="enable-mark-debug" value="1" value_type="e_option"/>
+        <efx:param name="max-bit-blast-mem-size" value="10240" value_type="e_integer"/>
         <efx:defmacro name="T120F576" value="1"/>
     </efx:synthesis>
     <efx:place_and_route tool_name="efx_pnr">
