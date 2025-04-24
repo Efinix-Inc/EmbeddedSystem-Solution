@@ -1,14 +1,8 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
- * source.c
- *
- *  Created on: 17 Mar 2021
- *      Author: user
- */
 #include "bsp.h"
 #include "device_config.h"
 #include "userDef.h"
@@ -119,7 +113,7 @@ void SD_CardInitial(struct mmc *mmc, struct mmc_cmd *cmd)
                 bsp_uDelay(50000);//delay 50ms
                 sd_send_cmd(mmc,cmd,MMC_CMD_APP_CMD,MMC_RSP_R1,0);
                 sd_send_cmd(mmc,cmd,SD_CMD_APP_SEND_OP_COND,MMC_RSP_R3,Value);
-                bsp_printf("Respose: 0x%x\r\n",cmd->response[0]);
+                bsp_printf("Response: 0x%x\r\n",cmd->response[0]);
                 busy = (cmd->response[0]>>31)&0x1;
                 bsp_uDelay(1000000);//delay 50ms
 				

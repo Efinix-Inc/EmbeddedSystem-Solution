@@ -1,14 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
-
-/*
- * source.h
- *
- *  Created on: 17 Mar 2021
- *      Author: user
- */
 
 #ifndef SRC_SOURCE_H_
 #define SRC_SOURCE_H_

@@ -1,9 +1,7 @@
-/*
- * bmp.h
- *
- *  Created on: Jan 8, 2025
- *      Author: JasonLau
- */
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
+// Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
+////////////////////////////////////////////////////////////////////////////////
 
 #ifndef SRC_BMP_H_
 #define SRC_BMP_H_

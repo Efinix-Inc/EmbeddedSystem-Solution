@@ -251,6 +251,7 @@ static void userInterrupt()
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)) {
 		switch(claim){
 		case TSE_RX_INTR:
+			data_cache_invalidate_all();
 			dmasg_interrupt_config(TSEMAC_DMASG_BASE, TSE_DMASG_RX_CH, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
 			if( xRxTaskHandle != NULL ) {
 		        xTaskNotifyFromISR( xRxTaskHandle, EMAC_IF_RX_EVENT, eSetBits, &( xHigherPriorityTaskWoken ) );

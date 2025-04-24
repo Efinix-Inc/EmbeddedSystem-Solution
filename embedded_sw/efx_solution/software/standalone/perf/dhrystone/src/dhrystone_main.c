@@ -59,9 +59,6 @@ int main (int argc, char** argv)
   /* main program, corresponds to procedures        */
   /* Main and Proc_0 in the Ada version             */
 {
-
-  bsp_init();
-
         One_Fifty       Int_1_Loc;
   REG   One_Fifty       Int_2_Loc;
         One_Fifty       Int_3_Loc;
@@ -76,6 +73,7 @@ int main (int argc, char** argv)
   Number_Of_Runs = NUMBER_OF_RUNS;
 
   /* Initializations */
+  bsp_init();
 
   Next_Ptr_Glob = (Rec_Pointer) alloca (sizeof (Rec_Type));
   Ptr_Glob = (Rec_Pointer) alloca (sizeof (Rec_Type));
