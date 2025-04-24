@@ -13,6 +13,7 @@
 ******************************************************************************/
 #include <stdint.h>
 #include "bsp.h"
+#include "userDef.h"
 #include "device_config.h"
 #include "riscv.h"
 #include "gpio.h"

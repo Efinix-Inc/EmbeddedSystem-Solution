@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,6 @@ char rd_buf[BLOCK_SIZE*MAX_BLK_BUF];
 
 void main() {
 
-	bsp_init();
 	struct mmc *mmc;
 	struct mmc_cmd *cmd;
 	struct mmc_data *data;
@@ -87,11 +86,11 @@ void main() {
 	bsp_printf("\r\n\n!!!!Warning it will crash the SD card data!!!!\r\n\n");
 	bsp_printf("      ###Push Any Key to Continue###\r\n\n");
 
-//	while(1)
-//	{
-//		if(uart_read(BSP_UART_TERMINAL))
-//			break;
-//	}
+	while(1)
+	{
+		if(uart_read(BSP_UART_TERMINAL))
+			break;
+	}
 
 	for(n=0;n<total_block_n;n+=MAX_BLK_BUF)
 	{
