@@ -32,7 +32,7 @@ create_clock -period 6.4000 [get_ports {mipi_dphy_rx_inst1_WORD_CLKOUT_HS}]
 ### Clock for TSEMAC
 create_clock -period 8.0000 io_tseClk
 create_clock -period 8.0000 rgmii_rxc_dum
-create_clock -waveform {2.0000 6.0000} -period 8.0000 rgmii_rxc
+create_clock -waveform {6.667 10.667} -period 8.000 -name rgmii_rxc [get_ports {rgmii_rxc}]
 create_clock -waveform {2.0000 6.0000} -period 8.0000 io_tseClk_90
 
 set_clock_groups -exclusive -group {io_peripheralClk} -group {io_systemClk} -group {io_memoryClk} -group {jtag_inst1_TCK} -group {mipi_pclk} -group {hdmi_clk} -group {hdmi_yuv_clk} -group {mipi_rx_cfgclk} -group {mipi_dphy_rx_inst1_WORD_CLKOUT_HS} -group {io_tseClk} -group {io_tseClk_90} -group {rgmii_rxc_slow} -group {rgmii_rxc}
