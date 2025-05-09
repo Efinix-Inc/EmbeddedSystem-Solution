@@ -7,7 +7,7 @@ CFLAGS+=-DSMP
 DEBUG=no
 BENCH=yes
 
-CFLAGS += -DITERATIONS=40000
+CFLAGS += -DITERATIONS=2000
 
 SRCS = 	$(wildcard src/*.c) \
 		$(wildcard src/*.cpp) \
