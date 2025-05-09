@@ -142,7 +142,7 @@ void main() {
         bsp_uDelay(LOOP_UDELAY);
     }   
     bsp_printf("***Starting GPIO Interrupt Demo*** \r\n");
-    bsp_printf("Press and release onboard button sw4 .. \r\n");
+    bsp_printf("Press and release onboard button sw7 .. \r\n");
     isrInit();
     while(1); 
 }
