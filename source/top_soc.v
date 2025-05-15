@@ -614,13 +614,14 @@ assign vision_dma_ctrl_interrupt    = | vision_dma_interrupts; // changed
 
 //Interrupts
 assign userInterruptA = userInterrupt_uart; 
-assign userInterruptB = userInterrupt_i2c0;
-assign userInterruptC = userInterrupt_spi0; 
-assign userInterruptD = userInterrupt_gpio0; 
-assign userInterruptE = userInterrupt_gpio1; 
-assign userInterruptF = userInterrupt_watchdog; 
-assign userInterruptG = userInterrupt_i2c1; 
-assign userInterruptH = userInterrupt_spi1;
+assign userInterruptB = userInterrupt_spi0;
+assign userInterruptC = userInterrupt_spi1; 
+assign userInterruptD = userInterrupt_i2c0; 
+assign userInterruptE = userInterrupt_i2c1; 
+assign userInterruptF = userInterrupt_gpio0; 
+assign userInterruptG = userInterrupt_gpio1; 
+assign userInterruptH = userInterrupt_watchdog;
+
 assign userInterruptI = 1'b0;                         
 assign userInterruptJ = 1'b0;
 assign userInterruptK = 1'b0; 

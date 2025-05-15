@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include "bsp.h"
 #include "device_config.h"
+#include "userDef.h"
 #include "riscv.h"
 #include "gpio.h"
 #include "clint.h"
