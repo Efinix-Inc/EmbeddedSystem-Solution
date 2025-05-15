@@ -3,7 +3,7 @@
         "-o",
         "gAXIM_2to1_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375-usb/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -14,7 +14,7 @@
     ],
     "conf": {
         "ARB_MODE": "\"ROUND_ROBIN_1\"",
-        "S_PORTS": "2",
+        "S_PORTS": "3",
         "TABLE0_AXI_S0__MIN": "32'd0",
         "TABLE0_AXI_S1__MIN": "32'd268435456",
         "TABLE0_AXI_S2__MIN": "32'd285212672",
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIM_2to1_switch/gAXIM_2to1_switch_tmpl.vhd",
             "gAXIM_2to1_switch/gAXIM_2to1_switch.v",
-            "gAXIM_2to1_switch/gAXIM_2to1_switch_tmpl.v",
-            "gAXIM_2to1_switch/gAXIM_2to1_switch_define.vh"
+            "gAXIM_2to1_switch/gAXIM_2to1_switch_define.vh",
+            "gAXIM_2to1_switch/gAXIM_2to1_switch_tmpl.vhd",
+            "gAXIM_2to1_switch/gAXIM_2to1_switch_tmpl.v"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:32:25.202241+00:00"
+    "sw_version": "2025.1.110",
+    "generated_date": "2025-05-13T09:33:17.399110+00:00"
 }

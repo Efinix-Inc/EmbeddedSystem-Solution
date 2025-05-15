@@ -170,6 +170,22 @@ port (
     io_apbSlave_2_PSLVERROR : in std_logic;
     io_apbSlave_2_PWDATA : out std_logic_vector(31 downto 0);
     io_apbSlave_2_PWRITE : out std_logic;
+    io_apbSlave_3_PADDR : out std_logic_vector(31 downto 0);
+    io_apbSlave_3_PENABLE : out std_logic;
+    io_apbSlave_3_PRDATA : in std_logic_vector(31 downto 0);
+    io_apbSlave_3_PREADY : in std_logic;
+    io_apbSlave_3_PSEL : out std_logic;
+    io_apbSlave_3_PSLVERROR : in std_logic;
+    io_apbSlave_3_PWDATA : out std_logic_vector(31 downto 0);
+    io_apbSlave_3_PWRITE : out std_logic;
+    io_apbSlave_4_PADDR : out std_logic_vector(31 downto 0);
+    io_apbSlave_4_PENABLE : out std_logic;
+    io_apbSlave_4_PRDATA : in std_logic_vector(31 downto 0);
+    io_apbSlave_4_PREADY : in std_logic;
+    io_apbSlave_4_PSEL : out std_logic;
+    io_apbSlave_4_PSLVERROR : in std_logic;
+    io_apbSlave_4_PWDATA : out std_logic_vector(31 downto 0);
+    io_apbSlave_4_PWRITE : out std_logic;
     system_i2c_1_io_sda_write : out std_logic;
     system_i2c_1_io_sda_writeEnable : out std_logic;
     system_i2c_1_io_scl_writeEnable : out std_logic;
@@ -315,6 +331,22 @@ port map (
     io_apbSlave_2_PSLVERROR => io_apbSlave_2_PSLVERROR,
     io_apbSlave_2_PWDATA => io_apbSlave_2_PWDATA,
     io_apbSlave_2_PWRITE => io_apbSlave_2_PWRITE,
+    io_apbSlave_3_PADDR => io_apbSlave_3_PADDR,
+    io_apbSlave_3_PENABLE => io_apbSlave_3_PENABLE,
+    io_apbSlave_3_PRDATA => io_apbSlave_3_PRDATA,
+    io_apbSlave_3_PREADY => io_apbSlave_3_PREADY,
+    io_apbSlave_3_PSEL => io_apbSlave_3_PSEL,
+    io_apbSlave_3_PSLVERROR => io_apbSlave_3_PSLVERROR,
+    io_apbSlave_3_PWDATA => io_apbSlave_3_PWDATA,
+    io_apbSlave_3_PWRITE => io_apbSlave_3_PWRITE,
+    io_apbSlave_4_PADDR => io_apbSlave_4_PADDR,
+    io_apbSlave_4_PENABLE => io_apbSlave_4_PENABLE,
+    io_apbSlave_4_PRDATA => io_apbSlave_4_PRDATA,
+    io_apbSlave_4_PREADY => io_apbSlave_4_PREADY,
+    io_apbSlave_4_PSEL => io_apbSlave_4_PSEL,
+    io_apbSlave_4_PSLVERROR => io_apbSlave_4_PSLVERROR,
+    io_apbSlave_4_PWDATA => io_apbSlave_4_PWDATA,
+    io_apbSlave_4_PWRITE => io_apbSlave_4_PWRITE,
     system_i2c_1_io_sda_write => system_i2c_1_io_sda_write,
     system_i2c_1_io_sda_writeEnable => system_i2c_1_io_sda_writeEnable,
     system_i2c_1_io_scl_writeEnable => system_i2c_1_io_scl_writeEnable,

@@ -40,18 +40,20 @@
 //`define SOFTTAP // Regenerate EfxSapphireHpSoc_slb with jtag with gpio selection is required. 
 
 `define TITANIUM_DEVICE 
-`define ENABLE_SDHC         // Comment out this line to disable SDHC , Modify gAXIS_1to4_switch IP manually !!
-`define ENABLE_EVSOC        // Comment out this line to disable EVSOC, Modify gAXIS_1to4_switch IP manually !!
-`define ENABLE_ETHERNET     // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
-`define DISPLAY_1920x1080_60Hz    //Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
-//`define DISPLAY_1280x720_60Hz   //Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
+`define ENABLE_SDHC               // Comment out this line to disable SDHC , Modify gAXIS_1to4_switch IP manually !!
+`define ENABLE_EVSOC              // Comment out this line to disable EVSOC, Modify gAXIS_1to4_switch IP manually !!
+`define ENABLE_ETHERNET           // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
+`define ENABLE_ESP                // Comment out this line to disable the ESP Design.
+`define ENABLE_CI                 // Comment out this linte to disable the Custom Instructions. 
+`define DISPLAY_1920x1080_60Hz    // Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
+//`define DISPLAY_1280x720_60Hz   // Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
 
 `ifdef ENABLE_EVSOC
     `define ENABLE_EVSOC_CAMERA     // Comment out this line to disable the PiCAM camera portion of EVSOC
     `define ENABLE_EVSOC_DISPLAY    // Comment out this line to disable the HDMI display portion of EVSOC
     `define ENABLE_EVSOC_HW_ACCEL   // Comment out this line to disable the hardware accelerator for EVSOC
 `endif 
-
+`define ENABLE_USB_CONTROLLER
 
 module top_soc (
 
@@ -81,9 +83,51 @@ input           ut_jtagCtrl_update,
 input           ut_jtagCtrl_reset,
 `endif 
 
+`ifdef ENABLE_USB_CONTROLLER
+/*
+// USB port 0
+input           io_usb_0_dp_read,
+output          io_usb_0_dp_write,
+output          io_usb_0_dp_writeEnable,
+input           io_usb_0_dm_read,
+output          io_usb_0_dm_write,
+output          io_usb_0_dm_writeEnable,
+// USB port 1
+input           io_usb_1_dp_read,
+output          io_usb_1_dp_write,
+output          io_usb_1_dp_writeEnable,
+input           io_usb_1_dm_read,
+output          io_usb_1_dm_write,
+output          io_usb_1_dm_writeEnable,
+// USB port 2
+input           io_usb_2_dp_read,
+output          io_usb_2_dp_write,
+output          io_usb_2_dp_writeEnable,
+input           io_usb_2_dm_read,
+output          io_usb_2_dm_write,
+output          io_usb_2_dm_writeEnable,
+// USB port 3
+input           io_usb_3_dp_read,
+output          io_usb_3_dp_write,
+output          io_usb_3_dp_writeEnable,
+input           io_usb_3_dm_read,
+output          io_usb_3_dm_write,
+output          io_usb_3_dm_writeEnable,
+*/
+input  [3:0]    io_usb_dm_read,
+output [3:0]    io_usb_dm_write,
+output [3:0]    io_usb_dm_writeEnable,
+input [3:0]     io_usb_dp_read,
+output [3:0]    io_usb_dp_write,
+output [3:0]    io_usb_dp_writeEnable,
+
+input           io_usbClk,
+`endif /* ENABLE_USB_CONTROLLER */
+
 //Custom Instruction
 input           io_cfuClk,
 input           io_cfuReset,
+`ifdef ENABLE_CI
 input           cpu0_customInstruction_cmd_valid,
 output          cpu0_customInstruction_cmd_ready,
 input [9:0]     cpu0_customInstruction_function_id,
@@ -116,6 +160,7 @@ input [31:0]    cpu3_customInstruction_inputs_1,
 output          cpu3_customInstruction_rsp_valid,
 input           cpu3_customInstruction_rsp_ready,
 output [31:0]   cpu3_customInstruction_outputs_0,
+`endif
 
 //DDR Master Ports
 output          io_ddrMasters_0_aw_valid,
@@ -457,7 +502,7 @@ output  ddr_inst1_WVALID_0                              //Write valid. This sign
 
 // AXI Interconnect
 localparam AXIS_DEV     = 4;
-localparam AXIM_DEV     = 2;
+localparam AXIM_DEV     = 3;
 localparam SLB          = 0;
 // SDHC
 localparam SDHC         = 1;
@@ -467,6 +512,9 @@ localparam TSE          = 2;
 localparam MTSE         = 1;
 // Hardware accel
 localparam HW_ACCEL     = 3;
+
+// USB
+localparam MUSB         = 2;
 
 //Vision related paramter
 localparam MIPI_FRAME_WIDTH     = 1920;  // Resolution of Camera input 
@@ -508,6 +556,16 @@ wire   [31:0]   tse_dma_apbSlave_2_PWDATA   ;
 wire   [31:0]   tse_dma_apbSlave_2_PRDATA   ;
 wire            tse_dma_apbSlave_2_PSLVERROR;
 
+// APB3 USB
+wire   [31:0]   usb_apbSlave_3_PADDR;
+wire            usb_apbSlave_3_PSEL;
+wire            usb_apbSlave_3_PENABLE;
+wire            usb_apbSlave_3_PREADY;
+wire            usb_apbSlave_3_PWRITE;
+wire   [31:0]   usb_apbSlave_3_PWDATA;
+wire   [31:0]   usb_apbSlave_3_PRDATA;
+wire            usb_apbSlave_3_PSLVERROR;
+
 // DMA
 wire [7:0]      dma_arid;
 wire [7:0]      dma_awid;
@@ -532,11 +590,19 @@ wire        vision_dma_ctrl_interrupt;
 wire        w_axiAInterrupt; 
 wire        axi4Interrupt_or; 
 wire        axiAInterrupt_slb; 
+wire        usb_interrupt;
 
 //reset
 wire        io_asyncReset_soc;
 wire        watchdog_reset;
 wire        i_arstn;  
+
+// SDHC
+wire            sd_rst;
+wire            sd_int;
+wire            sd_dat_oe_i;
+
+
  ////////////////////////////////////////////////////////////////////////////
  
 //Reset 
@@ -567,7 +633,7 @@ assign userInterruptP = vision_dma_ctrl_interrupt;
 assign userInterruptQ = dma_interrupts[0];
 assign userInterruptR = dma_interrupts[1];
 assign userInterruptS = sd_int;
-assign userInterruptT = 1'b0;
+assign userInterruptT = usb_interrupt;
 assign userInterruptU = 1'b0;
 assign userInterruptV = 1'b0;
 assign userInterruptW = 1'b0;
@@ -864,11 +930,7 @@ gAXIM_2to1_switch u_AXIM_2to1_switch
 
 `ifdef ENABLE_SDHC
 
-// SDHC
-wire            sd_rst;
-wire            sd_int;
-wire            sd_dat_oe_i;
-
+//SDHC
 assign sd_rst                       = io_peripheralReset;
 assign gAXIS_m_rlast[SDHC*1 +: 1]   = 1'b1;
 assign sd_dat_oe                    = {4{sd_dat_oe_i}};
@@ -929,7 +991,7 @@ gSDHC u_gSDHC
     .m_axi_arprot       ( gAXIM_s_arprot[MSDHC*4 +: 4] ),
     .m_axi_arlock       ( gAXIM_s_arlock[MSDHC*2 +: 2] ),
     .m_axi_arcache      ( gAXIM_s_arcache[MSDHC*4 +: 4] ),
-    .m_axi_arready      ( gAXIM_s_arready[MHSDC*1 +: 1] ),
+    .m_axi_arready      ( gAXIM_s_arready[MSDHC*1 +: 1] ),
     .m_axi_rvalid       ( gAXIM_s_rvalid[MSDHC*1 +: 1] ),
     .m_axi_rdata        ( gAXIM_s_rdata[MSDHC*128 +: 128] ),
     .m_axi_rlast        ( gAXIM_s_rlast[MSDHC*1 +: 1] ),
@@ -1406,10 +1468,114 @@ gDMA_vision u_dma_vision(
 
 `endif // ENABLE_EVSOC
 
-
+`ifdef ENABLE_USB_CONTROLLER
+UsbOhciAxi4Apb3 usb (
+  .io_dma_aw_payload_burst     (gAXIM_s_awburst[MUSB*2 +: 2]),
+  .io_dma_ar_payload_burst     (gAXIM_s_arburst[MUSB*2 +: 2]),
+  .io_dma_aw_valid              (gAXIM_s_awvalid[MUSB*1 +: 1]),
+  .io_dma_aw_ready              (gAXIM_s_awready[MUSB*1 +: 1]),
+  .io_dma_aw_payload_addr       (gAXIM_s_awaddr[MUSB*32 +: 32]),
+  .io_dma_aw_payload_len        (gAXIM_s_awlen[MUSB*8 +: 8]),
+  .io_dma_aw_payload_size       (gAXIM_s_awsize[MUSB*3 +: 3]),
+  .io_dma_aw_payload_cache      (gAXIM_s_awcache[MUSB*4 +: 4]),
+  .io_dma_aw_payload_prot       (gAXIM_s_awprot[MUSB*4 +: 4]),
+  .io_dma_w_valid               (gAXIM_s_wvalid[MUSB*1 +: 1]),
+  .io_dma_w_ready               (gAXIM_s_wready[MUSB*1 +:1]),
+  .io_dma_w_payload_data        (gAXIM_s_wdata[MUSB*128 +: 128]),
+  .io_dma_w_payload_strb        (gAXIM_s_wstrb[MUSB*16 +: 16]),
+  .io_dma_w_payload_last        (gAXIM_s_wlast[MUSB*1 +: 1]),
+  .io_dma_b_valid               (gAXIM_s_bvalid[MUSB*1 +: 1]),
+  .io_dma_b_ready               (gAXIM_s_bready[MUSB*1 +: 1]),
+  .io_dma_b_payload_resp        (gAXIM_s_bresp[MUSB*2 +: 2]),
+  .io_dma_ar_valid              (gAXIM_s_arvalid[MUSB*1 +: 1]),
+  .io_dma_ar_ready              (gAXIM_s_arready[MUSB*1 +: 1]),
+  .io_dma_ar_payload_addr       (gAXIM_s_araddr[MUSB*32 +: 32]),
+  .io_dma_ar_payload_len        (gAXIM_s_arlen[MUSB*8 +: 8]),
+  .io_dma_ar_payload_size       (gAXIM_s_arsize[MUSB*3 +: 3]),
+  .io_dma_ar_payload_cache      (gAXIM_s_arcache[MUSB*4 +: 4]),
+  .io_dma_ar_payload_prot       (gAXIM_s_arprot[MUSB*4 +: 4]),
+  .io_dma_r_valid               (gAXIM_s_rvalid[MUSB*1 +: 1]),
+  .io_dma_r_ready               (gAXIM_s_rready[MUSB*1 +: 1]),
+  .io_dma_r_payload_data        (gAXIM_s_rdata[MUSB*128 +: 128]),
+  .io_dma_r_payload_resp        (gAXIM_s_rresp[MUSB*2 +: 2]),
+  .io_dma_r_payload_last        (gAXIM_s_rlast[MUSB*1 +: 1]),
+  
+  .io_ctrl_PADDR                (usb_apbSlave_3_PADDR),
+  .io_ctrl_PSEL                 (usb_apbSlave_3_PSEL),
+  .io_ctrl_PENABLE              (usb_apbSlave_3_PENABLE),
+  .io_ctrl_PREADY               (usb_apbSlave_3_PREADY),
+  .io_ctrl_PWRITE               (usb_apbSlave_3_PWRITE),
+  .io_ctrl_PWDATA               (usb_apbSlave_3_PWDATA),
+  .io_ctrl_PRDATA               (usb_apbSlave_3_PRDATA),
+  .io_ctrl_PSLVERROR            (usb_apbSlave_3_PSLVERROR),
+  
+  .io_interrupt                 (usb_interrupt),
+  .io_usb_0_dp_read             (io_usb_dp_read[0]),
+  .io_usb_0_dp_write            (io_usb_dp_write[0]),
+  .io_usb_0_dp_writeEnable      (io_usb_dp_writeEnable[0]),
+  .io_usb_0_dm_read             (io_usb_dm_read[0]),
+  .io_usb_0_dm_write            (io_usb_dm_write[0]),
+  .io_usb_0_dm_writeEnable      (io_usb_dm_writeEnable[0]),
+  
+  .io_usb_1_dp_read             (io_usb_dp_read[1]),
+  .io_usb_1_dp_write            (io_usb_dp_write[1]),
+  .io_usb_1_dp_writeEnable      (io_usb_dp_writeEnable[1]),
+  .io_usb_1_dm_read             (io_usb_dm_read[1]),
+  .io_usb_1_dm_write            (io_usb_dm_write[1]),
+  .io_usb_1_dm_writeEnable      (io_usb_dm_writeEnable[1]),
+  
+  .io_usb_2_dp_read             (io_usb_dp_read[2]),
+  .io_usb_2_dp_write            (io_usb_dp_write[2]),
+  .io_usb_2_dp_writeEnable      (io_usb_dp_writeEnable[2]),
+  .io_usb_2_dm_read             (io_usb_dm_read[2]),
+  .io_usb_2_dm_write            (io_usb_dm_write[2]),
+  .io_usb_2_dm_writeEnable      (io_usb_dm_writeEnable[2]),
+  
+  .io_usb_3_dp_read             (io_usb_dp_read[3]),
+  .io_usb_3_dp_write            (io_usb_dp_write[3]),
+  .io_usb_3_dp_writeEnable      (io_usb_dp_writeEnable[3]),
+  .io_usb_3_dm_read             (io_usb_dm_read[3]),
+  .io_usb_3_dm_write            (io_usb_dm_write[3]),
+  .io_usb_3_dm_writeEnable      (io_usb_dm_writeEnable[3]),
+  
+  /*
+  .io_usb_0_dp_read             (io_usb_0_dp_read),
+  .io_usb_0_dp_write            (io_usb_0_dp_write),
+  .io_usb_0_dp_writeEnable      (io_usb_0_dp_writeEnable),
+  .io_usb_0_dm_read             (io_usb_0_dm_read),
+  .io_usb_0_dm_write            (io_usb_0_dm_write),
+  .io_usb_0_dm_writeEnable      (io_usb_0_dm_writeEnable),
+  .io_usb_1_dp_read             (io_usb_1_dp_read),
+  .io_usb_1_dp_write            (io_usb_1_dp_write),
+  .io_usb_1_dp_writeEnable      (io_usb_1_dp_writeEnable),
+  .io_usb_1_dm_read             (io_usb_1_dm_read),
+  .io_usb_1_dm_write            (io_usb_1_dm_write),
+  .io_usb_1_dm_writeEnable      (io_usb_1_dm_writeEnable),
+  .io_usb_2_dp_read             (io_usb_0_dp_read),
+  .io_usb_2_dp_write            (io_usb_2_dp_write),
+  .io_usb_2_dp_writeEnable      (io_usb_2_dp_writeEnable),
+  .io_usb_2_dm_read             (io_usb_2_dm_read),
+  .io_usb_2_dm_write            (io_usb_2_dm_write),
+  .io_usb_2_dm_writeEnable      (io_usb_2_dm_writeEnable),
+  .io_usb_3_dp_read             (io_usb_3_dp_read),
+  .io_usb_3_dp_write            (io_usb_3_dp_write),
+  .io_usb_3_dp_writeEnable      (io_usb_3_dp_writeEnable),
+  .io_usb_3_dm_read             (io_usb_3_dm_read),
+  .io_usb_3_dm_write            (io_usb_3_dm_write),
+  .io_usb_3_dm_writeEnable      (io_usb_3_dm_writeEnable),
+  */
+  
+  // usb clock
+  .phy_clk                      (io_usbClk),
+  .ctrl_clk                     (io_peripheralClk),
+  .ctrl_reset                   (io_peripheralReset),
+  .dma_clk                      (io_ddrMasters_0_clk),
+  .dma_reset                    (io_ddrMasters_0_reset)
+ );
+`endif // ENABLE_USB_CONTROLLER
 
 /*********************************************Miscellaneous Module  ****************************************************/
-
+`ifdef ENABLE_CI
 custom_instruction_tea cpu0_custom_instruction_tea_inst(
     .clk                ( io_cfuClk ),
     .reset              ( io_cfuReset ),
@@ -1462,10 +1628,13 @@ custom_instruction_tea cpu3_custom_instruction_tea_inst(
     .rsp_outputs_0      ( cpu3_customInstruction_outputs_0 )
 );
 
+`endif //ENABLE_CI
 /*********************************************Soft Logic Block ****************************************************/
 
 //axi4 bridge to various I/O
 EfxSapphireHpSoc_slb u_top_peripherals(
+
+`ifdef ENABLE_EVSOC
     .io_apbSlave_0_PADDR                    ( vision_dma_apbSlave_0_PADDR ),
     .io_apbSlave_0_PSEL                     ( vision_dma_apbSlave_0_PSEL ),
     .io_apbSlave_0_PENABLE                  ( vision_dma_apbSlave_0_PENABLE ),
@@ -1485,6 +1654,16 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .io_apbSlave_1_PRDATA                   ( vision_apbSlave_1_PRDATA ),
     .io_apbSlave_1_PSLVERROR                ( vision_apbSlave_1_PSLVERROR ),
 
+    .system_i2c_0_io_sda_writeEnable        ( o_cam_sda_oe ),
+    .system_i2c_0_io_sda_write              ( o_cam_sda ),
+    .system_i2c_0_io_sda_read               ( i_cam_sda ),
+    .system_i2c_0_io_scl_writeEnable        ( o_cam_scl_oe ),
+    .system_i2c_0_io_scl_write              ( o_cam_scl ),
+    .system_i2c_0_io_scl_read               ( i_cam_scl ),
+
+`endif // ENABLE_EVSOC
+
+`ifdef ENABLE_ETHERNET
     .io_apbSlave_2_PADDR                    ( tse_dma_apbSlave_2_PADDR    ),
     .io_apbSlave_2_PSEL                     ( tse_dma_apbSlave_2_PSEL     ),
     .io_apbSlave_2_PENABLE                  ( tse_dma_apbSlave_2_PENABLE  ),
@@ -1493,6 +1672,18 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .io_apbSlave_2_PWDATA                   ( tse_dma_apbSlave_2_PWDATA   ),
     .io_apbSlave_2_PRDATA                   ( tse_dma_apbSlave_2_PRDATA   ),
     .io_apbSlave_2_PSLVERROR                ( tse_dma_apbSlave_2_PSLVERROR),
+`endif // ENABLE_ETHERNET
+
+`ifdef ENABLE_USB_CONTROLLER
+    .io_apbSlave_3_PADDR                    (  usb_apbSlave_3_PADDR   ),
+    .io_apbSlave_3_PSEL                     (  usb_apbSlave_3_PSEL    ),
+    .io_apbSlave_3_PENABLE                  (  usb_apbSlave_3_PENABLE ),
+    .io_apbSlave_3_PREADY                   (  usb_apbSlave_3_PREADY  ),
+    .io_apbSlave_3_PWRITE                   (  usb_apbSlave_3_PWRITE  ),
+    .io_apbSlave_3_PWDATA                   (  usb_apbSlave_3_PWDATA  ),
+    .io_apbSlave_3_PRDATA                   (  usb_apbSlave_3_PRDATA  ),
+    .io_apbSlave_3_PSLVERROR                (  usb_apbSlave_3_PSLVERROR ),
+`endif //ENABLE_USB_CONTROLLER
 
     .system_spi_0_io_sclk_write             ( system_spi_0_io_sclk_write ),
     .system_spi_0_io_data_0_writeEnable     ( system_spi_0_io_data_0_writeEnable ),
@@ -1510,14 +1701,6 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .system_spi_0_io_ss                     ( system_spi_0_io_ss ),
     .system_uart_0_io_txd                   ( system_uart_0_io_txd ),
     .system_uart_0_io_rxd                   ( system_uart_0_io_rxd ),
-
-    .system_i2c_0_io_sda_writeEnable        ( o_cam_sda_oe ),
-    .system_i2c_0_io_sda_write              ( o_cam_sda ),
-    .system_i2c_0_io_sda_read               ( i_cam_sda ),
-    .system_i2c_0_io_scl_writeEnable        ( o_cam_scl_oe ),
-    .system_i2c_0_io_scl_write              ( o_cam_scl ),
-    .system_i2c_0_io_scl_read               ( i_cam_scl ),
-    
     .system_i2c_1_io_sda_writeEnable        ( system_i2c_1_io_sda_writeEnable ),
     .system_i2c_1_io_sda_write              ( system_i2c_1_io_sda_write ),
     .system_i2c_1_io_sda_read               ( system_i2c_1_io_sda_read ),
