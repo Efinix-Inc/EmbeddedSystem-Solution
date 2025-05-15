@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 #include <stdint.h>
@@ -68,7 +68,7 @@ void isrRoutine(){
    while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
       switch(claim){
 	  // TSE DMA INTERRUPT
-		  case TSE_TX_INTR:
+		  case TSE_RX_INTR:
 				dmasg_interrupt_config(TSEMAC_DMASG_BASE, 0, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
 				//flush_data_cache();
 				break;
@@ -103,9 +103,9 @@ void isrInit(){
 	// Cpu 0 accept all interrupts with priority above 0
    	plic_set_threshold(BSP_PLIC, BSP_PLIC_CPU_0, 0); 
 
-	// TSE TX interrupt
-	plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, TSE_TX_INTR, 1);
- 	plic_set_priority(BSP_PLIC, TSE_TX_INTR, 1);
+	// TSE RX interrupt
+	plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, TSE_RX_INTR, 1);
+ 	plic_set_priority(BSP_PLIC, TSE_RX_INTR, 1);
 
    // Enable interrupts
    // Set the machine trap vector (../common/trap.S)
