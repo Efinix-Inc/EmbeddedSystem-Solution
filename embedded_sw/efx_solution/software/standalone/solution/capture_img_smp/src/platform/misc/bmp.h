@@ -13,7 +13,7 @@
 #include "fatfs/xprintf.h"
 #include "vision/apb3_cam.h"
 
-#include "../ethernet/tse_tcp.h"
+
 
 
 typedef struct {

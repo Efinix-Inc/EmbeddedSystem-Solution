@@ -13,7 +13,7 @@
 #include "riscv.h"
 #include "efx_mmc_driver.h"
 
-#include "platform/ethernet/tse_tcp.h"
+
 #include "platform/vision/evsoc.h"
 
 void IntcInitialize();

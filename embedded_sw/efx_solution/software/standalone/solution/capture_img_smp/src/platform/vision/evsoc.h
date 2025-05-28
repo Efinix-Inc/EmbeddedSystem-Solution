@@ -7,6 +7,7 @@
 #define HEADER_EVSOC_H_
 
 #include "bsp.h"
+#include "userDef.h"
 #include "device_config.h"
 #include "uart.h"
 #include "i2c.h"
@@ -20,8 +21,7 @@
 #include "vision/dmasg_config.h"
 #include "vision/isp.h"
 
-#include "../ethernet/tse_tcp.h"
-#include "../ethernet/tse_tcp.h"
+
 #if PICAM_VERSION == 3
    #include "vision/PiCamV3Driver.h"
 #endif

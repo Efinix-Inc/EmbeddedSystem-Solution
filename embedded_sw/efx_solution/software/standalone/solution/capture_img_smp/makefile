@@ -8,14 +8,6 @@ SRCS =  $(wildcard src/*.c) \
 		$(wildcard src/*.S) \
         $(wildcard src/platform/*/*.c) \
 		$(wildcard ${BSP_PATH}/app/fatfs/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/user/arch/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/api/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/ppp/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/netif/ppp/polarssl/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/core/*.c) \
-		$(wildcard ${BSP_PATH}/app/lwip/core/ipv4/*.c) \
 		${STANDALONE}/common/start.S \
 		${STANDALONE}/common/smpInit.S \
         ${STANDALONE}/common/trap.S \
@@ -31,10 +23,6 @@ CFLAGS += -Isrc/platform/vision/
 CFLAGS += -Isrc/platform/ethernet/
 CFLAGS += -Isrc/platform/interrupt/
 CFLAGS += -I${BSP_PATH}/app/fatfs
-CFLAGS += -I${BSP_PATH}/app/lwip
-CFLAGS += -I${BSP_PATH}/app/lwip/include
-CFLAGS += -I${BSP_PATH}/app/lwip/user/arch
-CFLAGS += -I${BSP_PATH}/app/lwip/user/
 CFLAGS += -I${STANDALONE}/driver/vision
 
 include ${STANDALONE}/common/bsp.mk

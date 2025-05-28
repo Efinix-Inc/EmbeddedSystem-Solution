@@ -35,7 +35,7 @@
 #include "userDef.h"
 #include "start.h"
 
-#include "platform/ethernet/tse_tcp.h"
+
 #include "platform/interrupt/intc.h"
 #include "platform/vision/evsoc.h"
 #include "platform/sd/sd.h"

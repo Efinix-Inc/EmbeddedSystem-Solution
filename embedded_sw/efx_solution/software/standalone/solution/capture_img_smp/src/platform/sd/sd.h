@@ -15,7 +15,7 @@
 #include "fatfs/diskio.h"
 #include "fatfs/xprintf.h"
 
-#include "../ethernet/tse_tcp.h"
+
 #include "platform/misc/bmp.h"
 #include "platform/interrupt/intc.h"
 
