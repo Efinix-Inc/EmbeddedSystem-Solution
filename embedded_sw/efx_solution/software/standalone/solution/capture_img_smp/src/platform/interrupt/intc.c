@@ -3,9 +3,7 @@
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
-#include "intc.h"
-#include "vision/dmasg_config.h"
-
+#include "platform/interrupt/intc.h"
 
 IntStruct IntPtr;
 struct sd_ctrl_dev *dev;
@@ -15,7 +13,8 @@ uint8_t		buffer [20];
 /************************** Function Definitions *****************************/
 void trap_entry();
 
-/********************************* Function **********************************/
+/********************************* External Interrupt Function **********************************/
+// SDHC Interrupt
 void externalInterrupt()
 {
 	u32 int_status;
@@ -132,22 +131,53 @@ void externalInterrupt()
 void userInterrupt(){
 	uint32_t claim;
 	//While there is pending interrupts
+   u32 hartId = csr_read(mhartid);
+   if (hartId == 0){
 	while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_0)){
 		switch(claim){
 		case SDHC_INTERRUPT:externalInterrupt(); break;
-	    case PLIC_DMASG_CHANNEL:
-	         if(display_mm2s_active && !(dmasg_busy(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL))) {
-	            dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
-	            dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
-	            dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_CHANNEL_INTERRUPT_CHANNEL_COMPLETION_MASK);
-	            dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 0);  //Without self restart
-	         }
-	         break;
 		default: crash(); break;
 		}
 		//unmask the claimed interrupt
-		plic_release(BSP_PLIC, BSP_PLIC_CPU_0, claim); 
+		plic_release(BSP_PLIC, BSP_PLIC_CPU_0, claim);
 	}
+   } else if (hartId == 1){
+		while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_1)){
+			//bsp_printf("Enter CPU 1 subroutine.\r\n");
+			switch(claim){
+			case PLIC_DMASG_CHANNEL:
+				if(evsoc_reset_f) {
+					evsoc_reset();
+					h1_state = RESET;
+				}
+				else{
+				if(display_mm2s_active && !(dmasg_busy(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL))) {
+					//bsp_printf("Display subroutine\r\n");
+					dmasg_input_memory(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, IMG_START_ADDR, 16);
+					dmasg_output_stream(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_DISPLAY_MM2S_PORT, 0, 0, 1);
+					dmasg_interrupt_config(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, DMASG_CHANNEL_INTERRUPT_CHANNEL_COMPLETION_MASK);
+					dmasg_direct_start(DMASG_BASE, DMASG_DISPLAY_MM2S_CHANNEL, (FRAME_WIDTH*FRAME_HEIGHT)*4, 0);  //Without self restart
+				}
+				}
+				break;
+			default: crash(); break;
+			}
+			plic_release(BSP_PLIC, BSP_PLIC_CPU_1, claim); //unmask the claimed interrupt
+		}
+   }
+   else if (hartId == 2){
+
+		while(claim = plic_claim(BSP_PLIC, BSP_PLIC_CPU_2)){
+			switch(claim){
+			case TSE_RX_INTR:
+				dmasg_interrupt_config(TSEMAC_DMASG_BASE, 0, DMASG_CHANNEL_INTERRUPT_LINKED_LIST_UPDATE_MASK);
+				data_cache_invalidate_all();
+				break;
+			default: crash(); break;
+			}
+			plic_release(BSP_PLIC, BSP_PLIC_CPU_2, claim); //unmask the claimed interrupt
+		}
+   }
 }
 
 //Called by trap_entry on both exceptions and interrupts events
@@ -166,8 +196,7 @@ void trap(){
 	}
 }
 
-
-
+//Core 0 - SDHC Interrupt
 void IntcInitialize(struct mmc *mmc)
 {
 	dev=mmc->priv;
@@ -190,3 +219,5 @@ void IntcInitialize(struct mmc *mmc)
 	sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS1,INT_ENABLE);		//Enable All Interrupts Status
 	sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS1+4,INT_ENABLE);		//Open All Interrupts Signal
 }
+
+

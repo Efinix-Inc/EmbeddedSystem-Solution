@@ -20,10 +20,13 @@
 #define I2C_CTRL_HZ		SYSTEM_CLINT_HZ
 #define CORE_HZ			BSP_CLINT_HZ
 
+#define BSP_PLIC_CPU_2      SYSTEM_PLIC_SYSTEM_CORES_2_EXTERNAL_INTERRUPT
+#define BSP_PLIC_CPU_3      SYSTEM_PLIC_SYSTEM_CORES_3_EXTERNAL_INTERRUPT
+
 /************************** BMP Reader Setting ***************************/
 
 #define BMP_HEADER_SIZE 54
-#define IMG_START_ADDR        	0x01000000
+#define IMG_START_ADDR        	0x01000000 //0x01000000
 #define DDR_START_ADDRESS  		0x01000000
 #define img_array       		((uint32_t*)IMG_START_ADDR)
 #define DDR_SIZE           		(FRAME_WIDTH*FRAME_WIDTH*3 + 0x100)
@@ -58,7 +61,39 @@ time_data myConfig;
 #define MAX_BLK_BUF   0x1
 #define DATA_WIDTH    0x2 //0x0:1-bit mode; 0x2:4-bit mode;
 
-/************************** INTC Header File *****************************/
+/************************** TSEMAC ***************************/
+#define configIP_ADDR0		192
+#define configIP_ADDR1		168
+#define configIP_ADDR2		31
+#define configIP_ADDR3		55
+
+#define configMAC_ADDR0	 	0x00
+#define configMAC_ADDR1 	0x11
+#define configMAC_ADDR2 	0x22
+#define configMAC_ADDR3 	0x33
+#define configMAC_ADDR4 	0x44
+#define configMAC_ADDR5 	0x41
+#define TEST_MODE   		0 //0:Normal Mode; 1:Link partner Test Mode;
+#define PAT_NUM 			0
+#define PAT_DLEN			8
+#define PAT_IPG				4095 //4095//255
+#define PAT_TYPE			0 //0:UDP Pattern; //1:MAC Pattern;
+#define DST_MAC_H 			0xffff
+#define DST_MAC_L 			0xffffffff
+#define SRC_MAC_H 			(configMAC_ADDR5<<8)|configMAC_ADDR4
+#define SRC_MAC_L 			(configMAC_ADDR3<<24)|(configMAC_ADDR2<<16)|(configMAC_ADDR1<<8)|configMAC_ADDR0//0x5e0060c8
+#define SRC_IP 				(configIP_ADDR3<<24)|(configIP_ADDR2<<16)|(configIP_ADDR1<<8)|configIP_ADDR0
+#define DST_IP 				0xc0a80165
+#define SRC_PORT			0x0521
+#define DST_PORT			0x2715
+
+/************************** TSEMAC HW Header File ***************************/
+
+#define TSE_Speed_1000Mhz	0x04
+#define TSE_Speed_100Mhz	0x02
+#define TSE_Speed_10Mhz		0x01
+
+/************************** SDHC INTC Header File *****************************/
 #define INT_ENABLE                0xffffffcf
 #define INT_COMMAND_COMPLETE      0x1
 #define INT_TRANSFER_COMPLETE     0x2
@@ -87,6 +122,20 @@ time_data myConfig;
 #define ASCII_LOWER_CASE_Q  0x71
 #define ASCII_UPPER_CASE_Q  0x51
 
+/************************** Application Header File ***************************/
+#define TX_ENA_MASK    		0xFFFFFFFE
+#define RX_ENA_MASK    		0xFFFFFFFD
+#define XON_GEN_MASK 		0xFFFFFFFB
+#define PROMIS_EN_MASK   	0xFFFFFFEF
+#define PAD_EN_MASK   		0xFFFFFFDF
+#define CRC_FWD_MASK   		0xFFFFFFBF
+#define PAUSE_IGNORE_MASK   0xFFFFFEFF
+#define TX_ADDR_INS_MASK   	0xFFFFFBFF
+#define LOOP_ENA_MASK   	0xFFFF7FFF
+#define ETH_SPEED_MASK   	0xFFF8FFFF
+#define XOFF_GEN_MASK 		0xFFBFFFFF
+#define CNT_RST_MASK 		0x7FFFFFFF
+
 /************************** Peripherals *****************************/
 extern struct mmc *mmc;
 extern struct mmc_cmd *xmmc_cmd;
@@ -96,50 +145,12 @@ extern struct mmc_data *data;
 
 static
 const char HelpMsg[] =
-	"[Buffer controls]\r\n"
-	" bd <ofs> - Dump working buffer\r\n"
-	" be <ofs> [<data>] ... - Edit working buffer\r\n"
-	" br <pd#> <lba> [<count>] - Read disk into working buffer\r\n"
-	" bw <pd#> <lba> [<count>] - Write working buffer into disk\r\n"
-	" bf <val> - Fill working buffer\r\n"
-	"[File system controls]\r\n"
-	" fi <ld#> [<mount>]- Force initialized the volume\r\n"
-	" fs [<path>] - Show volume status\r\n"
-	" fl [<path>] - Show a directory\r\n"
-	" fo <mode> <file> - Open a file\r\n"
-	"    mode 0 => Open existing file\r\n"
-	"    mode 1 => Open as read file\r\n"
-	"    mode 2 => Open as write file\r\n"
-	"    mode 4 => Create new file\r\n"
-	"    mode 8 => Create new file always\r\n"
-	"    mode 16 => Open a file always\r\n"
-	"    mode 48 => Open a file append\r\n"
-	" fc - Close the file\r\n"
-	" fe <ofs> - Move fp in normal seek\r\n"
-	" fd <len> - Read and dump the file\r\n"
-	" fr <len> - Read the file\r\n"
-	" fw <len> <val> - Write to the file\r\n"
-	" fn <org.name> <new.name> - Rename an object\r\n"
-	" fu <name> - Unlink an object\r\n"
-	" fv - Truncate the file at current fp\r\n"
-	" fk <name> - Create a directory\r\n"
-	" fa <atrr> <mask> <object name> - Change attribute of an object\r\n"
-	" ft <year> <month> <day> <hour> <min> <sec> <name> - Change timestamp of an object\r\n"
-	" fx <src.file> <dst.file> - Copy a file\r\n"
-	" fg <path> - Change current directory\r\n"
-	" fq - Show current directory\r\n"
-	" fb <name> - Set volume label\r\n"
-	" fm - Create FAT32 file system\r\n"
-	" fz [<len>] - Change/Show R/W length for fr/fw/fx command\r\n"
-	"[Misc commands]\r\n"
-	" md[b|h|w] <addr> [<count>] - Dump memory\r\n"
-	" mf <addr> <value> <count> - Fill memory\r\n"
-	" me[b|h|w] <addr> [<value> ...] - Edit memory\r\n"
-	" t [<hour> <min> <sec> <dayOfTheWeek> <day> <month> <year>] - Set/Show RTC\r\n"
-		"    <dayOfTheWeek> = 1: Sunday, 2: Monday, 3: Tuesday, 4: Wednesday, "
-		"5: Thursday, 6: Friday, 7: Saturday \r\n"
-	" x <file> - Read BMP format file\r\n"
-	" v - Enable HDMI Display to display bmp format file \r\n"
+
+	" v - Enable Camera and HDMI Display. \r\n"
+	" d - Enable HDMI Display only. \r\n"
+	" z - Disable Camera and HDMI Display. \r\n"
+	" x <file> - Read BMP format file. \r\n"
+	" c - Capture Image when camera/display is enabled. \r\n"
 	"\r\n";
 
 #endif

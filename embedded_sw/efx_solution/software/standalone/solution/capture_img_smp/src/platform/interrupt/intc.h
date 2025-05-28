@@ -12,8 +12,20 @@
 #include "plic.h"
 #include "riscv.h"
 #include "efx_mmc_driver.h"
-#include "userDef.h"
+
+#include "platform/ethernet/tse_tcp.h"
+#include "platform/vision/evsoc.h"
 
 void IntcInitialize();
 
+
+// Hart 1 State
+#define IDLE   0
+#define INIT   1
+#define STREAM 2
+#define RESET  3
+
+extern u32 evsoc_reset_f;
+extern u32 h1_state;
+extern u32 h2_state;
 #endif

@@ -3,17 +3,15 @@
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef HEADER_INTC_H_
-#define HEADER_INTC_H_
+#define STACK_PER_HART 4096
 
-#include <stdint.h>
-#include "bsp.h"
-#include "device_config.h"
-#include "plic.h"
-#include "riscv.h"
-#include "efx_mmc_driver.h"
-#include "userDef.h"
-
-void IntcInitialize();
-
+#ifdef SYSTEM_PLIC_SYSTEM_CORES_3_EXTERNAL_INTERRUPT
+	#define HART_COUNT 4
+#elif SYSTEM_PLIC_SYSTEM_CORES_2_EXTERNAL_INTERRUPT
+	#define HART_COUNT 3
+#elif SYSTEM_PLIC_SYSTEM_CORES_1_EXTERNAL_INTERRUPT
+	#define HART_COUNT 2
+#else
+	#define HART_COUNT 1
 #endif
+
