@@ -4,7 +4,6 @@
 // https://gist.github.com/a1k0n/8ea6516b4946ab36348fb61703dc3194
 ////////////////////////////////////////////////////////////////////////////////
 #include "bsp.h"
-#include "userDef.h"
 #include "riscv.h"
 #include "start.h"
 #include "gpio.h"
@@ -16,6 +15,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <math.h>
+#include "smp.h"
 
 
 void trap();
