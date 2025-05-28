@@ -37,7 +37,7 @@
 #define sobel_array     ((volatile uint32_t*)SOBEL_START_ADDR)
 
 u32 select_demo_mode;      //For demo mode selection
-u32 display_mm2s_active=0; //For DMA interrupt
+//u32 display_mm2s_active=0; //For DMA interrupt
 
 /*******************************************************UART & DMA-RELATED FUNCTIONS***************************************************/
 

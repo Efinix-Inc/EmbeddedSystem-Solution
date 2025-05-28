@@ -13,8 +13,9 @@
 //For DMA interrupt
 uint32_t hw_accel_mm2s_active;
 uint32_t hw_accel_s2mm_active;
-uint32_t cam_s2mm_active;
-uint32_t display_mm2s_active;
+volatile uint32_t cam_s2mm_active;
+volatile uint32_t display_mm2s_active;
+extern u32 reset_done;
 
 #define DMASG_BASE            ISP_DMA_BASE
 #define PLIC_DMASG_CHANNEL    ISP_DMA_INTERRUPT
