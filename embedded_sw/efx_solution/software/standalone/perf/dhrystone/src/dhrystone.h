@@ -352,7 +352,8 @@
  */
 
 /* Compiler and system dependent definitions: */
-
+#include "riscv.h"
+#include "bsp.h"
 /* variables for time measurement: */
 
 #ifdef TIME
@@ -381,11 +382,11 @@ extern clock_t    clock();
 
 #elif defined(__riscv)
 
-#define HZ 1000000
+#define HZ SYSTEM_CLINT_HZ
 #define Too_Small_Time 1
 #define CLOCK_TYPE "rdcycle()"
-#define Start_Timer() Begin_Time = read_csr(mcycle)
-#define Stop_Timer() End_Time = read_csr(mcycle)
+#define Start_Timer() Begin_Time = csr_read(mcycle)
+#define Stop_Timer() End_Time = csr_read(mcycle)
 
 #else
                 /* Use times(2) time function unless    */
