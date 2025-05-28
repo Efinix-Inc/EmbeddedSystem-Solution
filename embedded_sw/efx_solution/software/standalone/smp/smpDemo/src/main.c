@@ -20,9 +20,9 @@
 ******************************************************************************/
 
 #include "bsp.h"
-#include "userDef.h"
 #include "riscv.h"
 #include "start.h"
+#include "smp.h"
 
 // Encryption count for single core processing
 #define ENCRYPT_COUNT HART_COUNT
