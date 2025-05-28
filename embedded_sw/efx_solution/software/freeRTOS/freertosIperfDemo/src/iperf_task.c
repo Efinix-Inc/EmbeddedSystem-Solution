@@ -76,7 +76,7 @@
 #include "iperf_task.h"
 
 #define ipconfigIPERF_BUFSIZE 8
-#define ipconfigIPERF_WINSIZE 8
+#define ipconfigIPERF_WINSIZE 4
 
 /* Put the TCP server at this port number: */
 #ifndef ipconfigIPERF_TCP_ECHO_PORT
