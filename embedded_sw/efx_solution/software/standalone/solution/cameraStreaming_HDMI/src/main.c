@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+// Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -35,7 +35,7 @@
 #define sobel_array     ((volatile uint32_t*)SOBEL_START_ADDR)
 
 u32 select_demo_mode;      //For demo mode selection
-u32 display_mm2s_active=0; //For DMA interrupt
+//u32 display_mm2s_active=0; //For DMA interrupt
 
 /*******************************************************UART & DMA-RELATED FUNCTIONS***************************************************/
 
