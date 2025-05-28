@@ -48,8 +48,9 @@ Available Embedded Software Demo:
   - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
   - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
 - [Solution](docs/app/ug_solution.md)
-  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#cameraStreaming_HDMI)
-  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpStreaming_HDMI)
+  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
+  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
+  - [x] [capture_img_smp](docs/app/ug_solution.md#capture_img_smp)  
 - [FreeRTOS](docs/app/ug_freertos.md)
   - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
   - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
@@ -98,9 +99,9 @@ Available Embedded Software Demo:
 
 | Device       | XLR              | Memory Block | DSP Block /Multiplier |
 |--------------|------------------|---------------------|------------------|
-| T120F576    |      78815/112128         |         693/1056         |       17/320 (Multiplier*)       |
-| Ti180J484    |      87314/172800         |        729/1280         |       17/640       |
-| Ti375C529     |       48967/ 362880         |          228/2688         |        0/1344       |
+| T120F576    |      81339/112128         |         710/1056         |       17/320 (Multiplier*)       |
+| Ti180J484    |      77422/172800         |        604/1280         |       17/640       |
+| Ti375C529     |       57749/ 362880         |          244/2688         |        0/1344       |
 
 ## Directory structure of Embedded System Solution
 
@@ -159,6 +160,7 @@ Available Embedded Software Demo:
   ¦           +---tsemac
   ¦           ¦   +---lwipIperfServer
   ¦           +---solution
+  ¦               +---capture_img_smp
   ¦               +---cameraStreaming_HDMI
   ¦               +---sd_bmpStreaming_HDMI
   +---source
@@ -176,15 +178,15 @@ Available Embedded Software Demo:
 
 ### Efinity Software Version 
 
-- [Efinity 2024.2.294.1.19](https://www.efinixinc.com/support/efinity.php) [v2024.2 Patch 1]
+- [Efinity 2025.1.110](https://www.efinixinc.com/support/efinity.php) [v2025.1]
 
-- Follow the official [documentation](https://www.efinixinc.com/docs/efinity-installation-v3.3.pdf) on installation process.
+- Follow the official [documentation](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=UG-EFN-SOFTWARE) on installation process.
 
 ### Efinity RISC-V Embedded Software IDE
 
-- [v2024.2](https://www.efinixinc.com/support/efinity.php) and above
+- [v2025.1](https://www.efinixinc.com/support/efinity.php) and above
 
-- Follow the official [documentation](https://www.efinixinc.com/docs/riscv-sapphire-ug-v6.1.pdf) on installation process 
+- Follow the official [documentation](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREUG) on installation process 
 
 - Learn more at the [official website](https://www.efinixinc.com/products-efinity-riscv-ide.html)
 

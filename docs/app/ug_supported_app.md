@@ -6,6 +6,7 @@ Here are the list of application that supported across different devices.
 |-------------------------------|------------|-----------|-----------|
 | bootloader                    |     ✓      |     ✓    |     ✓     |
 | coremark                      |     ✓      |     ✓    |     ✓     |
+| capture_img_smp                    |     ✓      |     ✓    |     ✓     |
 | clintTimerInterruptDemo        |     ✓      |     ✓    |     ✓     |
 | customInstructionDemo         |     ✓      |     ✓    |     ✓     |
 | dhrystone                     |     ✓      |     ✓    |     ✓     |
