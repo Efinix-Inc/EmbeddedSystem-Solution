@@ -43,7 +43,6 @@
 `define ENABLE_SDHC               // Comment out this line to disable SDHC , Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_EVSOC              // Comment out this line to disable EVSOC, Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_ETHERNET           // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
-`define ENABLE_ESP                // Comment out this line to disable the ESP Design.
 `define ENABLE_CI                 // Comment out this linte to disable the Custom Instructions. 
 `define DISPLAY_1920x1080_60Hz    // Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
 //`define DISPLAY_1280x720_60Hz   // Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
