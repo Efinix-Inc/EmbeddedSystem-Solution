@@ -43,7 +43,8 @@
 `define ENABLE_SDHC               // Comment out this line to disable SDHC , Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_EVSOC              // Comment out this line to disable EVSOC, Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_ETHERNET           // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
-`define ENABLE_CI                 // Comment out this linte to disable the Custom Instructions. 
+`define ENABLE_CI                 // Comment out this line to disable the Custom Instructions. 
+`define ENABLE_USB_CONTROLLER     // Comment out this line to disable USB Controller.
 `define DISPLAY_1920x1080_60Hz    // Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
 //`define DISPLAY_1280x720_60Hz   // Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
 
@@ -52,7 +53,7 @@
     `define ENABLE_EVSOC_DISPLAY    // Comment out this line to disable the HDMI display portion of EVSOC
     `define ENABLE_EVSOC_HW_ACCEL   // Comment out this line to disable the hardware accelerator for EVSOC
 `endif 
-`define ENABLE_USB_CONTROLLER
+
 
 module top_soc (
 
@@ -83,49 +84,19 @@ input           ut_jtagCtrl_reset,
 `endif 
 
 `ifdef ENABLE_USB_CONTROLLER
-/*
-// USB port 0
-input           io_usb_0_dp_read,
-output          io_usb_0_dp_write,
-output          io_usb_0_dp_writeEnable,
-input           io_usb_0_dm_read,
-output          io_usb_0_dm_write,
-output          io_usb_0_dm_writeEnable,
-// USB port 1
-input           io_usb_1_dp_read,
-output          io_usb_1_dp_write,
-output          io_usb_1_dp_writeEnable,
-input           io_usb_1_dm_read,
-output          io_usb_1_dm_write,
-output          io_usb_1_dm_writeEnable,
-// USB port 2
-input           io_usb_2_dp_read,
-output          io_usb_2_dp_write,
-output          io_usb_2_dp_writeEnable,
-input           io_usb_2_dm_read,
-output          io_usb_2_dm_write,
-output          io_usb_2_dm_writeEnable,
-// USB port 3
-input           io_usb_3_dp_read,
-output          io_usb_3_dp_write,
-output          io_usb_3_dp_writeEnable,
-input           io_usb_3_dm_read,
-output          io_usb_3_dm_write,
-output          io_usb_3_dm_writeEnable,
-*/
 input  [3:0]    io_usb_dm_read,
 output [3:0]    io_usb_dm_write,
 output [3:0]    io_usb_dm_writeEnable,
 input [3:0]     io_usb_dp_read,
 output [3:0]    io_usb_dp_write,
 output [3:0]    io_usb_dp_writeEnable,
-
 input           io_usbClk,
 `endif /* ENABLE_USB_CONTROLLER */
 
 //Custom Instruction
 input           io_cfuClk,
 input           io_cfuReset,
+
 `ifdef ENABLE_CI
 input           cpu0_customInstruction_cmd_valid,
 output          cpu0_customInstruction_cmd_ready,
@@ -1537,33 +1508,6 @@ UsbOhciAxi4Apb3 usb (
   .io_usb_3_dm_read             (io_usb_dm_read[3]),
   .io_usb_3_dm_write            (io_usb_dm_write[3]),
   .io_usb_3_dm_writeEnable      (io_usb_dm_writeEnable[3]),
-  
-  /*
-  .io_usb_0_dp_read             (io_usb_0_dp_read),
-  .io_usb_0_dp_write            (io_usb_0_dp_write),
-  .io_usb_0_dp_writeEnable      (io_usb_0_dp_writeEnable),
-  .io_usb_0_dm_read             (io_usb_0_dm_read),
-  .io_usb_0_dm_write            (io_usb_0_dm_write),
-  .io_usb_0_dm_writeEnable      (io_usb_0_dm_writeEnable),
-  .io_usb_1_dp_read             (io_usb_1_dp_read),
-  .io_usb_1_dp_write            (io_usb_1_dp_write),
-  .io_usb_1_dp_writeEnable      (io_usb_1_dp_writeEnable),
-  .io_usb_1_dm_read             (io_usb_1_dm_read),
-  .io_usb_1_dm_write            (io_usb_1_dm_write),
-  .io_usb_1_dm_writeEnable      (io_usb_1_dm_writeEnable),
-  .io_usb_2_dp_read             (io_usb_0_dp_read),
-  .io_usb_2_dp_write            (io_usb_2_dp_write),
-  .io_usb_2_dp_writeEnable      (io_usb_2_dp_writeEnable),
-  .io_usb_2_dm_read             (io_usb_2_dm_read),
-  .io_usb_2_dm_write            (io_usb_2_dm_write),
-  .io_usb_2_dm_writeEnable      (io_usb_2_dm_writeEnable),
-  .io_usb_3_dp_read             (io_usb_3_dp_read),
-  .io_usb_3_dp_write            (io_usb_3_dp_write),
-  .io_usb_3_dp_writeEnable      (io_usb_3_dp_writeEnable),
-  .io_usb_3_dm_read             (io_usb_3_dm_read),
-  .io_usb_3_dm_write            (io_usb_3_dm_write),
-  .io_usb_3_dm_writeEnable      (io_usb_3_dm_writeEnable),
-  */
   
   // usb clock
   .phy_clk                      (io_usbClk),
