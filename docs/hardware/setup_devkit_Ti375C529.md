@@ -22,6 +22,9 @@ Vision related hardware are needed in the following:
 SD related hardware are needed in the following:
 - Micro SD card less than 32GB storage size
 
+USB controlller hardware are needed in the following:
+- PMOD 4-Ports USB Host External Board
+
 ## Steps for connecting the hardware to Ti375C529 Development Board. 
 ---
 1. Hardware connection for Micro SD Card:
@@ -37,6 +40,9 @@ SD related hardware are needed in the following:
 * Attach the Dual Raspberry Pi Camera Connector Daughter Card to the P2 connector of the Titanium Ti375C529 Development Board.
 * Attach the HDMI Connector Daughter Card to the P1 connector of the Titanium Ti375C529 Development Board.
 * Connect HDMI Cable to the HDMI Connector Daughter Card.
+
+5. Hardware Connection for USB Controller:
+* Connect the PMOD 4-Ports USB Host External Board directly into J15 PMOD.
 
 5. Ensure all boards have the followings jumper settings:
 
