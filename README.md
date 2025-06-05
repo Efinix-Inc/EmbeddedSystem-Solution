@@ -166,11 +166,13 @@ Available Embedded Software Demo:
   +---source
   ¦   +---submodules
   ¦        +---cam
-  ¦        +---common               
+  ¦        +---common 
+  ¦        +---ethernet              
   ¦        +---hdmi_display
   ¦        ¦   +---display
   ¦        ¦       +---mif_yuv
-  ¦        +---hw_accel         
+  ¦        +---hw_accel      
+  ¦        +---usb      
 
 ```
 
