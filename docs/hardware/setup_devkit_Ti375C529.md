@@ -23,7 +23,9 @@ SD related hardware are needed in the following:
 - Micro SD card less than 32GB storage size
 
 USB controlller hardware are needed in the following:
-- PMOD 4-Ports USB Host External Board
+- PMOD 4-Ports USB Host External Board 
+
+Note: Refer [here](../../hw/efinix/PMOD-USB-Ext-Board/) to obtain the schematic diagram/manufacture files of PMOD-USB External Board.
 
 ## Steps for connecting the hardware to Ti375C529 Development Board. 
 ---
