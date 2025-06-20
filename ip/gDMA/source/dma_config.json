@@ -33,7 +33,7 @@
             ],
             "half_completion_interrupt": false,
             "self_restart_capable": false,
-            "bytes_per_burst": 1024,
+            "bytes_per_burst": 2048,
             "buffer_address": 0,
             "buffer_size": 16384
         },
@@ -47,7 +47,7 @@
             ],
             "half_completion_interrupt": false,
             "self_restart_capable": false,
-            "bytes_per_burst": 1024,
+            "bytes_per_burst": 2048,
             "buffer_address": 16384,
             "buffer_size": 16384
         }

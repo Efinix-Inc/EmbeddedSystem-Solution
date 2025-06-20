@@ -1,5 +1,6 @@
 // Generator : SpinalHDL dev    git head : 81793df2c4f55a20f7eff1130c4bb74a4b11319f
 // Component : EfxDMA
+// Git hash  : dd4a51b4ebf5c380856bcf4f29243995424db0a1
 
 `timescale 1ns/1ps
 
@@ -4557,7 +4558,7 @@ module EfxDMA_Core (
   end
 
   assign when_DmaSg_l457 = (channels_0_push_s2b_packetEvent && channels_0_push_s2b_completionOnLast);
-  assign channels_0_pop_b2m_bytePerBurst = 11'h3ff;
+  assign channels_0_pop_b2m_bytePerBurst = 11'h7ff;
   always @(*) begin
     channels_0_pop_b2m_fire = 1'b0;
     if(when_DmaSg_l935) begin
@@ -4757,7 +4758,7 @@ module EfxDMA_Core (
   assign channels_1_fifo_pop_empty = (channels_1_fifo_pop_ptr == channels_1_fifo_push_ptr);
   assign channels_1_fifo_pop_bytes = channels_1_fifo_pop_withoutOverride_exposed;
   assign channels_1_fifo_empty = (channels_1_fifo_push_ptr == channels_1_fifo_pop_ptr);
-  assign channels_1_push_m2b_bytePerBurst = 11'h3ff;
+  assign channels_1_push_m2b_bytePerBurst = 11'h7ff;
   always @(*) begin
     channels_1_push_m2b_memPendingIncr = 1'b0;
     if(when_DmaSg_l758) begin

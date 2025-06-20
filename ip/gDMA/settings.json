@@ -71,7 +71,7 @@
         "CH2_AsyncMode": "1'b0",
         "CH4_AsyncMode": "1'b0",
         "CH0_BufferSize": "16384",
-        "CH0_BurstSize": "1024",
+        "CH0_BurstSize": "2048",
         "CH0_SR": "1'b0",
         "CH0_Width": "8",
         "CH1_Input": "1'b0",
@@ -87,7 +87,7 @@
         "CH2_Output": "1'b1",
         "CH2_Input": "1'b1",
         "CH1_BufferSize": "16384",
-        "CH1_BurstSize": "1024",
+        "CH1_BurstSize": "2048",
         "CH2_Enable_user": "1'b0",
         "CH2_Enable_default": "1'b0",
         "CH3_Enable_default": "1'b0",
@@ -113,14 +113,14 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
+            "gDMA/gDMA_tmpl.vhd",
             "gDMA/gDMA_tmpl.v",
-            "gDMA/gDMA_define.vh",
             "gDMA/gDMA.v",
-            "gDMA/gDMA_tmpl.vhd"
+            "gDMA/gDMA_define.vh"
         ],
         "external_script_script": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:20:32.745767+00:00"
+    "sw_version": "2025.1.110",
+    "generated_date": "2025-06-19T08:13:44.395081+00:00"
 }
