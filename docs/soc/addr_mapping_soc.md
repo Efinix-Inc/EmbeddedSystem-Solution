@@ -17,7 +17,6 @@ The base address of AXI Interconnect ``SYSTEM_AXI_A_BMB`` is ``0xe8000000``.
 | 0xe8100000 | Apb3 Slave 0 | dma0 (Camera & Display)         | 16               |
 | 0xe8200000 | Apb3 Slave 1 | reg: camera & display           | -                |
 | 0xe8300000 | Apb3 Slave 2 | dma1 (TSEMAC)                   | 17, 18             |
-| 0xe8400000 | Apb3 Slave 3 | usb controller                  | 20             |
 | SYSTEM_AXI_A_BMB | Axi Slave 0  | Soft Logic Block                | -                |
 | SYSTEM_AXI_A_BMB + 0xe1000000  | Axi Slave 1  | SD Host Controller              | 19                |
 | SYSTEM_AXI_A_BMB + 0xe1100000  | Axi Slave 2  | Triple Speed Ethernet           | -                |
