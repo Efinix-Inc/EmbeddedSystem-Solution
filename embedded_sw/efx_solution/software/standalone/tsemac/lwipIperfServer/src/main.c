@@ -278,7 +278,11 @@ void main() {
 	bsp_printf(" Mbps\n\r");
 
 	bsp_printf("=========================================\n\r");
-	
+	bsp_printf("[INFO] To perform unidirectional test (RX):\r\n");
+	bsp_printf(" * Send from FPGA -> iperf.exe -c 192.168.31.55 -t 25 -i 1 -p 5001 -b 1000M -l 1460\r\n\r\n");
+	bsp_printf("[INFO] To perform bidirectional test (RX/TX):\r\n");
+	bsp_printf(" * Mandatory step: Start server at PC -> iperf.exe -s -i 1\r\n");
+	bsp_printf(" * Send from FPGA -> iperf.exe -c 192.168.31.55 -t 25 -i 1 -p 5001 -r -b 1000M -l 1460\r\n");
 
     while (1) {
         /************************* TSE *****************************/
