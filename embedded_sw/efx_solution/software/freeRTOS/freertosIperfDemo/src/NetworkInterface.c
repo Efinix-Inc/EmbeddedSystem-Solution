@@ -54,7 +54,7 @@
     #define ipCONSIDER_FRAME_FOR_PROCESSING( pucEthernetBuffer )    eConsiderFrameForProcessing( ( pucEthernetBuffer ) )
 #endif
 
-#define FRAME_PACKET  	256
+#define FRAME_PACKET  	4096
 #define BUFFER_SIZE 	1519
 
 #define EMAC_IF_RX_EVENT        1UL
