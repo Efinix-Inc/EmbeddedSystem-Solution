@@ -46,7 +46,7 @@ For Ti180J484, it can link up to full duplex 1000Mbps while T120F576 only suppor
 7. Change to the directory where it has the iPerf2 executable.
 8. Type the command:
 
-    `` .\iperf.exe -c 192.168.31.55 -i 1 ``
+    `` iperf.exe -c 192.168.31.55 -t 25 -i 1 -p 5001 -b 1000M -l 1460 ``
     
 User should see output similar to the following in the terminal:
 
