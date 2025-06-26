@@ -998,7 +998,7 @@ void vIPerfTask( void * pvParameter )
 			cIPAddressString, ipconfigIPERF_UDP_ECHO_PORT ) );
 	FreeRTOS_printf( ( "TCP send:    iperf3 -c %s -p %d -n 100M -R\r\n",
 			cIPAddressString, ipconfigIPERF_UDP_ECHO_PORT ) );
-	FreeRTOS_printf( ( "UDP:         iperf3 -c %s -p %d -n 1000M -u -b 1000M\r\n",
+	FreeRTOS_printf( ( "UDP:         iperf3 -c %s -p %d -n 1000M -u -b 280M\r\n",
 			cIPAddressString, ipconfigIPERF_UDP_ECHO_PORT ) );
     #if ( ipconfigUSE_IPv6 == 1 )
         NetworkEndPoint_t * pxEndpoint = pxFindLocalEndpoint();
