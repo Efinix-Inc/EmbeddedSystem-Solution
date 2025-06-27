@@ -81,6 +81,13 @@ Available Embedded Software Demo:
 | T120F576     |       50         |          50         |        50        |2 ways 8kb I & D caches |
 - The resolution of the display is set to 720p for the Ti180J484 device.
 
+### Ethernet Throughput - TCP (Raw Mode)
+
+| Device       | RX (Mbits/sec)   | TX (Mbits/sec)      |
+|--------------|------------------|---------------------|
+| Ti375C529    |      923        |         402         |
+| Ti180J484    |      298         |         89         |
+| T120F576     |       50         |          25         |
 
 ### Resource Consumption
 
