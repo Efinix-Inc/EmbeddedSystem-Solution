@@ -3,13 +3,13 @@
         "-o",
         "EfxSapphireHpSoc_slb",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375-usb/ip",
+        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "soc",
             "name": "efx_hard_soc",
-            "version": "1.19"
+            "version": "1.21"
         }
     ],
     "conf": {
@@ -120,15 +120,15 @@
         "external_script_Peripheral_Generator": [],
         "external_source_source": [
             "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb.v",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_define.vh",
             "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.vhd",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.v"
+            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.v",
+            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_define.vh"
         ],
         "external_script_PT_Configuration": [],
         "external_script_Peripheral_Post_Script": [],
         "external_script_Embedded_SW": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.110",
-    "generated_date": "2025-05-13T07:10:31.960973+00:00"
+    "sw_version": "2025.1.110.3.16",
+    "generated_date": "2025-07-29T05:52:14.067533+00:00"
 }

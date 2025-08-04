@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "memory_controller",
             "name": "efx_sd_host_controller",
-            "version": "5.3.1"
+            "version": "6.0"
         }
     ],
     "conf": {
@@ -19,13 +19,13 @@
     "output": {
         "external_script_reference_design": [],
         "external_source_source": [
+            "gSDHC/gSDHC.v",
             "gSDHC/gSDHC_tmpl.vhd",
             "gSDHC/gSDHC_tmpl.v",
-            "gSDHC/gSDHC.v",
             "gSDHC/gSDHC_define.vh"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:32:12.603402+00:00"
+    "sw_version": "2025.1.110.3.16",
+    "generated_date": "2025-07-29T05:51:55.637565+00:00"
 }

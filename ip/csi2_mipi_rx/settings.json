@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "mipi",
             "name": "efx_csi2_rx",
-            "version": "5.11"
+            "version": "5.13"
         }
     ],
     "conf": {
@@ -33,17 +33,18 @@
         "Pack_64": "1'b1",
         "FRAME_MODE": "\"GENERIC\"",
         "ENABLE_VCX": "1'b0",
-        "MIPI_CSI2_RX_DEBUG": "1'b0"
+        "MIPI_CSI2_RX_DEBUG": "1'b0",
+        "MIPI_CSI2_RX_PIXEL_SIDEBAND": "1'b0"
     },
     "output": {
         "external_source_source": [
-            "csi2_mipi_rx/csi2_mipi_rx.sv",
-            "csi2_mipi_rx/csi2_mipi_rx_define.svh",
             "csi2_mipi_rx/csi2_mipi_rx_tmpl.sv",
-            "csi2_mipi_rx/csi2_mipi_rx_tmpl.vhd"
+            "csi2_mipi_rx/csi2_mipi_rx_define.svh",
+            "csi2_mipi_rx/csi2_mipi_rx_tmpl.vhd",
+            "csi2_mipi_rx/csi2_mipi_rx.sv"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:22:20.533220+00:00"
+    "sw_version": "2025.1.110.3.16",
+    "generated_date": "2025-07-29T05:52:16.677672+00:00"
 }
