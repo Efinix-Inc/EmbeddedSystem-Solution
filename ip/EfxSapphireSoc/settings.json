@@ -9,12 +9,12 @@
             "vendor": "efinixinc.com",
             "library": "soc",
             "name": "efx_soc",
-            "version": "3.2.1"
+            "version": "3.2.3"
         }
     ],
     "conf": {
         "HexFile_PathEnable": "1'b0",
-        "HexFile_Path": "\"../../common/bootloader/bootloader_linux_Ti180J484_100.hex\"",
+        "HexFile_Path": "\"embedded_sw/efx_solution/software/standalone/bootloader/build/bootloader.hex\"",
         "APBSlave0_Size": "65536",
         "DEVKIT_CUSTOM": "\"sapphireBoard_rev0\"",
         "LDSize": "2044",
@@ -168,15 +168,15 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd",
             "EfxSapphireSoc/EfxSapphireSoc_tmpl.v",
+            "EfxSapphireSoc/EfxSapphireSoc_define.vh",
             "EfxSapphireSoc/EfxSapphireSoc.v",
-            "EfxSapphireSoc/EfxSapphireSoc_define.vh"
+            "EfxSapphireSoc/EfxSapphireSoc_tmpl.vhd"
         ],
         "external_script_script": [],
         "external_script_embedded_sw": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.102",
-    "generated_date": "2025-04-22T08:00:44.604150+00:00"
+    "sw_version": "2025.1.110.3.16",
+    "generated_date": "2025-08-04T02:30:56.392106+00:00"
 }
