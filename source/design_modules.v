@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2024 github-efx
+// Copyright (c) 2025 github-efx
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,7 +22,7 @@
 
 ////////////////////////////////////////////////////////////////////////////
 //           _____       
-//          / _______    Copyright (C) 2013-2024 Efinix Inc. All rights reserved.
+//          / _______    Copyright (C) 2013-2025 Efinix Inc. All rights reserved.
 //         / /       \   
 //        / /  ..    /   design_modules.v
 //       / / .'     /    

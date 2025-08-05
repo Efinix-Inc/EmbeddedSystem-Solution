@@ -3,7 +3,7 @@
     "contentVersion": "0.2.0",
     "headerVersion": "0.2.0",
     "license": "MIT",
-    "copyright": "Copyright (C) 2013-2024 Efinix Inc. All rights reserved.",
+    "copyright": "Copyright (C) 2013-2025 Efinix Inc. All rights reserved.",
     "device": {
         "Sapphire High Performance SoC": {
             "version": "1.0.0",
