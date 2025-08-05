@@ -93,9 +93,9 @@ Available Embedded Software Demo:
 
 | Device       | XLR              | Memory Block | DSP Block /Multiplier |
 |--------------|------------------|---------------------|------------------|
-| T120F576    |      81339/112128         |         710/1056         |       17/320 (Multiplier*)       |
-| Ti180J484    |      77422/172800         |        604/1280         |       17/640       |
-| Ti375C529     |       57749/ 362880         |          244/2688         |        0/1344       |
+| T120F576    |      81614/112128         |         707/1056         |       17/320 (Multiplier*)       |
+| Ti180J484    |      77670/172800         |        612/1280         |       17/640       |
+| Ti375C529     |       57656/ 362880         |          252/2688         |        0/1344       |
 
 ## Directory structure of Embedded System Solution
 
