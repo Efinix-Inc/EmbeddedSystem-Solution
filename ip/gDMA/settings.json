@@ -14,10 +14,10 @@
     ],
     "conf": {
         "PriorityEncode": "1'b0",
-        "WrQueue": "1'b1",
+        "WrQueue": "1'b0",
         "CTRL_ASYNC_MODE": "1'b1",
         "EfinixDDR": "1'b0",
-        "RdQueue": "1'b1",
+        "RdQueue": "1'b0",
         "BufferWidth": "32",
         "BufferWords": "4096",
         "MemExtWidth": "64",
@@ -113,14 +113,14 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA/gDMA_tmpl.v",
             "gDMA/gDMA.v",
             "gDMA/gDMA_define.vh",
-            "gDMA/gDMA_tmpl.vhd"
+            "gDMA/gDMA_tmpl.vhd",
+            "gDMA/gDMA_tmpl.v"
         ],
         "external_script_script": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.102",
-    "generated_date": "2025-04-28T03:24:43.892643+00:00"
+    "sw_version": "2025.1.110.3.16",
+    "generated_date": "2025-08-04T02:25:13.711165+00:00"
 }
