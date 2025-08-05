@@ -14,7 +14,7 @@
     ],
     "conf": {
         "HexFile_PathEnable": "1'b0",
-        "HexFile_Path": "\"embedded_sw/efx_solution/software/standalone/bootloader/build/bootloader.hex\"",
+        "HexFile_Path": "",
         "APBSlave0_Size": "65536",
         "DEVKIT_CUSTOM": "\"sapphireBoard_rev0\"",
         "LDSize": "2044",
