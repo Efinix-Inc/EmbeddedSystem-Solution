@@ -13,6 +13,7 @@
 IntStruct IntPtr;
 struct sd_ctrl_dev *dev;
 
+
 /********************************* Function **********************************/
 void UserInterruptAIsr()
 {
@@ -127,6 +128,18 @@ void crash(){
 	bsp_printf( "\n*** CRASH ***\n");
 	while(1);
 }
+void i2c_intc(){
+	if (i2c_getInterruptFlag(I2C_CTRL) & I2C_INTERRUPT_DROP)
+		bsp_printf("I2C Transfer is dropped due to timeout!\r\n");
+	else
+
+		bsp_printf("I2C Interrupt is triggered!\r\n");
+
+	i2c_clearInterruptFlag(I2C_CTRL, I2C_INTERRUPT_DROP);
+
+	while(1);
+
+}
 
 void userInterrupt(){
 	//struct example_apb3_ctrl_reg cfg={0};
@@ -136,6 +149,7 @@ void userInterrupt(){
 		switch(claim){
 		case SYSTEM_PLIC_USER_INTERRUPT_D_INTERRUPT:
 			UserInterruptAIsr(); break;
+		case RTC_I2C_INTC: i2c_intc(); break;
 		default: crash(); break;
 		}
 		plic_release(BSP_PLIC, BSP_PLIC_CPU_0, claim); //unmask the claimed interrupt
@@ -174,13 +188,17 @@ void IntcInitialize(struct mmc *mmc)
 	plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, SYSTEM_PLIC_USER_INTERRUPT_D_INTERRUPT, 1);
 	plic_set_priority(BSP_PLIC, SYSTEM_PLIC_USER_INTERRUPT_D_INTERRUPT, 1);
 
-	//enable riscV interrupts
-//	csr_set(mie, MIE_MTIE | MIE_MEIE); //Enable machine timer and external interrupts
-	csr_set(mie, MIE_MEIE); //Enable machine timer and external interrupts
-    csr_write(mstatus, csr_read(mstatus) | MSTATUS_MPP | MSTATUS_MIE);
-
 	//enable User interrupts
 	sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS1,0x00);		//Clean All Interrupts Status
 	sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS1,INT_ENABLE);		//Enable All Interrupts Status
 	sd_ctrl_write(dev,SDHC_ADDR+REG_NORMAL_INTERRUPT_STATUS1+4,INT_ENABLE);		//Open All Interrupts Signal
+
+    //enable PLIC I2C interrupts
+	i2c_enableInterrupt(I2C_CTRL, I2C_INTERRUPT_DROP);
+    plic_set_enable(BSP_PLIC, BSP_PLIC_CPU_0, RTC_I2C_INTC , 1);
+    plic_set_priority(BSP_PLIC, RTC_I2C_INTC, 1);
+
+    //Enable machine external interrupts
+    csr_write(mie, MIE_MEIE);
+    csr_write(mstatus, csr_read(mstatus) | MSTATUS_MPP | MSTATUS_MIE);
 }

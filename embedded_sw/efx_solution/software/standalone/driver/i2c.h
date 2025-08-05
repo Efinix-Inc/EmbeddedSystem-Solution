@@ -45,7 +45,12 @@
 * - i2c_enableInterrupt: Enables specific interrupts for the I2C module.
 * - i2c_disableInterrupt: Disables specific interrupts for the I2C module.
 * - i2c_clearInterruptFlag: Clears specific interrupt flags for the I2C module.
-*
+* - i2c_rxAckWait: Waits for ACK signal from Slave.
+* - TX_AND_CHECK: Transmits a single byte over the I2C bus and waits for an ACK response.
+* - i2c_writeData_b_ack:  Write data with an 8-bit register address using I2C and checks rx ack for each transaction.
+* - i2c_writeData_w_ack:  Write data with an 16-bit register address using I2C and checks rx ack for each transaction.
+* - i2c_readData_b_ack: This function is to read data with an 8-bit register address over I2C and checks rx ack.
+* - i2c_readData_w_ack: This function is to read data with an 16-bit register address over I2C and checks rx ack.
 ******************************************************************************/
 
 #pragma once
@@ -420,6 +425,18 @@
 
 /******************************************************************************
 *
+* This function waits for ACK signal from Slave.
+*
+* @param reg   The base address of the I2C registers.
+*
+* @return      None.
+*
+******************************************************************************/
+    static void i2c_rxAckWait(u32 reg){
+        while ((read_u32(reg + I2C_RX_ACK) & I2C_RX_VALUE) != 0);
+    }
+/******************************************************************************
+*
 * This function sends an ACK signal over the I2C bus and waits until the transmission is complete.
 *
 * @param reg   The base address of the I2C registers.
@@ -571,6 +588,188 @@
     static inline void i2c_clearInterruptFlag(u32 reg, u32 value){
         write_u32(value, reg + I2C_INTERRUPT_FLAG);
     }
+
+
+/*******************************************************************************
+*
+* This macro transmits a single byte over the I2C bus and waits for an ACK response.
+*
+* @param   reg: I2C peripheral register base address.
+* @param   byte: The 8-bit data byte to be transmitted.
+*
+* This macro performs a single byte transmission as part of an I2C write transaction.
+* First, it sends the specified byte using the `i2c_txByte()` function, followed by
+* `i2c_txNackBlocking()` to complete the 9-bit transfer cycle (8 data bits + 1 ACK/NACK).
+* It then calls `i2c_rxAckWait()` to wait until the ACK status is returned by the slave.
+* This ensures that the slave has successfully received and acknowledged the byte.
+* The macro is wrapped in a `do { ... } while(0)` construct to allow safe usage
+* within conditional blocks or inline statements.
+*
+*******************************************************************************/
+    #define TX_AND_CHECK(reg, byte)              \
+        do {                                     \
+            i2c_txByte(reg, (byte));             \
+            i2c_txNackBlocking(reg);             \
+            i2c_rxAckWait(reg);                  \
+        } while(0)
+
+/*******************************************************************************
+*
+* This function is to write data with an 8-bit register address using I2C and checks rx ack for each transaction.
+*
+* @param   reg: I2C peripheral register base address.
+* @param   slaveAddr: Address of the slave device.
+* @param   regAddr: 8-bit register address.
+* @param   data: Pointer to the data buffer containing bytes to write.
+* @param   length: Number of bytes to write from the buffer.
+*
+* This function performs a write operation over the I2C bus using an 8-bit
+* register address. It begins by sending the start condition, followed by
+* the slave address with the write bit. Next, it transmits the target register
+* address within the slave. Then, it iterates through the provided data buffer,
+* transmitting each byte individually. After sending each byte, the function
+* waits for an acknowledgment (ACK) from the slave device to confirm reception,
+* using the `TX_AND_CHECK()` macro.
+*
+* If at any point the slave does not acknowledge (ACK), the macro ensures that
+* the function will block until an ACK is received. Finally, a stop condition
+* is sent to complete the transaction.
+*
+*******************************************************************************/
+    static void i2c_writeData_b_ack(u32 reg, u8 slaveAddr, u8 regAddr, u8 *data, u32 length){
+        i2c_masterStartBlocking(reg);                   // Start condition
+        TX_AND_CHECK(reg, (slaveAddr | I2C_WRITE));     // Send slave address (write mode)
+        TX_AND_CHECK(reg, regAddr);
+        for(u32 i = 0; i < length; i++){
+            TX_AND_CHECK(reg, data[i]);                 // Send each byte
+        }
+        i2c_masterStopBlocking(reg);                    // Stop condition
+    }
+/*******************************************************************************
+*
+* This function is to write data with an 16-bit register address using I2C and checks rx ack for each transaction.
+*
+* @param   reg: I2C peripheral register base address.
+* @param   slaveAddr: Address of the slave device.
+* @param   regAddr: 16-bit register address.
+* @param   data: Pointer to the data buffer containing bytes to write.
+* @param   length: Number of bytes to write from the buffer.
+*
+* This function performs a write operation over the I2C bus using an 8-bit
+* register address. It begins by sending the start condition, followed by
+* the slave address with the write bit. Next, it transmits the target register
+* address within the slave. Then, it iterates through the provided data buffer,
+* transmitting each byte individually. After sending each byte, the function
+* waits for an acknowledgment (ACK) from the slave device to confirm reception,
+* using the `TX_AND_CHECK()` macro.
+*
+* If at any point the slave does not acknowledge (ACK), the macro ensures that
+* the function will block until an ACK is received. Finally, a stop condition
+* is sent to complete the transaction.
+*
+*******************************************************************************/  
+    static void i2c_writeData_w_ack(u32 reg, u8 slaveAddr, u16 regAddr, u8 *data, u32 length){
+        i2c_masterStartBlocking(reg);                   // Start condition
+        TX_AND_CHECK(reg, (slaveAddr | I2C_WRITE));     // Send slave address (write mode)
+        TX_AND_CHECK(reg, (regAddr >> 8) & 0xFF);       // MSB of register address
+        TX_AND_CHECK(reg, regAddr & 0xFF);              // LSB of register address
+        for(u32 i = 0; i < length; i++) {
+            TX_AND_CHECK(reg, data[i]);                 // Send each byte
+        }
+        i2c_masterStopBlocking(reg);                    // Stop condition
+    }
+
+/*******************************************************************************
+*
+* This function is to read data with an 8-bit register address over I2C and checks rx ack.
+*
+* @param   reg:        I2C peripheral register base address.
+* @param   slaveAddr:  Address of the slave device.
+* @param   regAddr:    8-bit register address to read from.
+* @param   data:       Pointer to the data buffer to store the read data.
+* @param   length:     Number of bytes to read from the slave.
+*
+* This function performs a read operation over the I2C bus using an 8-bit 
+* register address. It starts by sending the start condition, followed by 
+* the slave address with the write bit and the register address to access.
+* It then issues a repeated start condition to switch to read mode, followed 
+* by the slave address with the read bit.
+*
+* If more than one byte is requested, it repeatedly sends 0xFF to generate 
+* clock pulses and reads each byte, sending an ACK to the slave to continue 
+* transmission. For the final byte, it sends a NACK to indicate the end of 
+* the read, and then issues a stop condition.
+*
+*******************************************************************************/
+    static void i2c_readData_b_ack(u32 reg, u8 slaveAddr, u8 regAddr, u8 *data , u32 length){
+        i2c_masterStartBlocking(reg);               // Send start sequence
+        TX_AND_CHECK(reg, slaveAddr | I2C_WRITE);   // write device address byte with write bit
+        TX_AND_CHECK(reg, (regAddr & 0xFF));        // write second byte address
+        i2c_masterRestartBlocking(reg);             // send restart sequence and wait for it to complete
+        TX_AND_CHECK(reg, slaveAddr|I2C_READ);      // write device address byt ewith read bit
+        if(length > 1){
+            for(int i = 0; i < length - 1; i++){
+                i2c_txByte(reg, 0xFF);              // send 0xFF (Release SDA line) to the slave while generate 8-bit SCL pulses
+                i2c_txAckBlocking(reg);             // send ack bit to ask slave to continue send the next byte
+                data[i] = i2c_rxData(reg);          // read the data from rx data register and place it into data array
+            }
+        }
+        i2c_txByte(reg, 0xFF);                      // send 0xFF (Release SDA line) to the slave while generate 8-bit SCL pulses
+        i2c_txNackBlocking(reg);                    // send nack bit
+        data[length-1] = i2c_rxData(reg);           // read the data from rx data register and place it into last data array
+        i2c_masterStopBlocking(reg);                // send stop sequence
+    }
+
+/*******************************************************************************
+*
+* This function is to read data with an 16-bit register address over I2C and checks rx ack.
+*
+* @param   reg:        I2C peripheral register base address.
+* @param   slaveAddr:  Address of the slave device.
+* @param   regAddr:    8-bit register address to read from.
+* @param   data:       Pointer to the data buffer to store the read data.
+* @param   length:     Number of bytes to read from the slave.
+*
+* This function performs a read operation over the I2C bus using an 8-bit 
+* register address. It starts by sending the start condition, followed by 
+* the slave address with the write bit and the register address to access.
+* It then issues a repeated start condition to switch to read mode, followed 
+* by the slave address with the read bit.
+*
+* If more than one byte is requested, it repeatedly sends 0xFF to generate 
+* clock pulses and reads each byte, sending an ACK to the slave to continue 
+* transmission. For the final byte, it sends a NACK to indicate the end of 
+* the read, and then issues a stop condition.
+*
+*******************************************************************************/
+    static void i2c_readData_w_ack(u32 reg, u8 slaveAddr, u16 regAddr, u8 *data , u32 length){
+        i2c_masterStartBlocking(reg);               // Send start sequence
+        TX_AND_CHECK(reg, slaveAddr|I2C_WRITE);       // write device address byte with write bit
+        TX_AND_CHECK(reg, ((regAddr >>8) & 0xFF));    // write first byte address
+        TX_AND_CHECK(reg, (regAddr & 0xFF));          // write second byte address
+        i2c_masterRestartBlocking(reg);             // send restart sequence and wait for it to complete
+        TX_AND_CHECK(reg, slaveAddr|I2C_READ);        // write device address byt ewith read bit
+        if(length > 1){
+            for(int i = 0; i < length - 1; i++){
+                i2c_txByte(reg, 0xFF);              // send 0xFF (Release SDA line) to the slave while generate 8-bit SCL pulses
+                i2c_txAckBlocking(reg);             // send ack bit to ask slave to continue send the next byte
+                data[i] = i2c_rxData(reg);          // read the data from rx data register and place it into data array
+            }
+        }
+        i2c_txByte(reg, 0xFF);                      // send 0xFF (Release SDA line) to the slave while generate 8-bit SCL pulses
+        i2c_txNackBlocking(reg);                    // send nack bit
+        data[length-1] = i2c_rxData(reg);           // read the data from rx data register and place it into last data array
+        i2c_masterStopBlocking(reg);                // send stop sequence
+    }
+
+    
+
+
+/*******************************************************************************
+*
+* The following functions perform I2C write/read operations without checking for Rx acknowledgment.
+*
+*******************************************************************************/
 
 /*******************************************************************************
 *

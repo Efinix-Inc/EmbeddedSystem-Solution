@@ -185,7 +185,7 @@ static void init(){
 
     I2c_Config i2c;
     i2c.samplingClockDivider    = 3;                        // Sampling rate = (FCLK/(samplingClockDivider + 1). Controls the rate at which the I2C controller samples SCL and SDA.
-    i2c.timeout                 = 0;//I2C_CTRL_HZ/1000;     // Set to 0 in order to avoid timeout // Inactive timeout clock cycle. The controller will drop the transfer when the value of the timeout is reached or exceeded. Setting the timeout value to zero will disable the timeout feature.
+    i2c.timeout                 = I2C_CTRL_HZ/1000;     // Set to 0 in order to avoid timeout // Inactive timeout clock cycle. The controller will drop the transfer when the value of the timeout is reached or exceeded. Setting the timeout value to zero will disable the timeout feature.
     i2c.tsuDat                  = I2C_CTRL_HZ/10000000;  	// Data setup time. The number of clock cycles should SDA hold its state before the rising edge of SCL. Refer to your I2C slave datasheet.
     i2c.tLow                    = I2C_CTRL_HZ/666667;  		// The number of clock cycles of SCL in LOW state.
     i2c.tHigh                   = I2C_CTRL_HZ/1250000;  		// The number of clock cycles of SCL in HIGH state.
