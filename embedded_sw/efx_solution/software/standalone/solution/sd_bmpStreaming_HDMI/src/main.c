@@ -423,7 +423,7 @@ bool printOrSetRTCTime(char* ptr){
 						break;
 
 					case STATE_YEAR: // configure year
-						bsp_printf("Enter Current year, i.e. 24 indicates year 2024\r\n");
+						bsp_printf("Enter Current year, i.e. 24 indicates year 2025\r\n");
 						Line[0] = 0x00;
 						xgets(Line, sizeof Line);
 						ptr = Line;
