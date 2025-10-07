@@ -44,6 +44,7 @@
 `define ENABLE_EVSOC              // Comment out this line to disable EVSOC, Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_ETHERNET           // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_CI                 // Comment out this line to disable the Custom Instructions. 
+`define ENABLE_EMMC               // Comment out this line to disable the EMMC. 
 `define ENABLE_USB_CONTROLLER     // Comment out this line to disable USB Controller.
 `define DISPLAY_1920x1080_60Hz    // Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
 //`define DISPLAY_1280x720_60Hz   // Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
@@ -395,6 +396,30 @@ output   wire       cam_d0_RST,
 output   wire       cam_d1_RST,
 `endif  // ENABLE_EVSOC_CAMERA
 
+`ifdef ENABLE_EMMC
+// EMMC
+input                           clk_200m,
+input                           clk_200m_cal,
+input                           emmc_pll_locked,
+output  wire    [2:0]           pll_SHIFT,          
+output  wire    [4:0]           pll_SHIFT_SEL,      
+output  wire                    pll_SHIFT_ENA,
+output  wire                    emmc_rstn,
+output  wire                    emmc_clk_HI,
+output  wire                    emmc_clk_LO,
+input                           emmc_cmd_IN_HI,
+input                           emmc_cmd_IN_LO,
+output  wire                    emmc_cmd_OUT_HI,
+output  wire                    emmc_cmd_OUT_LO,
+output  wire                    emmc_cmd_OE,
+input           [7:0]           emmc_dat_IN_HI,
+input           [7:0]           emmc_dat_IN_LO,
+output  wire    [7:0]           emmc_dat_OUT_HI,
+output  wire    [7:0]           emmc_dat_OUT_LO,
+output  wire    [7:0]           emmc_dat_OE,
+
+`endif //ENABLE_EMMC
+
 //DDR AXI 0
 output          ddr_inst1_ARSTN_0,
 //DDR AXI 0 Read Address Channel
@@ -471,20 +496,25 @@ output  ddr_inst1_WVALID_0                              //Write valid. This sign
 
 
 // AXI Interconnect
-localparam AXIS_DEV     = 4;
-localparam AXIM_DEV     = 3;
-localparam SLB          = 0;
-// SDHC
-localparam SDHC         = 1;
-localparam MSDHC        = 0;
-// TSEMAC
-localparam TSE          = 2;
-localparam MTSE         = 1;
-// Hardware accel
-localparam HW_ACCEL     = 3;
+localparam AXIS_DEV     = 6; 
+localparam AXIM_DEV     = 4; 
 
-// USB
-localparam MUSB         = 2;
+// AXI (Slave Interface)
+localparam SLB          = 0; // Soft Logic Block
+localparam SDHC         = 1; // SD Host Controller
+localparam TSE          = 2; // TSE Ethernet
+localparam HW_ACCEL     = 3; // Hardware Accelerator
+localparam S_EMMC_HC    = 4; // EMMC
+localparam S_REG_SYS    = 5; // EMMC
+
+// AXI (Master Interface)
+localparam MSDHC        = 0; // SD Host Controller
+localparam MTSE         = 1; // TSE Ethernet
+localparam MUSB         = 2; // USB Controller
+localparam M_EMMC_HC    = 3; // EMMC
+
+// EMMC
+parameter ADMA_DATA_WIDTH = 128;
 
 //Vision related paramter
 localparam MIPI_FRAME_WIDTH     = 1920;  // Resolution of Camera input 
@@ -605,7 +635,7 @@ assign userInterruptQ = dma_interrupts[0];
 assign userInterruptR = dma_interrupts[1];
 assign userInterruptS = sd_int;
 assign userInterruptT = usb_interrupt;
-assign userInterruptU = 1'b0;
+assign userInterruptU = emmc_int;
 assign userInterruptV = 1'b0;
 assign userInterruptW = 1'b0;
 assign userInterruptX = 1'b0;
@@ -1517,6 +1547,139 @@ UsbOhciAxi4Apb3 usb (
   .dma_reset                    (io_ddrMasters_0_reset)
  );
 `endif // ENABLE_USB_CONTROLLER
+
+/********************************************* EMMC ********************************************/
+`ifdef ENABLE_EMMC
+
+// EMMC
+wire                            emmc_dev_rst;
+wire                            emmc_ip_rst;
+wire                            emmc_int;
+wire                            emmc_dat_oe_w;
+
+system_reg  u_system_reg
+(
+    .s_axi_aclk                         (io_peripheralClk                   ),
+    .s_axi_aresetn                      (~io_peripheralReset                ),
+    .s_axi_awaddr                       (gAXIS_m_awaddr[S_REG_SYS*32 +: 32]   ),
+    .s_axi_awready                      (gAXIS_m_awready[S_REG_SYS*1 +: 1]    ),
+    .s_axi_awvalid                      (gAXIS_m_awvalid[S_REG_SYS*1 +: 1]    ),
+    .s_axi_wstrb                        (gAXIS_m_wstrb[S_REG_SYS*4 +: 4]      ),
+    .s_axi_wdata                        (gAXIS_m_wdata[S_REG_SYS*32 +: 32]    ),
+    .s_axi_wready                       (gAXIS_m_wready[S_REG_SYS*1 +: 1]     ),
+    .s_axi_wvalid                       (gAXIS_m_wvalid[S_REG_SYS*1 +: 1]     ),
+    .s_axi_bresp                        (gAXIS_m_bresp[S_REG_SYS*2 +: 2]      ),
+    .s_axi_bvalid                       (gAXIS_m_bvalid[S_REG_SYS*1 +: 1]     ),
+    .s_axi_araddr                       (gAXIS_m_araddr[S_REG_SYS*32 +: 32]   ),
+    .s_axi_bready                       (gAXIS_m_bready[S_REG_SYS*1 +: 1]     ),
+    .s_axi_arready                      (gAXIS_m_arready[S_REG_SYS*1 +: 1]    ),
+    .s_axi_arvalid                      (gAXIS_m_arvalid[S_REG_SYS*1 +: 1]    ),
+    .s_axi_rresp                        (gAXIS_m_rresp[S_REG_SYS*2 +: 2]      ),
+    .s_axi_rdata                        (gAXIS_m_rdata[S_REG_SYS*32 +: 32]    ),
+    .s_axi_rvalid                       (gAXIS_m_rvalid[S_REG_SYS*1 +: 1]     ),
+    .s_axi_rlast                        (gAXIS_m_rlast[S_REG_SYS*1 +: 1]      ),
+    .s_axi_rready                       (gAXIS_m_rready[S_REG_SYS*1 +: 1]     ),                       
+
+    .emmc_dev_rst_o                     (emmc_dev_rst                       ),                        
+    .emmc_ip_rst_o                      (emmc_ip_rst                        )                         
+
+);
+
+assign emmc_rstn                  = ~emmc_dev_rst;
+assign emmc_dat_OE                = {8{emmc_dat_oe_w}};
+
+emmc_host_controller #(
+    .ADMA_DATA_WIDTH                    (ADMA_DATA_WIDTH                    ),
+    .BASE_CLK_FREQ                      (200                                ),   // MHz, the frequency of emmc_base_clk
+    .SHIFT_SEL                          (5'h4                               )
+)
+u_emmc_host_controller
+(
+//eMMC interface
+    .emmc_base_clk                      (clk_200m                           ),
+    .emmc_base_clk_cal                  (clk_200m_cal                       ),
+//--To FPGA PLL 
+    .pll_SHIFT                          (pll_SHIFT                          ),
+    .pll_SHIFT_SEL                      (pll_SHIFT_SEL                      ),
+    .pll_SHIFT_ENA                      (pll_SHIFT_ENA                      ),
+    .emmc_rst                           (io_peripheralReset | emmc_ip_rst   ),
+    .emmc_int                           (emmc_int                           ),
+    .emmc_clk_HI                        (emmc_clk_HI                        ),
+    .emmc_clk_LO                        (emmc_clk_LO                        ),
+    .emmc_cmd_IN_HI                     (emmc_cmd_IN_HI                     ),
+    .emmc_cmd_IN_LO                     (emmc_cmd_IN_LO                     ),
+    .emmc_cmd_OUT_HI                    (emmc_cmd_OUT_HI                    ),
+    .emmc_cmd_OUT_LO                    (emmc_cmd_OUT_LO                    ),
+    .emmc_cmd_OE                        (emmc_cmd_OE                        ),
+    .emmc_dat_IN_HI                     (emmc_dat_IN_HI                     ),
+    .emmc_dat_IN_LO                     (emmc_dat_IN_LO                     ),
+    .emmc_dat_OUT_HI                    (emmc_dat_OUT_HI                    ),
+    .emmc_dat_OUT_LO                    (emmc_dat_OUT_LO                    ),
+    .emmc_dat_OE                        (emmc_dat_oe_w                      ),
+
+//AXI4 lite Slave interface(configure channel)
+    .s_axi_aclk                         (io_peripheralClk                   ),
+    .s_axi_awaddr                       (gAXIS_m_awaddr[S_EMMC_HC*32 +: 32] ),
+    .s_axi_awready                      (gAXIS_m_awready[S_EMMC_HC*1 +: 1]  ),
+    .s_axi_awvalid                      (gAXIS_m_awvalid[S_EMMC_HC*1 +: 1]  ),
+    .s_axi_wstrb                        (gAXIS_m_wstrb[S_EMMC_HC*4 +: 4]    ),
+    .s_axi_wdata                        (gAXIS_m_wdata[S_EMMC_HC*32 +: 32]  ),
+    .s_axi_wready                       (gAXIS_m_wready[S_EMMC_HC*1 +: 1]   ),
+    .s_axi_wvalid                       (gAXIS_m_wvalid[S_EMMC_HC*1 +: 1]   ),
+    .s_axi_bresp                        (gAXIS_m_bresp[S_EMMC_HC*2 +: 2]    ),
+    .s_axi_bvalid                       (gAXIS_m_bvalid[S_EMMC_HC*1 +: 1]   ),
+    .s_axi_araddr                       (gAXIS_m_araddr[S_EMMC_HC*32 +: 32] ),
+    .s_axi_bready                       (gAXIS_m_bready[S_EMMC_HC*1 +: 1]   ),
+    .s_axi_arready                      (gAXIS_m_arready[S_EMMC_HC*1 +: 1]  ),
+    .s_axi_arvalid                      (gAXIS_m_arvalid[S_EMMC_HC*1 +: 1]  ),
+    .s_axi_rresp                        (gAXIS_m_rresp[S_EMMC_HC*2 +: 2]    ),
+    .s_axi_rdata                        (gAXIS_m_rdata[S_EMMC_HC*32 +: 32]  ),
+    .s_axi_rvalid                       (gAXIS_m_rvalid[S_EMMC_HC*1 +: 1]   ),
+    .s_axi_rlast                        (gAXIS_m_rlast[S_EMMC_HC*1 +: 1]    ),
+    .s_axi_rready                       (gAXIS_m_rready[S_EMMC_HC*1 +: 1]   ),
+
+//AXI Master interface(data channel) 
+  //AXI4 Memory Bus Interface
+    .m_axi_clk                          (io_ddrMasters_0_clk                ),
+//--Write Bus Interface
+    .m_axi_awvalid                      (gAXIM_s_awvalid[M_EMMC_HC*1 +: 1]  ),
+    .m_axi_awaddr                       (gAXIM_s_awaddr[M_EMMC_HC*32 +: 32] ),
+    .m_axi_awlen                        (gAXIM_s_awlen[M_EMMC_HC*8 +: 8]    ),
+    .m_axi_awready                      (gAXIM_s_awready[M_EMMC_HC*1 +: 1]  ),
+    .m_axi_awburst                      (gAXIM_s_awburst[M_EMMC_HC*2 +: 2]  ),
+    .m_axi_awsize                       (gAXIM_s_awsize[M_EMMC_HC*3 +: 3]   ),
+    .m_axi_awcache                      (gAXIM_s_awcache[M_EMMC_HC*4 +: 4]  ),
+    .m_axi_awlock                       (gAXIM_s_awlock[M_EMMC_HC*2 +: 2]   ),
+    .m_axi_awprot                       (gAXIM_s_awprot[M_EMMC_HC*4 +: 4]   ),
+    .m_axi_wdata                        (gAXIM_s_wdata[M_EMMC_HC*128 +: 128]),
+    .m_axi_wstrb                        (gAXIM_s_wstrb[M_EMMC_HC*16 +: 16]  ),
+    .m_axi_wlast                        (gAXIM_s_wlast[M_EMMC_HC*1 +: 1]    ),
+    .m_axi_wvalid                       (gAXIM_s_wvalid[M_EMMC_HC*1 +: 1]   ),
+    .m_axi_wready                       (gAXIM_s_wready[M_EMMC_HC*1 +:1]    ),
+    .m_axi_bresp                        (gAXIM_s_bresp[M_EMMC_HC*2 +: 2]    ),
+    .m_axi_bvalid                       (gAXIM_s_bvalid[M_EMMC_HC*1 +: 1]   ),
+    .m_axi_bready                       (gAXIM_s_bready[M_EMMC_HC*1 +: 1]   ),
+//--Read Bus Interface
+    .m_axi_arvalid                      (gAXIM_s_arvalid[M_EMMC_HC*1 +: 1]  ),
+    .m_axi_araddr                       (gAXIM_s_araddr[M_EMMC_HC*32 +: 32] ),
+    .m_axi_arlen                        (gAXIM_s_arlen[M_EMMC_HC*8 +: 8]    ),
+    .m_axi_arsize                       (gAXIM_s_arsize[M_EMMC_HC*3 +: 3]   ),
+    .m_axi_arburst                      (gAXIM_s_arburst[M_EMMC_HC*2 +: 2]  ),
+    .m_axi_arprot                       (gAXIM_s_arprot[M_EMMC_HC*4 +: 4]   ),
+    .m_axi_arlock                       (gAXIM_s_arlock[M_EMMC_HC*2 +: 2]   ),
+    .m_axi_arcache                      (gAXIM_s_arcache[M_EMMC_HC*4 +: 4]  ),
+    .m_axi_arready                      (gAXIM_s_arready[M_EMMC_HC*1 +: 1]  ),
+    .m_axi_rvalid                       (gAXIM_s_rvalid[M_EMMC_HC*1 +: 1]   ),
+    .m_axi_rdata                        (gAXIM_s_rdata[M_EMMC_HC*128 +: 128]),
+    .m_axi_rlast                        (gAXIM_s_rlast[M_EMMC_HC*1 +: 1]    ),
+    .m_axi_rresp                        (gAXIM_s_rresp[M_EMMC_HC*2 +: 2]    ),
+    .m_axi_rready                       (gAXIM_s_rready[M_EMMC_HC*1 +: 1]   )
+  
+);
+
+`endif //ENABLE_EMMC 
+
+
 
 /*********************************************Miscellaneous Module  ****************************************************/
 `ifdef ENABLE_CI

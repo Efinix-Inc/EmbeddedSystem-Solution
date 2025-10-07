@@ -3,7 +3,7 @@
         "-o",
         "gAXIS_1to4_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "C:\\Users\\JasonLau\\Downloads\\workspace_local\\GitLab\\embedded_solution\\Ti375\\ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -33,7 +33,7 @@
         "TABLE0_AXI_S7__MAX": "32'd20",
         "DATA_WIDTH": "32",
         "ADDR_WIDTH": "32",
-        "M_PORTS": "4",
+        "M_PORTS": "6",
         "ID_WIDTH": "8",
         "USER_WIDTH": "3",
         "PROTOCOL": "\"AXI4\""
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIS_1to4_switch/gAXIS_1to4_switch_tmpl.v",
-            "gAXIS_1to4_switch/gAXIS_1to4_switch_define.vh",
-            "gAXIS_1to4_switch/gAXIS_1to4_switch.v",
-            "gAXIS_1to4_switch/gAXIS_1to4_switch_tmpl.vhd"
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch.v",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.v",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.vhd",
+            "gAXIS_1to4_switch\\gAXIS_1to4_switch_define.vh"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:22:16.781866+00:00"
+    "sw_version": "2025.1.110.4.9",
+    "generated_date": "2025-10-06T08:10:28.708856+00:00"
 }
