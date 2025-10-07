@@ -3,8 +3,10 @@
 This guide show on how to run the solution application on baremetal. 
 Below are the solution-related application:
   - [cameraStreaming_HDMI](ug_solution.md#camerastreaming_hdmi)
+  - [cameraStreaming_ETH](ug_solution.md#camerastreaming_eth)
+  - [cameraCapture_mc](ug_solution.md#cameracapture_mc)
   - [sd_bmpStreaming_HDMI](ug_solution.md#sd_bmpstreaming_hdmi)
-  - [capture_img_smp](ug_solution.md#capture_img_smp)
+
 
 ## cameraStreaming_HDMI
 The ``cameraStreaming_HDMI`` example design demonstrates a use case of hardware/software co-design for video processing within a camera and display system. This design showcases how users can control the FPGA hardware via software, enabling different hardware acceleration functions by modifying the firmware on the RISC-V processor.
@@ -17,7 +19,51 @@ List of implemented ISP algorithms (available for both SW functions and HW modul
 - Binary dilation      -> Removes line detail by ANDing all windowed pixels.
 - Binary erosion       -> Strengthens line detail by ORing all windowed pixels. 
 
-![evsoc-demo-output.png](../images/evsoc-demo-output.png)
+**cameraStreaming_HDMI Demo:**
+
+![](../images/cameraStreaming_HDMI_Demo.gif)
+
+## cameraStreaming_ETH
+The ``cameraStreaming_ETH`` application is an enhanced version of ``cameraStreaming_HDMI``, featuring a bare-metal LWIP network stack that streams video frames to a host machine over UDP.
+On the host side, a Python script repackages the received UDP data and reconstructs the video. 
+
+
+### Step to stream over ethernet:
+1. Refer to [lwipIperfServer](../app/ug_ethernet.md) for configuring the Ethernet network adapter on the host machine.
+
+1. Run the Python script (``recv_udp_raw.py``) before launching the application.
+
+2. Ensure the FPGA and the host machine are connected via Ethernet.
+
+3. Launch the application.
+
+4. User can select (a,b,c) for different mode:
+    * Camera Mode A: RGB Mode
+    * Camera Mode B: Grayscale Mode
+    * Camera Mode C: Edge Detection Mode
+
+**cameraStreaming_ETH Demo:**
+
+![](../images/cameraStreaming_ETH_Demo.gif)
+
+## cameraCapture_mc
+This example design offers the same features as ``sd_bmpStreaming_HDMI``. Additionally, it allows the user to capture an image, which is saved in BMP format to the SD card and can also be viewed on the HDMI display.
+
+### Capture Image
+1. Type ``v ``to enable the camera and start HDMI display streaming.
+
+2. Type ``c ``to capture an image.
+
+3. Type ``z`` to stop camera streaming.
+
+### Display Captured Image on HDMI
+1. Type ``d`` to enable HDMI display only.
+
+2. Type ``x 1.BMP`` to display 1.BMP on the HDMI display.
+
+**cameraCapture_mc Demo:**
+
+![](../images/cameraCapture_mc_Demo.gif)
 
 ## sd_bmpStreaming_HDMI
 This example design ``sd_bmpStreaming_HDMI`` demonstrates the implementation of the FatFS FileSystem with a Command Line Interface (CLI) for interaction. The disk IO layer is ported to the SD Host Controller. Upon execution, the example initializes the SD Host Controller and the FAT File System automatically. Additionally, the FatFSDemo is integrated with the Real-Time Clock (RTC) available on board. User can configure the RTC using the rtcDemo provided within the BSP. In addition, User able to read BMP file and stream the image file to HDMI Display.
@@ -153,21 +199,3 @@ FAT File System, commonly known as FatFs, is a lightweight and versatile file sy
 
 5. The image will be displayed on the HDMI screen. <br> <img src="../images/sd_bmp_HDMI_0.png" alt="Description" width="1080" height="480"> <br>
 
-## capture_img_smp
-This example design offers the same features as ``sd_bmpStreaming_HDMI``. Additionally, it allows the user to capture an image, which is saved in BMP format to the SD card and can also be viewed on the HDMI display.
-
-<br> <img src="../images/capture_img_smp_menu.png" alt="Description" width="740" height="269"> <br>
-
-### Capture Image
-1. Type ``v ``to enable the camera and start HDMI display streaming.
-
-2. Type ``c ``to capture an image.
-
-3. Type ``z`` to stop camera streaming.
-
-### Display Captured Image on HDMI
-1. Type ``d`` to enable HDMI display only.
-
-2. Type ``x 1.BMP`` to display 1.BMP on the HDMI display.
-
-<br> <img src="../images/capture_img_smp_flow.png" alt="Description" width="518" height="576"> <br>

@@ -5,11 +5,14 @@ Here are the list of application that supported across different devices.
 | Baremetal Application         | Ti375C529  | Ti180J484 | T120F576  |
 |-------------------------------|------------|-----------|-----------|
 | bootloader                    |     ✓      |     ✓    |     ✓     |
+| cameraCapture_mc                    |     ✓      |     ✓    |     ✓     |
+| cameraStreaming_HDMI                    |     ✓      |     ✓    |     ✓     |
+| cameraStreaming_ETH                    |     ✓      |        |         |
 | coremark                      |     ✓      |     ✓    |     ✓     |
-| capture_img_smp                    |     ✓      |     ✓    |     ✓     |
 | clintTimerInterruptDemo        |     ✓      |     ✓    |     ✓     |
 | customInstructionDemo         |     ✓      |     ✓    |     ✓     |
 | dhrystone                     |     ✓      |     ✓    |     ✓     |
+| emmcDemo                     |     ✓      |        |       |
 | eeprom_AT24C01                       |           |         |     ✓     |
 | fpuDemo                       |     ✓      |     ✓    |     ✓     |
 | gpioDemo                      |     ✓      |     ✓    |     ✓     |

@@ -29,7 +29,7 @@ It is compatible with both Titanium and Trion devices, ensuring flexibility and 
 
 #### High-Performance Sapphire SoC Top Module Block Diagram
 
-![HPS SoC block-diagram](docs/images/hps/hps-top-block-diagram.png)
+![HPS SoC block-diagram](docs/images/hps/hps_blk_diagram.png)
 
 Key Features:
 * Unified RTL Design.
@@ -42,6 +42,8 @@ Key Features:
 
 
 Available Embedded Software Demo:
+- [Emmc](docs/app/ug_emmc.md)
+  - [x] [emmcDemo](docs/app/ug_emmc.md#emmcDemo)
 - [Tsemac](docs/app/ug_ethernet.md)
   - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
@@ -49,8 +51,10 @@ Available Embedded Software Demo:
   - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
 - [Solution](docs/app/ug_solution.md)
   - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
+  - [x] [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth)
+  - [x] [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) 
   - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
-  - [x] [capture_img_smp](docs/app/ug_solution.md#capture_img_smp)  
+ 
 - [FreeRTOS](docs/app/ug_freertos.md)
   - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
   - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
@@ -108,7 +112,7 @@ Available Embedded Software Demo:
 |--------------|------------------|---------------------|------------------|
 | T120F576    |      81614/112128         |         707/1056         |       17/320 (Multiplier*)       |
 | Ti180J484    |      77670/172800         |        612/1280         |       17/640       |
-| Ti375C529     |       57656/ 362880         |          252/2688         |        0/1344       |
+| Ti375C529     |       57656/ 362880         |          357/2688         |        0/1344       |
 
 ## Directory structure of Embedded System Solution
 
@@ -140,6 +144,8 @@ Available Embedded Software Demo:
   ¦           ¦   +---customInstruction
   ¦           ¦   ¦   +---customInstructionDemo
   ¦           ¦   +---driver
+  ¦           ¦   +---emmc
+  ¦           ¦   ¦   +---emmcDemo
   ¦           ¦   +---fpu
   ¦           ¦   ¦   +---fpuDemo
   ¦           ¦   +---gpio
@@ -167,7 +173,8 @@ Available Embedded Software Demo:
   ¦           +---tsemac
   ¦           ¦   +---lwipIperfServer
   ¦           +---solution
-  ¦               +---capture_img_smp
+  ¦               +---cameraCapture_mc
+  ¦               +---cameraStreaming_ETH
   ¦               +---cameraStreaming_HDMI
   ¦               +---sd_bmpStreaming_HDMI
   +---source
@@ -187,13 +194,13 @@ Available Embedded Software Demo:
 
 ### Efinity Software Version 
 
-- [Efinity 2025.1.110](https://www.efinixinc.com/support/efinity.php) [v2025.1]
+- [Efinity 2025.2](https://www.efinixinc.com/support/efinity.php) [v2025.2]
 
 - Follow the official [documentation](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=UG-EFN-SOFTWARE) on installation process.
 
 ### Efinity RISC-V Embedded Software IDE
 
-- [v2025.1](https://www.efinixinc.com/support/efinity.php) and above
+- [v2025.2](https://www.efinixinc.com/support/efinity.php) and above
 
 - Follow the official [documentation](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=SAPPHIREUG) on installation process 
 
@@ -222,11 +229,9 @@ Available Embedded Software Demo:
     ```
     
 2. By launching [Efinity RISC-V Embedded Software IDE](https://www.efinixinc.com/support/efinity.php), users are required to import the [bsp](embedded_sw/efx_solution/bsp) shown below:
-<br> <img src="docs/images/import_bsp_0.png" alt="Description" width="800" height="420">
+3. Once the BSP is selected, available BSP project can be imported to the workspace. 
 
-3. Once the BSP is selected, available BSP project can be imported to the workspace. <br>
-<img src="docs/images/import_bsp_1.png" alt="Description" width="700" height="500">
-
+    ![](docs/images/tutorial-open-ide_Demo.gif)
 
 Note: Please refer [List of supported app](docs/app/ug_supported_app.md) for different devices. 
 

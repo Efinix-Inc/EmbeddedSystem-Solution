@@ -202,6 +202,7 @@ void main() {
 
 
     bsp_printf("***Starting TSEMAC Demo***\n\r");
+	HwChecksum_status();
     drv_sel = Phy_identification();
 /******************************************************SETUP DMA & UART********************************************************/
 	

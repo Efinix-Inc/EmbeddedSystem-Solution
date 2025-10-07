@@ -29,15 +29,20 @@
 #include "userDef.h"
 
 // MAC Configuration Registers
-#define VERSION 					0x0000
-#define COMMAND_CONFIG				0x0008
-#define MAC_ADDR_LO					0x000C
-#define MAC_ADDR_HI					0x0010
-#define FRM_LENGHT					0x0014
-#define PAUSE_QUANT					0x0018
-#define TX_IPG_LEN					0x005C
-#define ETHERNET_CTRL_MAC_RST       0x0200
-#define ETHERNET_CTRL_PHY_RST       0x0204
+#define VERSION 						0x0000
+#define COMMAND_CONFIG					0x0008
+#define MAC_ADDR_LO						0x000C
+#define MAC_ADDR_HI						0x0010
+#define FRM_LENGHT						0x0014
+#define PAUSE_QUANT						0x0018
+#define TX_IPG_LEN						0x005C
+#define ETHERNET_CTRL_MAC_RST       	0x0200
+#define ETHERNET_CTRL_PHY_RST       	0x0204
+#define ETHERNET_CTRL_DMA_RX_RST       	0x0208
+#define ETHERNET_CTRL_DMA_TX_RST       	0x020C
+#define ETHERNET_CTRL_HW_RX_CHECKSUM_EN	0x0210
+#define ETHERNET_CTRL_HW_TX_CHECKSUM_EN	0x0214
+
 // MDIO Configuration Registers
 #define	DIVIDER_PRE					0x0100
 #define	RD_WR_EN					0x0104
@@ -306,4 +311,32 @@ static void MacRst(u8 macRst, u8 phyRst)
 	bsp_uDelay(100*1000);  // 100ms delay
 	write_u32(0, TSEMAC_BASE+ETHERNET_CTRL_PHY_RST);
 	bsp_uDelay(100*1000);  // 100ms delay
+}
+
+// Usage: Check Hardware Checksum Status
+static void HwChecksum_status()
+{
+	if (read_u32(TSEMAC_BASE+ETHERNET_CTRL_HW_RX_CHECKSUM_EN))
+		bsp_printf("Info: RX Hardware Checksum ENABLED\r\n");
+	else
+		bsp_printf("Info: RX Hardware Checksum DISABLED\r\n");
+
+		if (read_u32(TSEMAC_BASE+ETHERNET_CTRL_HW_TX_CHECKSUM_EN))
+		bsp_printf("Info: TX Hardware Checksum ENABLED\r\n");
+	else
+		bsp_printf("Info: TX Hardware Checksum DISABLED\r\n");
+
+}
+
+// Usage: Enable both RX/TX Hardware Checksum
+static void HwChecksum_switch(u8 enable)
+{
+	write_u32((enable & 0x01), TSEMAC_BASE+ETHERNET_CTRL_HW_RX_CHECKSUM_EN);
+	write_u32((enable & 0x01), TSEMAC_BASE+ETHERNET_CTRL_HW_TX_CHECKSUM_EN);
+
+	if (enable)
+		bsp_printf("Info: RX & TX Hardware Checksum ENABLED\r\n");
+	else
+		bsp_printf("Info: RX & TX Hardware Checksum DISABLED\r\n");
+
 }

@@ -80,6 +80,7 @@ reg                     w_cam_confdone;
 wire                    w_cam_ck_HS_ENA_0;
 wire                    w_cam_ck_HS_TERM_0;
 wire  [1:0]             w_cam_d_HS_ENA_0;
+wire  [1:0]             w_cam_d_HS_TERM_0;
 
 (* async_reg = "true" *)reg   [1:0]    r_mipi_rx_data_LP_P_IN_0_1P;
 (* async_reg = "true" *)reg   [1:0]    r_mipi_rx_data_LP_N_IN_0_1P;
@@ -95,7 +96,7 @@ wire            w_rx_out_hs;
 wire [5:0]      rx_out_dt;
 
 
-
+// Register - Pipelining stage
 always@(negedge rstn or posedge cam_ck_CLKOUT)
 begin
    if (~rstn)
@@ -123,10 +124,10 @@ end
 assign   w_cam_d0_HS_IN    = cam_d0_HS_IN; 
 assign   w_cam_d1_HS_IN    = cam_d1_HS_IN; 
 
-assign   cam_ck_HS_TERM  = w_cam_ck_HS_ENA_0;
+assign   cam_ck_HS_TERM  = w_cam_ck_HS_TERM_0;
 assign   cam_ck_HS_ENA   = w_cam_ck_HS_ENA_0;
-assign   cam_d0_HS_TERM  = w_cam_d_HS_ENA_0[0];
-assign   cam_d1_HS_TERM  = w_cam_d_HS_ENA_0[1];
+assign   cam_d0_HS_TERM  = w_cam_d_HS_TERM_0[0];
+assign   cam_d1_HS_TERM  = w_cam_d_HS_TERM_0[1];
 assign   cam_d0_HS_ENA   = w_cam_d_HS_ENA_0[0];
 assign   cam_d1_HS_ENA   = w_cam_d_HS_ENA_0[1];
 assign   cam_d0_RST      = ~rstn;
@@ -140,20 +141,25 @@ assign   cam_d1_RST      = ~rstn;
 **************************************************/ 
 csi2_mipi_rx #(
 ) u_csi2_rx_cam (
+   // IP core clock consumed by controller logics. 100 MHz.
+   .clk                 ( i_pixel_clk ), 
    .reset_n             ( rstn ),
-   .clk                 ( i_pixel_clk ),
+   // MIPI RX parallel clock. This is a HS transmission clock
+   .clk_byte_HS         ( cam_ck_CLKOUT ), 
    .reset_byte_HS_n     ( rstn ),
-   .clk_byte_HS         ( cam_ck_CLKOUT ),
+   // Pixel clock.
+   .clk_pixel           ( i_pixel_clk ), 
    .reset_pixel_n       ( rstn ),
-   .clk_pixel           ( i_pixel_clk ),
-   
+   // LP mode RX clock single-ended P/N signal
    .Rx_LP_CLK_P         ( cam_ck_LP_P_IN ),
    .Rx_LP_CLK_N         ( cam_ck_LP_N_IN ),
+   // Enable HS Mode Clock lane/termination
    .Rx_HS_enable_C      ( w_cam_ck_HS_ENA_0 ),
    .LVDS_termen_C       ( w_cam_ck_HS_TERM_0 ),
- 
-   .Rx_LP_D_P           ( r_mipi_rx_data_LP_P_IN_0_2P ),
+   // LP Mode RX data single-ended P/N Signal
+   .Rx_LP_D_P           ( r_mipi_rx_data_LP_P_IN_0_2P ), 
    .Rx_LP_D_N           ( r_mipi_rx_data_LP_N_IN_0_2P ),
+   // Hs Mode differential lane data bus
    .Rx_HS_D_0           ( r_mipi_rx_data_HS_IN_0_2P[7:0] ),
    .Rx_HS_D_1           ( r_mipi_rx_data_HS_IN_0_2P[15:8] ),
    .Rx_HS_D_2           (  ),
@@ -162,8 +168,10 @@ csi2_mipi_rx #(
    .Rx_HS_D_5           (  ),
    .Rx_HS_D_6           (  ),
    .Rx_HS_D_7           (  ),
+   // Enable HS Mode data lane/termination
    .Rx_HS_enable_D      ( w_cam_d_HS_ENA_0 ),
-   .LVDS_termen_D       (  ),
+   .LVDS_termen_D       ( w_cam_d_HS_TERM_0 ),
+   // RX HS mode data lane FIFO read enable/empty signal.
    .fifo_rd_enable      ( {cam_d1_FIFO_RD,    cam_d0_FIFO_RD} ),
    .fifo_rd_empty       ( {cam_d1_FIFO_EMPTY, cam_d0_FIFO_EMPTY} ),
    .DLY_enable_D        (  ),
@@ -171,6 +179,7 @@ csi2_mipi_rx #(
    .u_dly_enable_D      (  ),
    .u_dly_inc_D         (  ),
    
+   // Axi4-lite Interface
    .axi_clk             ( 1'b0 ),
    .axi_reset_n         ( 1'b0 ),
    .axi_awaddr          ( 6'b0 ),
@@ -179,7 +188,6 @@ csi2_mipi_rx #(
    .axi_wdata           ( 32'b0 ),
    .axi_wvalid          ( 1'b0 ),
    .axi_wready          (  ),
-    
    .axi_bvalid          (  ),
    .axi_bready          ( 1'b0 ),
    .axi_araddr          ( 6'b0 ),
@@ -189,6 +197,10 @@ csi2_mipi_rx #(
    .axi_rvalid          (  ),
    .axi_rready          ( 1'b0 ),
    
+   /** Video Interface **/
+   // All signals are clocked with clk_pixel and reset_pixel_n. 
+   // The hsync_vc and vsync_vc are level signals and not pulse signals.
+   // Active High horitzontal sync for virtual channel
    .hsync_vc0           ( w_rx_out_hs ),
    .hsync_vc1           (  ),
    .hsync_vc2           (  ),
@@ -227,8 +239,8 @@ csi2_mipi_rx #(
    .shortpkt_data_field (  ),
    .datatype            ( rx_out_dt ),
    .pixel_per_clk       (  ),
-   .pixel_data          ( w_mapped_raw_data ),
-   .pixel_data_valid    ( w_rx_out_de ),
+   .pixel_data          ( w_mapped_raw_data ), // Video Data, the actual data width.
+   .pixel_data_valid    ( w_rx_out_de ), // Active-high pixel data enable
    .irq                 (  )
  );
 

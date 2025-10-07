@@ -20,98 +20,16 @@
 ******************************************************************************/
 #include <stdint.h>
 #include "bsp.h"
-#include "device_config.h"
 #include "userDef.h"
 #include "spi.h"
+#include "spiFlash.h"
 
-/******************************************************************************
-*
-* @brief This function waits until the SPI flash is not busy.
-*
-******************************************************************************/
-void WaitBusy(void)
-{
-    u8 out;
-    u16 timeout=0;
 
-    while(1)
-    {
-        bsp_uDelay(1*1000);
-        spi_select(SPI, 0);
-        //Write Enable
-        spi_write(SPI, 0x05);   
-        out = spi_read(SPI);
-        spi_diselect(SPI, 0);
-        if((out & 0x01) ==0x00)
-            return;
-        timeout++;
-        //sector erase max=400ms
-        if(timeout >=400)       
-        {
-            bsp_printf("Time out .. \r\n");
-            return;
-        }
-    }
-}
 
-/******************************************************************************
-*
-* @brief This function enables the write latch of the SPI flash. 
-*
-******************************************************************************/
-void WriteEnableLatch(void)
-{
-    spi_select(SPI, 0);
-    //Write Enable latch
-    spi_write(SPI, 0x06);   
-    spi_diselect(SPI, 0);
-}
+#define LEN 256   // Length to write/read from/to SPI Flash
+#define SPI_CS 0 // Chip Select
 
-/******************************************************************************
-*
-* @brief This function globally locks the SPI flash.  
-*
-******************************************************************************/
-void GlobalLock(void)
-{
-    WriteEnableLatch();
-    spi_select(SPI, 0);
-    //Global lock
-    spi_write(SPI, 0x7E);   
-    spi_diselect(SPI, 0);
-}
 
-/******************************************************************************
-*
-* @brief This function globally unlocks the SPI flash.  
-*
-******************************************************************************/
-void GlobalUnlock(void)
-{
-    WriteEnableLatch();
-    spi_select(SPI, 0);
-    //Global unlock
-    spi_write(SPI, 0x98);   
-    spi_diselect(SPI, 0);
-}
-
-/******************************************************************************
-*
-* @brief This function erases a sector of the SPI flash given an address. 
-*
-******************************************************************************/
-void SectorErase(u32 Addr)
-{
-    WriteEnableLatch();
-    spi_select(SPI, 0);     
-    //Erase Sector
-    spi_write(SPI, 0x20);
-    spi_write(SPI, (Addr>>16)&0xFF);
-    spi_write(SPI, (Addr>>8)&0xFF);
-    spi_write(SPI, Addr&0xFF);
-    spi_diselect(SPI, 0);
-    WaitBusy();
-}
 
 /*******************************************************************************
 *
@@ -155,64 +73,58 @@ void spiInit(){
     spi_applyConfig(SPI, &spiA);
 }
 
-/******************************************************************************
+
+
+/**************************************l****************************************
 *
-* @brief This main function initializes the SPI interface, selects the SPI device, 
-*        writes to SPI flash starting from a specific address and for a specified length.
+* @brief This function is Writes LEN bytes of incrementing data to NOR Flash starting at the specified address.
 *
 ******************************************************************************/
+void spiWriteData_toFlash(u32 reg ,u32 cs, u32 addr){
+    spiGlobalUnlock(reg,cs);
+    spiSectorErase(reg,cs,addr);
+    spiWriteEnable(reg,cs);
+    spi_select(reg, 0);
+    spi_write(reg, PAGE_PROGRAM_OP);
+    spi_write(reg, (addr>>16) & 0xFF);
+    spi_write(reg, (addr>>8) & 0xFF);
+    spi_write(reg, addr & 0xFF);
+    // Write dummy data
+    for(int i=0; i<LEN; i++)
+    {
+        spi_write(reg, i & 0xFF );
+        bsp_printf("Write address %x := %x \r\n", addr+i, i & 0xFF );
+    }
 
+    spi_diselect(reg, cs);
+    // Wait for page writing done
+    if (spiWaitBusy(reg,cs) == 1) bsp_printf("Timeout!\r\n");
+    spiGlobalLock(reg,cs);
+}
+
+
+
+/**************************************l****************************************
+*
+* @brief This main function initializes the SPI interface, selects the SPI device,
+*        writes to SPI flash starting from a specific address and for a specified LENgth.
+*
+******************************************************************************/
 void main() {
-    uint8_t id;
-    int i,len;
-    u8 out;
 
     bsp_init();
     bsp_printf("***Starting SPI Demo*** \r\n");
     spiInit();
-    spi_select(SPI, 0);
-    spi_write(SPI, 0xAB);
-    spi_write(SPI, 0x00);
-    spi_write(SPI, 0x00);
-    spi_write(SPI, 0x00);
-    id = spi_read(SPI);
-    spi_diselect(SPI, 0);
-    bsp_printf("Device ID : %x \r\n", id);
-
-       
+    bsp_printf("Device ID : %x \r\n", spiFlash_manufacturer_id(SPI,SPI_CS));
     bsp_printf("Writing data to flash .. \r\n");
-    len=256;
-    GlobalUnlock();
-    SectorErase(FLASH_START_ADDR);
-    WriteEnableLatch();
-    spi_select(SPI, 0);
-    spi_write(SPI, 0x02);
-    spi_write(SPI, (FLASH_START_ADDR>>16) & 0xFF);
-    spi_write(SPI, (FLASH_START_ADDR>>8) & 0xFF);
-    spi_write(SPI, FLASH_START_ADDR & 0xFF);
-    // Write dummy data
-    for(i=0; i<len; i++)          
-    {
-        spi_write(SPI, i & 0xFF);
-        bsp_printf("Write address %x := %x \r\n", FLASH_START_ADDR+i, i & 0xFF);
-    }
-    spi_diselect(SPI, 0);
-    // Wait for page writing done
-    WaitBusy(); 
-    GlobalLock();
-   
-    bsp_printf("Reading from flash .. \r\n");
-    for(i=FLASH_START_ADDR;i< (FLASH_START_ADDR+len) ;i++)
-    {
-        spi_select(SPI, 0);
-        spi_write(SPI, 0x03);
-        spi_write(SPI, (i>>16) & 0xFF);
-        spi_write(SPI, (i>>8) & 0xFF);
-        spi_write(SPI, i & 0xFF);
-        out = spi_read(SPI);
-        spi_diselect(SPI, 0);
-        bsp_printf("Read address %x := %x \r\n", i, out);
-    }
-    bsp_printf("***Succesfully Ran Demo*** \r\n");
-}
+    spiWriteData_toFlash(SPI,SPI_CS,FLASH_START_ADDR);
 
+    bsp_printf("Reading from flash .. \r\n");
+    for(int i=FLASH_START_ADDR;i< (FLASH_START_ADDR+LEN) ;i++)
+    {
+        bsp_printf("Read address %x := %x \r\n", i, spiReadData_fromFlash(SPI,SPI_CS,i));
+    }
+
+    bsp_printf("***Successfully Ran Demo*** \r\n");
+
+}

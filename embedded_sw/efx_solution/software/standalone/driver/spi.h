@@ -18,15 +18,13 @@
  * - spi_diselect: Deselects a slave device on the SPI bus
  * - spi_applyConfig: Applies SPI configuration settings
  * - spi_waitXferBusy: Wait for SPI Transfer to complete.
- * - spiReadStatusRegister: Read Status Register.
- * - spiWriteStatusRegister: Write Status Register.
- * - spiWriteEnable: Set Write Enable Latch.
  *
  ******************************************************************************/
 #pragma once
 
 #include "type.h"
 #include "io.h"
+#include "soc.h"
 
 #define SPI_DATA             0x00
 #define SPI_BUFFER           0x04
@@ -264,7 +262,21 @@
 *
 ******************************************************************************/
     static void spi_waitXferBusy(u32 reg){
+    	u16 cmdFifo_depth;
+
+#ifdef SYSTEM_SPI_0_IO_CTRL
+    	if(reg == SYSTEM_SPI_0_IO_CTRL) cmdFifo_depth = SYSTEM_SPI_0_IO_PARAMETER_CMD_FIFO_DEPTH;
+#endif
+
+#ifdef SYSTEM_SPI_1_IO_CTRL
+    	if(reg == SYSTEM_SPI_1_IO_CTRL) cmdFifo_depth = SYSTEM_SPI_1_IO_PARAMETER_CMD_FIFO_DEPTH;
+#endif
+
+#ifdef SYSTEM_SPI_2_IO_CTRL
+    	if(reg == SYSTEM_SPI_2_IO_CTRL) cmdFifo_depth = SYSTEM_SPI_2_IO_PARAMETER_CMD_FIFO_DEPTH;
+#endif
+
     	bsp_uDelay(1);
-    	while(spi_cmdAvailability(reg) != 256);
+    	while(spi_cmdAvailability(reg) != cmdFifo_depth);
     }
 

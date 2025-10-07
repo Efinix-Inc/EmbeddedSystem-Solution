@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "bridges_and_adaptors",
             "name": "efx_dma",
-            "version": "6.4.1"
+            "version": "6.4.2"
         }
     ],
     "conf": {
@@ -121,6 +121,6 @@
         "external_script_script": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:21:45.954870+00:00"
+    "sw_version": "2025.2.288",
+    "generated_date": "2025-11-18T06:56:55.621240+00:00"
 }

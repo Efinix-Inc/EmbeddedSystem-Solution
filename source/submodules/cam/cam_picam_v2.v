@@ -55,9 +55,9 @@ module cam_picam_v2 #(
    output wire [31:0] debug_cam_dma_fifo_status
 );
 
-localparam CAM_DMA_COUNT_BIT = $clog2(DMA_TRANSFER_LENGTH);
-localparam CAM_X_COUNT_BIT   = $clog2(MIPI_FRAME_WIDTH/4); //4PPC
-localparam CAM_Y_COUNT_BIT   = $clog2(MIPI_FRAME_HEIGHT);
+localparam CAM_DMA_COUNT_BIT = $clog2(DMA_TRANSFER_LENGTH); // 2PPC => 2320 Bit needed if log2(1920*1080/2)
+localparam CAM_X_COUNT_BIT   = $clog2(MIPI_FRAME_WIDTH/4); // 4PPC => 9 Bit
+localparam CAM_Y_COUNT_BIT   = $clog2(MIPI_FRAME_HEIGHT); // 11 Bit
 
 reg  [39:0]                 cam_data;
 reg                         cam_valid;
@@ -149,6 +149,7 @@ reg                         debug_cam_scaler_fifo_underflow;
 `ifndef SIM
 
 //Camera data sync to FPGA fabric mipi_pclk
+// Double-flop synchronization 
 always @(posedge mipi_pclk)
 begin
    if (~rst_n) begin
@@ -196,6 +197,7 @@ begin
    end
 end
 
+// Edge Detector -> Generate 1-cycle pulse whenever a falling edge occurs.
 assign cam_hs_fall_edge = cam_hs_r && ~cam_hs;
 assign cam_vs_fall_edge = cam_vs_r && ~cam_vs;
 assign cam_data8        = {cam_data[39:32], cam_data[29:22], cam_data[19:12], cam_data[9:2]};  //Keep MSB 8-bit per pixel only
@@ -214,7 +216,7 @@ cam_rgb_gain #(
    .green_gain (green_gain_r),
    .blue_gain  (blue_gain_r),
    .o_vs       (),
-   .o_valid    (rgb_gain_data_valid),
+   .o_valid    (rgb_gain_data_valid), //cam_valid
    .o_data     (rgb_gain_data)
 );
 
@@ -704,7 +706,7 @@ assign debug_cam_dma_fifo_status    = {23'b0, debug_cam_scaler_fifo_underflow, d
 
 assign cam_dma_fifo_re = cam_dma_write && cam_dma_wready && ~cam_dma_fifo_empty;
 assign cam_dma_wvalid  = cam_dma_fifo_rvalid && cam_dma_fifo_re;
-assign cam_dma_wdata   = {8'd0, cam_dma_fifo_rdata[47:24], 8'd0, cam_dma_fifo_rdata[23:0]};
+assign cam_dma_wdata   = {8'd0, cam_dma_fifo_rdata[47:24], 8'd0, cam_dma_fifo_rdata[23:0]};// Sending 2 pixel with 24bit each pixel
 assign cam_dma_wlast   = cam_dma_wvalid && (cam_dma_count==DMA_TRANSFER_LENGTH-1);
 
 endmodule

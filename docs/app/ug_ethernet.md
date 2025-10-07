@@ -32,7 +32,7 @@ For Ti180J484, it can link up to full duplex 1000Mbps while T120F576 only suppor
 6. Else, user can set it to "Auto Negotiation" where it will use 100Mbps for T120F576.
 
 #### Additional Software Needed
-- [iperf2](#https://iperf.fr/download/windows/iperf-2.0.9-win64.zip)
+- [iperf2](https://iperf.fr/download/windows/iperf-2.0.9-win64.zip)
 
 ### Usage
 1. In Efinity RISC-V IDE, open the main.c from lwipIperfServer
@@ -41,7 +41,7 @@ For Ti180J484, it can link up to full duplex 1000Mbps while T120F576 only suppor
 
     ![iperf-output](../images/iperf-output.png)
     
-5. Download [iperf2](#https://iperf.fr/download/windows/iperf-2.0.9-win64.zip) and extract the zip file. 
+5. Download [iperf2](https://iperf.fr/download/windows/iperf-2.0.9-win64.zip) and extract the zip file. 
 6. Open a second terminal or command prompt.
 7. Change to the directory where it has the iPerf2 executable.
 8. Type the command:

@@ -277,5 +277,5 @@ void PiCamV3_Init()
 
 //	PiCamV3_StartStreaming();
 
-	uart_writeStr(BSP_UART_TERMINAL, "\n\rDone Camera Init");
+	uart_writeStr(BSP_UART_TERMINAL, "\n\rInfo: Done Camera Init.");
 }
