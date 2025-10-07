@@ -735,7 +735,7 @@ wire [AXIM_DEV-1:0]         gAXIM_s_rready;
  * To switch between SDHC, SLB, TSEMAC, Hw Accel
  * 
 **************************************************/                    
-gAXIS_1to4_switch u_AXIS_1to4_switch
+gAXIS_1to6_switch u_AXIS_1to6_switch
 (
     .rst_n              ( ~io_peripheralReset ),
     .clk                ( io_peripheralClk ),
@@ -834,7 +834,7 @@ gAXIS_1to4_switch u_AXIS_1to4_switch
  * To switch between access of SDHC and TSEMAC to ddrMaster of Soc 
  * 
 **************************************************/ 
-gAXIM_2to1_switch u_AXIM_2to1_switch
+gAXIM_3to1_switch u_AXIM_3to1_switch
 (
     .rst_n              ( ~io_ddrMasters_0_reset ),
     .clk                ( io_ddrMasters_0_clk ),

@@ -1,9 +1,9 @@
 {
     "args": [
         "-o",
-        "gAXIS_1to4_switch",
+        "gAXIS_1to6_switch",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace_local\\GitLab\\embedded_solution\\Ti375\\ip",
+        "/home/cslau/cslau/Workspace/Gitlab/embedded_solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -19,16 +19,16 @@
         "TABLE0_AXI_S1__MIN": "32'd16777216",
         "TABLE0_AXI_S2__MIN": "32'd17825792",
         "TABLE0_AXI_S3__MIN": "32'd18874368",
-        "TABLE0_AXI_S4__MIN": "32'd536870912",
-        "TABLE0_AXI_S5__MIN": "32'd805306368",
+        "TABLE0_AXI_S4__MIN": "32'd19922944",
+        "TABLE0_AXI_S5__MIN": "32'd20971520",
         "TABLE0_AXI_S6__MIN": "32'd1073741824",
         "TABLE0_AXI_S7__MIN": "32'd1090519040",
         "TABLE0_AXI_S0__MAX": "32'd24",
         "TABLE0_AXI_S1__MAX": "32'd16",
         "TABLE0_AXI_S2__MAX": "32'd16",
         "TABLE0_AXI_S3__MAX": "32'd16",
-        "TABLE0_AXI_S4__MAX": "32'd28",
-        "TABLE0_AXI_S5__MAX": "32'd28",
+        "TABLE0_AXI_S4__MAX": "32'd16",
+        "TABLE0_AXI_S5__MAX": "32'd16",
         "TABLE0_AXI_S6__MAX": "32'd24",
         "TABLE0_AXI_S7__MAX": "32'd20",
         "DATA_WIDTH": "32",
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch.v",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.v",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_tmpl.vhd",
-            "gAXIS_1to4_switch\\gAXIS_1to4_switch_define.vh"
+            "gAXIS_1to6_switch/gAXIS_1to6_switch_tmpl.vhd",
+            "gAXIS_1to6_switch/gAXIS_1to6_switch_tmpl.v",
+            "gAXIS_1to6_switch/gAXIS_1to6_switch_define.vh",
+            "gAXIS_1to6_switch/gAXIS_1to6_switch.v"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.110.4.9",
-    "generated_date": "2025-10-06T08:10:28.708856+00:00"
+    "sw_version": "2025.2.261",
+    "generated_date": "2025-10-07T06:27:31.448400+00:00"
 }

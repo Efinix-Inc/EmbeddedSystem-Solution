@@ -1,9 +1,9 @@
 {
     "args": [
         "-o",
-        "gAXIM_2to1_switch",
+        "gAXIM_3to1_switch",
         "--base_path",
-        "C:\\Users\\JasonLau\\Downloads\\workspace_local\\GitLab\\embedded_solution\\Ti375\\ip",
+        "/home/cslau/cslau/Workspace/Gitlab/embedded_solution/Ti375/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIM_2to1_switch\\gAXIM_2to1_switch_define.vh",
-            "gAXIM_2to1_switch\\gAXIM_2to1_switch_tmpl.v",
-            "gAXIM_2to1_switch\\gAXIM_2to1_switch.v",
-            "gAXIM_2to1_switch\\gAXIM_2to1_switch_tmpl.vhd"
+            "gAXIM_3to1_switch/gAXIM_3to1_switch.v",
+            "gAXIM_3to1_switch/gAXIM_3to1_switch_tmpl.vhd",
+            "gAXIM_3to1_switch/gAXIM_3to1_switch_tmpl.v",
+            "gAXIM_3to1_switch/gAXIM_3to1_switch_define.vh"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.110.4.9",
-    "generated_date": "2025-10-06T06:49:35.383466+00:00"
+    "sw_version": "2025.2.261",
+    "generated_date": "2025-10-07T06:29:27.572803+00:00"
 }
