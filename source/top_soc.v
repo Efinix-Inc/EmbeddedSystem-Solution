@@ -732,9 +732,18 @@ wire [AXIM_DEV-1:0]         gAXIM_s_rready;
 /**************************************************
  *
  * AXI Interconnect Instantiation
- * To switch between SDHC, SLB, TSEMAC, Hw Accel
+ * To switch between SDHC, SLB, TSEMAC, Hw Accel, EMMC, SYS_REG
  * 
-**************************************************/                    
+**************************************************/ 
+/*
+Master Base Address (AXI): 
+            32'h1400000,    // S5: SYS_REG
+            32'h1300000,    // S4: EMMC 
+            32'h1200000,    // S3: Hardware Accelerator
+            32'h1100000,    // S2: TSEMAC
+            32'h1000000,    // S1: SDHC
+            32'h0           // S0: Soft Logic Block
+*/
 gAXIS_1to6_switch u_AXIS_1to6_switch
 (
     .rst_n              ( ~io_peripheralReset ),
