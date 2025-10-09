@@ -9,6 +9,7 @@
 #include <string.h>
 #include <time.h>
 #include "bsp.h"
+#include "device_config.h"
 #include "intc.h"
 #include "efx_emmc_driver.h"
 #include "userDef.h"

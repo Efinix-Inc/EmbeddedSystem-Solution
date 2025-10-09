@@ -3,10 +3,6 @@
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <stdio.h>
-#include <stdarg.h>
-#include "bsp.h"
-#include "userDef.h"
 #include "utils.h"
 
 u32 reg_read(u32 reg)

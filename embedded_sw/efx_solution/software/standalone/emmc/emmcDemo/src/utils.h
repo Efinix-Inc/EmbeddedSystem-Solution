@@ -5,6 +5,11 @@
 
 #ifndef SRC_UTILS_H_
 #define SRC_UTILS_H_
+#include <stdio.h>
+#include <stdarg.h>
+#include "bsp.h"
+#include "device_config.h"
+#include "userDef.h"
 
 u32 reg_read(u32 reg);
 void reg_write(u32 val, u32 reg);

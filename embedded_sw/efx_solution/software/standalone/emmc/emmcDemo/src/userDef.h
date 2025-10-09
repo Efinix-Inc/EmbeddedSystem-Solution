@@ -10,9 +10,6 @@
 
 /************************** Hardware Header File ***************************/
 //The following parameters are described in the ug document
-#define EMMC_ADDR			(SYSTEM_AXI_A_BMB + 0x01300000)
-#define SYS_REG_ADDR		(SYSTEM_AXI_A_BMB + 0x01400000)
-#define EMMC_INTERRUPT		SYSTEM_PLIC_USER_INTERRUPT_U_INTERRUPT
 #define EMMC_VCCQ			1.8
 #define EMMC_LARGE_DENSITY	1
 #define EMMC_RCA			2
