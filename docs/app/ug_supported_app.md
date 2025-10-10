@@ -10,6 +10,7 @@ Here are the list of application that supported across different devices.
 | clintTimerInterruptDemo        |     ✓      |     ✓    |     ✓     |
 | customInstructionDemo         |     ✓      |     ✓    |     ✓     |
 | dhrystone                     |     ✓      |     ✓    |     ✓     |
+| emmcDemo                     |     ✓      |        |       |
 | eeprom_AT24C01                       |           |         |     ✓     |
 | fpuDemo                       |     ✓      |     ✓    |     ✓     |
 | gpioDemo                      |     ✓      |     ✓    |     ✓     |

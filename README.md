@@ -42,6 +42,8 @@ Key Features:
 
 
 Available Embedded Software Demo:
+- [Emmc](docs/app/ug_emmc.md)
+  - [x] [emmcDemo](docs/app/ug_emmc.md#emmcDemo)
 - [Tsemac](docs/app/ug_ethernet.md)
   - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
 - [Sensors](docs/app/ug_sensors.md)
@@ -140,6 +142,8 @@ Available Embedded Software Demo:
   ¦           ¦   +---customInstruction
   ¦           ¦   ¦   +---customInstructionDemo
   ¦           ¦   +---driver
+  ¦           ¦   +---emmc
+  ¦           ¦   ¦   +---emmcDemo
   ¦           ¦   +---fpu
   ¦           ¦   ¦   +---fpuDemo
   ¦           ¦   +---gpio
@@ -187,7 +191,7 @@ Available Embedded Software Demo:
 
 ### Efinity Software Version 
 
-- [Efinity 2025.1.110](https://www.efinixinc.com/support/efinity.php) [v2025.1]
+- [Efinity 2025.2](https://www.efinixinc.com/support/efinity.php) [v2025.2]
 
 - Follow the official [documentation](https://www.efinixinc.com/support/docsdl.php?s=ef&pn=UG-EFN-SOFTWARE) on installation process.
 
