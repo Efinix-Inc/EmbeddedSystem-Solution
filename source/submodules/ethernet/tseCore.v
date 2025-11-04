@@ -647,7 +647,7 @@ reset #(
 
 assign w_rd_en          = (next_rd_state == 1);
 assign write_cnt_next   = (s_eth_tx_tkeep ? write_cnt + 1 : write_cnt);
-assign s_eth_tx_tready  = !w_tx_full;
+assign s_eth_tx_tready  = !w_tx_full && !w_tx_size_busy;
 assign m_eth_tx_tvalid  = rd_state != 0;
 assign m_eth_tx_tdata   = w_eth_tx_tdata;
 assign m_eth_tx_tdest   = w_eth_tx_tdest;
@@ -752,20 +752,26 @@ end
 
 
 
+// Changes: 
+// * Change to Synchronous FIFO (R/W)
+// * Change to FWFT.
+// * USE OUTPUT_REG.
+// * Use RST_BUSY SIGNAL.
+
 common_efx_fifo_wrapper #(
    .FAMILY (FAMILY),       
-   .SYNC_CLK (0),
+   .SYNC_CLK (1),
    .SYNC_STAGE (2),
    .DATA_WIDTH (13),
-   .MODE ("STANDARD"),
-   .OUTPUT_REG (0),
-   .PROG_FULL_ASSERT (510),
+   .MODE ("FWFT"),
+   .OUTPUT_REG (1),
+   .PROG_FULL_ASSERT (4),
    .PROGRAMMABLE_FULL ("NONE"),
-   .PROG_FULL_NEGATE (510),
+   .PROG_FULL_NEGATE (4),
    .PROGRAMMABLE_EMPTY ("NONE"),
-   .PROG_EMPTY_ASSERT (2),
-   .PROG_EMPTY_NEGATE (3),
-   .OPTIONAL_FLAGS (0),
+   .PROG_EMPTY_ASSERT (0),
+   .PROG_EMPTY_NEGATE (0),
+   .OPTIONAL_FLAGS (1),
    .PIPELINE_REG (1),
    .DEPTH (4096),
    .ASYM_WIDTH_RATIO (4),
@@ -777,10 +783,9 @@ common_efx_fifo_wrapper #(
 
    )u_standard_tx_fifo_trans (
     .a_rst_i        (w_eth_mac_rst),
-    .wr_clk_i       (s_eth_tx_clk),
+    .clk_i          (s_eth_tx_clk),
     .wr_en_i        (s_eth_tx_tvalid && s_eth_tx_tready && s_eth_tx_tkeep),
     .wdata          ({s_eth_tx_tkeep,s_eth_tx_tdest, s_eth_tx_tdata}),
-    .rd_clk_i       (s_eth_tx_clk),
     .rd_en_i        (w_rd_en),
     .rdata          ({w_eth_tx_tkeep, w_eth_tx_tdest, w_eth_tx_tdata}),
     .full_o         (w_tx_full),
@@ -789,6 +794,7 @@ common_efx_fifo_wrapper #(
     .rd_datacount_o (w_txdata_rd_datacount),
     .rst_busy       (w_tx_size_busy)
 );
+
 
 common_efx_fifo_wrapper  #(
    .FAMILY (FAMILY),       
