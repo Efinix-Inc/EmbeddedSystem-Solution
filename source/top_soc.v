@@ -591,7 +591,7 @@ wire        w_axiAInterrupt;
 wire        axi4Interrupt_or; 
 wire        axiAInterrupt_slb; 
 wire        usb_interrupt;
-
+wire        emmc_int;
 //reset
 wire        io_asyncReset_soc;
 wire        watchdog_reset;
@@ -1563,7 +1563,6 @@ UsbOhciAxi4Apb3 usb (
 // EMMC
 wire                            emmc_dev_rst;
 wire                            emmc_ip_rst;
-wire                            emmc_int;
 wire                            emmc_dat_oe_w;
 
 system_reg  u_system_reg
