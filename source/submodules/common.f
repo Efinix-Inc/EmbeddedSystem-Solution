@@ -10,3 +10,12 @@ common/common_simple_dual_port_ram.v
 common/common_simple_dual_port_ram_fifo.v
 common/common_timer_start.sv
 common/common_true_dual_port_ram.v
+common/axi_interconnect_v1_1/axi4_id_seq.v
+common/axi_interconnect_v1_1/crossbar.v
+common/axi_interconnect_v1_1/master_coupler.v
+common/axi_interconnect_v1_1/round_robin_priority_arbiter.v
+common/axi_interconnect_v1_1/sfifo_d3_wx.v
+common/axi_interconnect_v1_1/slave_coupler.v
+common/axi_interconnect_v1_1/slave_coupler_wrapper.v
+common/axi_interconnect_v1_1/axi_buffer.v
+common/axi_interconnect_v1_1/axi_interconnect_v1_1.v

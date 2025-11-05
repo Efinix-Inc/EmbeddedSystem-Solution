@@ -652,6 +652,15 @@ assign ddr_inst1_AWALLSTRB_0  = 1'b0;
 assign ddr_inst1_AWCOBUF_0    = 1'b0;
 assign ddr_inst1_ARSTN_0       = ~io_systemReset;
 
+//AXI Slave Interface of SoC: ddrMaster (Soc)
+assign io_ddrMasters_0_aw_payload_qos = 4'h0;
+assign io_ddrMasters_0_aw_payload_region = 4'h0;
+assign io_ddrMasters_0_aw_payload_cache = 4'hf;
+assign io_ddrMasters_0_ar_payload_qos = 4'h0;
+assign io_ddrMasters_0_ar_payload_region = 4'h0;
+assign io_ddrMasters_0_ar_payload_cache = 4'hf;
+assign io_ddrMasters_0_aw_payload_allStrb = 1'b0;
+
 /********************************************* AXI Interconnect ********************************************/
 
 //  Switch between sdhc and slb
@@ -837,12 +846,177 @@ gAXIS_1to6_switch u_AXIS_1to6_switch
     .s_axi_ruser        ( )
 );
 
+// Connection between AXI_v1_1 and ID Handler
+wire [AXIM_DEV-1:0]         axi_inter_m_awvalid;
+wire [AXIM_DEV-1:0]         axi_inter_m_awready;
+wire [32*AXIM_DEV-1:0]      axi_inter_m_awaddr;
+wire [8*AXIM_DEV-1:0 ]      axi_inter_m_awlen;
+wire [AXIM_DEV-1:0]         axi_inter_m_arvalid;
+wire [AXIM_DEV-1:0]         axi_inter_m_arready;
+wire [32*AXIM_DEV-1:0]      axi_inter_m_araddr;
+wire [8*AXIM_DEV-1:0 ]      axi_inter_m_arlen;
+wire [AXIM_DEV-1:0]         axi_inter_m_bvalid;
+wire [AXIM_DEV-1:0]         axi_inter_m_bready;
+wire [2*AXIM_DEV-1:0 ]      axi_inter_m_bresp;
+wire [AXIM_DEV-1:0]         axi_inter_m_wvalid;
+wire [AXIM_DEV-1:0]         axi_inter_m_wready;
+wire [128*AXIM_DEV-1:0]     axi_inter_m_wdata;
+wire [128*AXIM_DEV-1:0]     axi_inter_m_wstrb ;
+wire [AXIM_DEV-1:0]         axi_inter_m_wlast;
+wire [AXIM_DEV-1:0]         axi_inter_m_rvalid;
+wire [AXIM_DEV-1:0]         axi_inter_m_rready;
+wire [128*AXIM_DEV-1:0]     axi_inter_m_rdata;
+wire [2*AXIM_DEV-1:0 ]      axi_inter_m_rresp;
+wire [AXIM_DEV-1:0]         axi_inter_m_rlast;
+
+
+
+
 /**************************************************
  *
  * AXI Interconnect Instantiation
  * To switch between access of SDHC and TSEMAC to ddrMaster of Soc 
  * 
-**************************************************/ 
+**************************************************/
+
+/*
+Master Interface (AXI)
+    * MSDHC        = 0; // SD Host Controller
+    * MTSE         = 1; // TSE Ethernet
+    * MUSB         = 2; // USB Controller
+    * M_EMMC_HC    = 3; // EMMC
+
+*/
+axi_interconnect_v1_1 #(
+
+    .S_COUNT                            (4                                  ),
+    .S_BUFFER_EN                        ({4{1'b1}}                          ),
+    .AXI_DW                             (128                                ),
+    .FAMILY                             ("TITANIUM"                         ),
+    .RD_QUEUE_FIFO_RAM_STYLE            ("block_ram"                        ),
+    .S_AXI_CMD_REG_EN                   (1),
+    .RD_QUEUE_FIFO_DEPTH                (512                                )
+
+   ) u_axi_interconnect_Master (
+   //AXI slave interfaces - S0: Connected to TSEMAC (DMA), USB
+   .clk              (io_ddrMasters_0_clk),
+   .rstn             (~io_ddrMasters_0_reset),
+   .s_axi_awaddr     ( axi_inter_m_awaddr  ),
+   .s_axi_awlen      ( axi_inter_m_awlen  ),
+   .s_axi_awvalid    ( axi_inter_m_awvalid  ),
+   .s_axi_awready    ( axi_inter_m_awready  ),
+   .s_axi_wdata      ( axi_inter_m_wdata  ),
+   .s_axi_wstrb      ( axi_inter_m_wstrb  ),
+   .s_axi_wlast      ( axi_inter_m_wlast  ),
+   .s_axi_wvalid     ( axi_inter_m_wvalid  ),
+   .s_axi_wready     ( axi_inter_m_wready  ),
+   .s_axi_bresp      ( axi_inter_m_bresp  ),
+   .s_axi_bvalid     ( axi_inter_m_bvalid  ),
+   .s_axi_bready     ( axi_inter_m_bready  ),
+   .s_axi_araddr     ( axi_inter_m_araddr  ),
+   .s_axi_arlen      ( axi_inter_m_arlen  ),
+   .s_axi_arvalid    ( axi_inter_m_arvalid  ),
+   .s_axi_arready    ( axi_inter_m_arready  ),
+   .s_axi_rdata      ( axi_inter_m_rdata  ),
+   .s_axi_rresp      ( axi_inter_m_rresp  ),
+   .s_axi_rlast      ( axi_inter_m_rlast  ),
+   .s_axi_rvalid     ( axi_inter_m_rvalid  ),
+   .s_axi_rready     ( axi_inter_m_rready  ),
+
+   //AXI master interface - Connect to ddrMaster (Soc)
+   .m_axi_awid       ( io_ddrMasters_0_aw_payload_id      ),
+   .m_axi_awaddr     ( io_ddrMasters_0_aw_payload_addr    ),
+   .m_axi_awlen      ( io_ddrMasters_0_aw_payload_len     ),
+   .m_axi_awsize     ( io_ddrMasters_0_aw_payload_size    ),
+   .m_axi_awburst    ( io_ddrMasters_0_aw_payload_burst   ),
+   .m_axi_awlock     ( io_ddrMasters_0_aw_payload_lock    ),
+   //.m_axi_awcache    ( io_ddrMasters_0_aw_payload_cache   ),
+   .m_axi_awprot     ( io_ddrMasters_0_aw_payload_prot    ),
+   .m_axi_awvalid    ( io_ddrMasters_0_aw_valid   ),
+   .m_axi_awready    ( io_ddrMasters_0_aw_ready   ),
+   .m_axi_wdata      ( io_ddrMasters_0_w_payload_data     ),
+   .m_axi_wstrb      ( io_ddrMasters_0_w_payload_strb     ),
+   .m_axi_wlast      ( io_ddrMasters_0_w_payload_last     ),
+   .m_axi_wvalid     ( io_ddrMasters_0_w_valid    ),
+   .m_axi_wready     ( io_ddrMasters_0_w_ready    ),
+   .m_axi_bresp      ( io_ddrMasters_0_b_payload_resp     ),
+   .m_axi_bvalid     ( io_ddrMasters_0_b_valid    ),
+   .m_axi_bready     ( io_ddrMasters_0_b_ready    ),
+   .m_axi_arid       ( io_ddrMasters_0_ar_payload_id      ),
+   .m_axi_araddr     ( io_ddrMasters_0_ar_payload_addr    ),
+   .m_axi_arlen      ( io_ddrMasters_0_ar_payload_len     ),
+   .m_axi_arsize     ( io_ddrMasters_0_ar_payload_size    ),
+   .m_axi_arburst    ( io_ddrMasters_0_ar_payload_burst   ),
+   .m_axi_arlock     ( io_ddrMasters_0_ar_payload_lock    ),
+   //.m_axi_arcache    ( io_ddrMasters_0_ar_payload_cache   ),
+   .m_axi_arprot     ( io_ddrMasters_0_ar_payload_prot    ),
+   .m_axi_arvalid    ( io_ddrMasters_0_ar_valid   ),
+   .m_axi_arready    ( io_ddrMasters_0_ar_ready   ),
+   .m_axi_rdata      ( io_ddrMasters_0_r_payload_data     ),
+   .m_axi_rresp      ( io_ddrMasters_0_r_payload_resp     ),
+   .m_axi_rlast      ( io_ddrMasters_0_r_payload_last     ),
+   .m_axi_rvalid     ( io_ddrMasters_0_r_valid    ),
+   .m_axi_rready     ( io_ddrMasters_0_r_ready    )
+);
+
+axi4_id_seq #(
+    .AXI_DATA_WIDTH     (128),
+    .AXI_ADDR_WIDTH     (32),
+    .AXI_ID_WIDTH       (4),
+    .S_COUNT            (4)
+) u_axi4_id_seq (
+    .axi_clk            ( io_ddrMasters_0_clk ),
+    .axi_rstn           ( ~io_ddrMasters_0_reset ),
+    .s_axi_awaddr       ( gAXIM_s_awaddr ),
+    .s_axi_awid         ( {4'h3,4'h2,4'h1,4'h0} ),
+    .s_axi_awlen        ( gAXIM_s_awlen ),
+    .s_axi_awvalid      ( gAXIM_s_awvalid ),
+    .s_axi_awready      ( gAXIM_s_awready ),
+    .s_axi_araddr       ( gAXIM_s_araddr ),
+    .s_axi_arid         ( {4'h3,4'h2,4'h1,4'h0}  ),
+    .s_axi_arlen        ( gAXIM_s_arlen ),
+    .s_axi_arvalid      ( gAXIM_s_arvalid ),
+    .s_axi_arready      ( gAXIM_s_arready ),
+    .s_axi_bresp        ( gAXIM_s_bresp ),
+    .s_axi_bid          ( ),
+    .s_axi_bvalid       ( gAXIM_s_bvalid ),
+    .s_axi_bready       ( gAXIM_s_bready ),
+    .s_axi_wdata        ( gAXIM_s_wdata ),
+    .s_axi_wlast        ( gAXIM_s_wlast ),
+    .s_axi_wvalid       ( gAXIM_s_wvalid ),
+    .s_axi_wready       ( gAXIM_s_wready ),
+    .s_axi_wstrb        ( gAXIM_s_wstrb ),
+    .s_axi_rid          ( ),
+    .s_axi_rdata        ( gAXIM_s_rdata ),
+    .s_axi_rresp        ( gAXIM_s_rresp ),
+    .s_axi_rlast        ( gAXIM_s_rlast ),
+    .s_axi_rvalid       ( gAXIM_s_rvalid ),
+    .s_axi_rready       ( gAXIM_s_rready ),
+
+    .m_axi_awaddr       ( axi_inter_m_awaddr ),
+    .m_axi_awlen        ( axi_inter_m_awlen ),
+    .m_axi_awvalid      ( axi_inter_m_awvalid ),
+    .m_axi_awready      ( axi_inter_m_awready ), 
+    .m_axi_araddr       ( axi_inter_m_araddr ),
+    .m_axi_arlen        ( axi_inter_m_arlen ),
+    .m_axi_arvalid      ( axi_inter_m_arvalid ),
+    .m_axi_arready      ( axi_inter_m_arready ), 
+    .m_axi_bresp        ( axi_inter_m_bresp ),  
+    .m_axi_bready       ( axi_inter_m_bready ),
+    .m_axi_bvalid       ( axi_inter_m_bvalid ),
+    .m_axi_wdata        ( axi_inter_m_wdata ),
+    .m_axi_wlast        ( axi_inter_m_wlast ),
+    .m_axi_wstrb        ( axi_inter_m_wstrb ),
+    .m_axi_wvalid       ( axi_inter_m_wvalid ),
+    .m_axi_wready       ( axi_inter_m_wready ),
+    .m_axi_rdata        ( axi_inter_m_rdata ),
+    .m_axi_rresp        ( axi_inter_m_rresp ),
+    .m_axi_rlast        ( axi_inter_m_rlast ),
+    .m_axi_rvalid       ( axi_inter_m_rvalid ),
+    .m_axi_rready       ( axi_inter_m_rready )
+);
+
+/*
 gAXIM_3to1_switch u_AXIM_3to1_switch
 (
     .rst_n              ( ~io_ddrMasters_0_reset ),
@@ -935,6 +1109,7 @@ gAXIM_3to1_switch u_AXIM_3to1_switch
     .s_axi_rid          ( ),
     .s_axi_ruser        ( )
 );
+*/
 
 /****************************************** SD Related Modules Instantiation *****************************************/
 
