@@ -39,6 +39,8 @@ create_clock -period 40.000 -name core_clk [get_ports {core_clk}]
 
 # Exclusive Clock Group
 set_clock_groups -exclusive -group {cam_ck_CLKOUT} -group {io_usbClk} -group {core_clk} -group {rgmii_rxc io_tseClk_90 io_tseClk} -group {io_memoryClk} -group {i_pixel_clk} -group {i_hdmi_clk_148p5MHz} -group {io_ddrMasters_0_clk} -group {sd_base_clk} -group {io_peripheralClk} -group {i_sys_clk_25mhz} -group {io_cfuClk} -group {jtagCtrl_tck}
+set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
+set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
 
 
 # GPIO Constraints
