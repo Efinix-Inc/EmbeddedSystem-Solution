@@ -83,8 +83,11 @@ void initWatchdog(){
     watchdog_setCounterLimit(SYSTEM_WATCHDOG_LOGIC_CTRL, 0,   WATCHDOG_TIMEOUT_MS-1);
     watchdog_setCounterLimit(SYSTEM_WATCHDOG_LOGIC_CTRL, 1, 2*WATCHDOG_TIMEOUT_MS-1);
 
-    // Irrevocably enable the watchdog counters 0 and 1
+    // Enable the watchdog counters 0 and 1
     watchdog_enable(SYSTEM_WATCHDOG_LOGIC_CTRL, 3); //Enable counter 0 and 1
+
+    // Prevent any future modification of the watchdog configuration
+    watchdog_lock(SYSTEM_WATCHDOG_LOGIC_CTRL);
 }
 
 

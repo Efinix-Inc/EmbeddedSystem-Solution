@@ -133,6 +133,7 @@ void isrInit(){
 
 
 #if STATIC_STREAM
+// Usage: Fill physical memory with RGB888 pixel.
 static void generate_test_image() {
 	for (int y = 0; y < CROP_H; y++) {
 		for (int x = 0; x < CROP_W; x++) {
@@ -164,6 +165,7 @@ static void generate_test_image() {
 	}
 }
 #else
+// Usage: Crop input pixel from camera to smaller size, ignore Alpha in RGBA (4 bytes)
 static void crop_frame_to_txbuffer()
 {
     uint8_t *dst = (uint8_t *)tx_frame;
@@ -196,7 +198,6 @@ void uart_demo_mode_selection()
       uart_status_write(BSP_UART_TERMINAL,uart_status_read(BSP_UART_TERMINAL) & 0xFFFFFFFD);   // RX FIFO not empty interrupt Disable
       uart_user_input = uart_read(BSP_UART_TERMINAL);
       uart_status_write(BSP_UART_TERMINAL,uart_status_read(BSP_UART_TERMINAL) | 0x02);         // RX FIFO not empty interrupt enable
-      bsp_printf("userinput: %c\r\n",uart_user_input);
       //Assign UART input for demo mode selection
       if (uart_user_input == 'a') {
          select_demo_mode = 0;
@@ -212,6 +213,19 @@ void uart_demo_mode_selection()
 	}
 }
 }
+/*******************************************************EVSOC-RELATED FUNCTIONS******************************************************/
+
+void ispExample_menu()
+{
+	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "                    ISP + LWIP Example Design Scenario Selection\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "'a' : Camera Capture + HDMI Display (RGB)                                       \n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "'b' : Camera Capture + RGB2Grayscale (HW) + HDMI Display                        \n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "'c' : Camera Capture + RGB2Grayscale & Sobel & Dilation (HW) + HDMI Display     \n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\n\r");
+    uart_writeStr(BSP_UART_TERMINAL, "Info: Please ensure that you have run recv_udp_raw.py in the background!!!\n\n\r");
+}
 
 void evsoc_main() {
 
@@ -219,7 +233,7 @@ void evsoc_main() {
 	Set_MipiRst(0);
 
     uart_writeStr(BSP_UART_TERMINAL, "\n\r **** Image Signal Processing Demo! **** \n\n\r");
-	uart_writeStr(BSP_UART_TERMINAL, "Init MIPI I2C.....\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "Info: Init MIPI I2C.....\n\r");
 	mipi_i2c_init();
 
 #if PICAM_VERSION == 3
@@ -234,14 +248,14 @@ void evsoc_main() {
 
     dmasg_priority(DMASG_BASE, DMASG_CAM_S2MM_CHANNEL,      3, 0);
 
-    bsp_printf("\r\nStart streaming.\r\n");
+    bsp_printf("\r\nInfo: Start streaming.\r\n");
 #if PICAM_VERSION == 3
    PiCamV3_StartStreaming();
 #endif
 }
 #endif
 
-
+/*******************************************************LWIP-RELATED FUNCTIONS******************************************************/
 static void send_frame_udp()
 {
 #if STATIC_STREAM
@@ -315,7 +329,7 @@ static void send_frame_udp()
 }
 
 
-
+// Usage: Init UDP server
 void udp_sender_init()
 {
     upcb = udp_new();
@@ -384,6 +398,7 @@ void main() {
 
 	bsp_init();
 	bsp_printf("***Starting TSEMAC Demo***\n\r");
+    HwChecksum_status();
 	int state;
 	int n,speed=TSE_Speed_1000Mhz,link_speed=0;
 	int check_connect=0;
@@ -413,6 +428,7 @@ void main() {
 	generate_test_image();
 #else
 	evsoc_main();
+    ispExample_menu();
 #endif
 
     while (1) {
