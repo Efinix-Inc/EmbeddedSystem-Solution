@@ -1770,6 +1770,12 @@ system_reg  u_system_reg
 
 assign emmc_rstn                  = ~emmc_dev_rst;
 assign emmc_dat_OE                = {8{emmc_dat_oe_w}};
+reg emmc_rst_sync;
+
+// Fix for timing issue, reduce combo path
+always @(posedge clk_200m) begin
+    emmc_rst_sync <= io_peripheralReset | emmc_ip_rst;
+end
 
 emmc_host_controller #(
     .ADMA_DATA_WIDTH                    (ADMA_DATA_WIDTH                    ),
@@ -1785,7 +1791,7 @@ u_emmc_host_controller
     .pll_SHIFT                          (pll_SHIFT                          ),
     .pll_SHIFT_SEL                      (pll_SHIFT_SEL                      ),
     .pll_SHIFT_ENA                      (pll_SHIFT_ENA                      ),
-    .emmc_rst                           (io_peripheralReset | emmc_ip_rst   ),
+    .emmc_rst                           (emmc_rst_sync                      ),
     .emmc_int                           (emmc_int                           ),
     .emmc_clk_HI                        (emmc_clk_HI                        ),
     .emmc_clk_LO                        (emmc_clk_LO                        ),
