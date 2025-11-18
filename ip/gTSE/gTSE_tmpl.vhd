@@ -41,31 +41,18 @@ component gTSE is
 port (
     mac_reset : in std_logic;
     proto_reset : in std_logic;
-    s_axi_araddr : in std_logic_vector(9 downto 0);
-    s_axi_rresp : out std_logic_vector(1 downto 0);
     rx_mac_aclk : out std_logic;
     tx_mac_aclk : in std_logic;
     eth_speed : out std_logic_vector(2 downto 0);
-    MdoEn : out std_logic;
     rx_axis_clk : in std_logic;
     rx_axis_mac_tuser : out std_logic;
-    Mdc : out std_logic;
     rx_axis_mac_tlast : out std_logic;
-    Mdi : in std_logic;
     rx_axis_mac_tvalid : out std_logic;
-    s_axi_rvalid : out std_logic;
-    s_axi_arready : out std_logic;
     rx_axis_mac_tready : in std_logic;
-    s_axi_rdata : out std_logic_vector(31 downto 0);
     tx_axis_clk : in std_logic;
     tx_axis_mac_tvalid : in std_logic;
-    s_axi_bvalid : out std_logic;
-    s_axi_wready : out std_logic;
-    s_axi_rready : in std_logic;
     tx_axis_mac_tlast : in std_logic;
-    Mdo : out std_logic;
     tx_axis_mac_tuser : in std_logic;
-    s_axi_wdata : in std_logic_vector(31 downto 0);
     tx_axis_mac_tready : out std_logic;
     rgmii_txd_HI : out std_logic_vector(3 downto 0);
     rgmii_txd_LO : out std_logic_vector(3 downto 0);
@@ -79,17 +66,30 @@ port (
     rgmii_rx_ctl_LO : in std_logic;
     rgmii_rxc : in std_logic;
     s_axi_aclk : in std_logic;
-    s_axi_bready : in std_logic;
-    s_axi_awaddr : in std_logic_vector(9 downto 0);
-    s_axi_arvalid : in std_logic;
-    s_axi_awvalid : in std_logic;
-    s_axi_awready : out std_logic;
-    s_axi_wvalid : in std_logic;
     rx_axis_mac_tdata : out std_logic_vector(7 downto 0);
     tx_axis_mac_tdata : in std_logic_vector(7 downto 0);
     tx_axis_mac_tstrb : in std_logic_vector(0 to 0);
     rx_axis_mac_tstrb : out std_logic_vector(0 to 0);
-    s_axi_bresp : out std_logic_vector(1 downto 0)
+    MdoEn : out std_logic;
+    Mdo : out std_logic;
+    Mdi : in std_logic;
+    Mdc : out std_logic;
+    s_axi_araddr : in std_logic_vector(9 downto 0);
+    s_axi_arready : out std_logic;
+    s_axi_arvalid : in std_logic;
+    s_axi_awaddr : in std_logic_vector(9 downto 0);
+    s_axi_awready : out std_logic;
+    s_axi_awvalid : in std_logic;
+    s_axi_bready : in std_logic;
+    s_axi_bresp : out std_logic_vector(1 downto 0);
+    s_axi_bvalid : out std_logic;
+    s_axi_rdata : out std_logic_vector(31 downto 0);
+    s_axi_rready : in std_logic;
+    s_axi_rresp : out std_logic_vector(1 downto 0);
+    s_axi_rvalid : out std_logic;
+    s_axi_wdata : in std_logic_vector(31 downto 0);
+    s_axi_wready : out std_logic;
+    s_axi_wvalid : in std_logic
 );
 end component gTSE;
 
@@ -99,31 +99,18 @@ u_gTSE : gTSE
 port map (
     mac_reset => mac_reset,
     proto_reset => proto_reset,
-    s_axi_araddr => s_axi_araddr,
-    s_axi_rresp => s_axi_rresp,
     rx_mac_aclk => rx_mac_aclk,
     tx_mac_aclk => tx_mac_aclk,
     eth_speed => eth_speed,
-    MdoEn => MdoEn,
     rx_axis_clk => rx_axis_clk,
     rx_axis_mac_tuser => rx_axis_mac_tuser,
-    Mdc => Mdc,
     rx_axis_mac_tlast => rx_axis_mac_tlast,
-    Mdi => Mdi,
     rx_axis_mac_tvalid => rx_axis_mac_tvalid,
-    s_axi_rvalid => s_axi_rvalid,
-    s_axi_arready => s_axi_arready,
     rx_axis_mac_tready => rx_axis_mac_tready,
-    s_axi_rdata => s_axi_rdata,
     tx_axis_clk => tx_axis_clk,
     tx_axis_mac_tvalid => tx_axis_mac_tvalid,
-    s_axi_bvalid => s_axi_bvalid,
-    s_axi_wready => s_axi_wready,
-    s_axi_rready => s_axi_rready,
     tx_axis_mac_tlast => tx_axis_mac_tlast,
-    Mdo => Mdo,
     tx_axis_mac_tuser => tx_axis_mac_tuser,
-    s_axi_wdata => s_axi_wdata,
     tx_axis_mac_tready => tx_axis_mac_tready,
     rgmii_txd_HI => rgmii_txd_HI,
     rgmii_txd_LO => rgmii_txd_LO,
@@ -137,17 +124,30 @@ port map (
     rgmii_rx_ctl_LO => rgmii_rx_ctl_LO,
     rgmii_rxc => rgmii_rxc,
     s_axi_aclk => s_axi_aclk,
-    s_axi_bready => s_axi_bready,
-    s_axi_awaddr => s_axi_awaddr,
-    s_axi_arvalid => s_axi_arvalid,
-    s_axi_awvalid => s_axi_awvalid,
-    s_axi_awready => s_axi_awready,
-    s_axi_wvalid => s_axi_wvalid,
     rx_axis_mac_tdata => rx_axis_mac_tdata,
     tx_axis_mac_tdata => tx_axis_mac_tdata,
     tx_axis_mac_tstrb => tx_axis_mac_tstrb,
     rx_axis_mac_tstrb => rx_axis_mac_tstrb,
-    s_axi_bresp => s_axi_bresp
+    MdoEn => MdoEn,
+    Mdo => Mdo,
+    Mdi => Mdi,
+    Mdc => Mdc,
+    s_axi_araddr => s_axi_araddr,
+    s_axi_arready => s_axi_arready,
+    s_axi_arvalid => s_axi_arvalid,
+    s_axi_awaddr => s_axi_awaddr,
+    s_axi_awready => s_axi_awready,
+    s_axi_awvalid => s_axi_awvalid,
+    s_axi_bready => s_axi_bready,
+    s_axi_bresp => s_axi_bresp,
+    s_axi_bvalid => s_axi_bvalid,
+    s_axi_rdata => s_axi_rdata,
+    s_axi_rready => s_axi_rready,
+    s_axi_rresp => s_axi_rresp,
+    s_axi_rvalid => s_axi_rvalid,
+    s_axi_wdata => s_axi_wdata,
+    s_axi_wready => s_axi_wready,
+    s_axi_wvalid => s_axi_wvalid
 );
 
 ------------------------ End INSTANTIATION Template ---------
