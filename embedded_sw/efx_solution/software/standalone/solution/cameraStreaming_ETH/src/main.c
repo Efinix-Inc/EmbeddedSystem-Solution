@@ -3,7 +3,6 @@
 // Full license header bsp/efinix/EfxSapphireSoc/include/LICENSE.MD
 ////////////////////////////////////////////////////////////////////////////////
 #include <stdint.h>
-//#include "syscall.h"
 #include "bsp.h"
 #include "userDef.h"
 #include "prescaler.h"
@@ -218,13 +217,13 @@ void uart_demo_mode_selection()
 void ispExample_menu()
 {
 	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\r");
-	uart_writeStr(BSP_UART_TERMINAL, "                    ISP + LWIP Example Design Scenario Selection\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "                    Camera + LWIP Example Design Scenario Selection\n\r");
 	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\r");
 	uart_writeStr(BSP_UART_TERMINAL, "'a' : Camera Capture + HDMI Display (RGB)                                       \n\r");
 	uart_writeStr(BSP_UART_TERMINAL, "'b' : Camera Capture + RGB2Grayscale (HW) + HDMI Display                        \n\r");
 	uart_writeStr(BSP_UART_TERMINAL, "'c' : Camera Capture + RGB2Grayscale & Sobel & Dilation (HW) + HDMI Display     \n\r");
 	uart_writeStr(BSP_UART_TERMINAL, "================================================================================\n\n\r");
-    uart_writeStr(BSP_UART_TERMINAL, "Info: Please ensure that you have run recv_udp_raw.py in the background!!!\n\n\r");
+    uart_writeStr(BSP_UART_TERMINAL, "Info: Please ensure that you have run recv_udp_raw.py in the background BEFORE launch the app!!!\n\n\r");
 }
 
 void evsoc_main() {
@@ -232,8 +231,7 @@ void evsoc_main() {
 	Set_MipiRst(1);
 	Set_MipiRst(0);
 
-    uart_writeStr(BSP_UART_TERMINAL, "\n\r **** Image Signal Processing Demo! **** \n\n\r");
-	uart_writeStr(BSP_UART_TERMINAL, "Info: Init MIPI I2C.....\n\r");
+	uart_writeStr(BSP_UART_TERMINAL, "Info: Init Camera MIPI I2C.....\n\r");
 	mipi_i2c_init();
 
 #if PICAM_VERSION == 3
@@ -397,7 +395,7 @@ u64_t sys_now(void)
 void main() {
 
 	bsp_init();
-	bsp_printf("***Starting TSEMAC Demo***\n\r");
+	bsp_printf("***Starting Camera + Bare-metal LwIP Network Stack (via UDP) Demo***\n\r");
     HwChecksum_status();
 	int state;
 	int n,speed=TSE_Speed_1000Mhz,link_speed=0;

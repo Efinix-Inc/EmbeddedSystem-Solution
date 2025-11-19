@@ -1,4 +1,4 @@
-PROJ_NAME=udp-lwip-raw
+PROJ_NAME=cameraStreaming_ETH
 
 STANDALONE = ../..
 
