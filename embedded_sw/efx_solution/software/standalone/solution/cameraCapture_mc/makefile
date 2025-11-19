@@ -1,4 +1,4 @@
-PROJ_NAME=capture_img_smp
+PROJ_NAME=cameraCapture_mc
 
 STANDALONE= ../../
 CFLAGS+=-DSMP

@@ -5,7 +5,7 @@
 
 /*******************************************************************************
 *
-* @file main.c: capture_img
+* @file main.c: cameraCapture_mc
 *
 * @brief This demo implements the FatFS File System along with a Command Line Interface (CLI)
 * 		 for user interaction. With the camera/display enabled, you can capture image
