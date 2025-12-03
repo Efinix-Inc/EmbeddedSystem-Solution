@@ -80,7 +80,7 @@ static int efx_emmc_boot_write(struct mmc *mmc, struct mmc_cmd *cmd, enum data_b
     } else if(bus_width == x8) {
         boot_bus_width = 0x2;
     } else {
-        debug_printf("Error: bus_width error in boot writing\r\n");
+        bsp_printf_full("Error: bus_width error in boot writing\r\n");
         return -1;
     }
     
@@ -89,7 +89,7 @@ static int efx_emmc_boot_write(struct mmc *mmc, struct mmc_cmd *cmd, enum data_b
     } else if(par_num == 0x2) {
         partition_access = 0x2;
     } else {
-        debug_printf("Error: partition number error\r\n");
+        bsp_printf_full("Error: partition number error\r\n");
         return -1;
     }
 
@@ -115,7 +115,7 @@ static int efx_emmc_boot_write(struct mmc *mmc, struct mmc_cmd *cmd, enum data_b
     efx_emmc_write_ext_csd(mmc, cmd, 179, partition_config);
     
     if(ret != 0) {
-        debug_printf("Error: boot partition write fail\r\n");
+        bsp_printf_full("Error: boot partition write fail\r\n");
         return -1;
     }
 
@@ -154,7 +154,7 @@ static int efx_emmc_boot_read_all(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_
     boot_partition_size = boot_partition_size_calculate(mmc);  // byte
 
     if (alt_boot_mode == 0) {
-        debug_printf("Error: Device does not support alternative boot method\r\n");
+        bsp_printf_full("Error: Device does not support alternative boot method\r\n");
         return -1;
     }
 
@@ -177,7 +177,7 @@ static int efx_emmc_boot_read_all(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_
     } else if(bus_width == x8) {
         boot_bus_width = 0x2;
     } else {
-        debug_printf("Error: bus_width error\r\n");
+        bsp_printf_full("Error: bus_width error\r\n");
         return -1;
     }
     
@@ -186,7 +186,7 @@ static int efx_emmc_boot_read_all(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_
     } else if(par_num == 0x2) {
         boot_partition_enable = 0x2;
     } else {
-        debug_printf("Error: partition number error\r\n");
+        bsp_printf_full("Error: partition number error\r\n");
         return -1;
     }
     
@@ -219,7 +219,7 @@ static int efx_emmc_boot_read_all(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_
     sd_send_cmd(mmc, cmd, MMC_CMD_GO_IDLE_STATE, MMC_RSP_NONE, 0x0);
     
     if(ret != 0) {
-        debug_printf("Error: boot partition read fail\r\n");
+        bsp_printf_full("Error: boot partition read fail\r\n");
         return -1;
     }
     
@@ -277,7 +277,7 @@ static int efx_emmc_boot_read_single(struct mmc *mmc, struct mmc_cmd *cmd, u32 b
     } else if (bus_width == x8) {
         boot_bus_width = 0x2;
     } else {
-        debug_printf("Error: bus_width error\r\n");
+        bsp_printf_full("Error: bus_width error\r\n");
         return -1;
     }
     
@@ -286,7 +286,7 @@ static int efx_emmc_boot_read_single(struct mmc *mmc, struct mmc_cmd *cmd, u32 b
     } else if(par_num == 0x2) {
         partition_access = 0x2;
     } else {
-        debug_printf("Error: partition number error\r\n");
+        bsp_printf_full("Error: partition number error\r\n");
         return -1;
     }
     
@@ -320,7 +320,7 @@ static int efx_emmc_boot_read_single(struct mmc *mmc, struct mmc_cmd *cmd, u32 b
     efx_emmc_write_ext_csd(mmc, cmd, 179, partition_config);
     
     if(ret != 0) {
-        debug_printf("Error: boot partition read fail\r\n");
+        bsp_printf_full("Error: boot partition read fail\r\n");
         return -1;
     }
 
@@ -343,12 +343,12 @@ static int efx_emmc_boot_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 par_num
     } else if(par_num == 0x2) {
         partition_access = 0x2;
     } else {
-        debug_printf("Error: partition number error\r\n");
+        bsp_printf_full("Error: partition number error\r\n");
         return -1;
     }
     
     if (erase_mode != erase && erase_mode != trim) {
-        debug_printf("Error: Invalid erase mode\r\n");
+        bsp_printf_full("Error: Invalid erase mode\r\n");
         return -1;
     }
     
@@ -369,7 +369,7 @@ static int efx_emmc_boot_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 par_num
     efx_emmc_write_ext_csd(mmc, cmd, 179, partition_config);
     
     if(ret != 0) {
-        debug_printf("Error: erase fail\r\n");
+        bsp_printf_full("Error: erase fail\r\n");
         return -1;
     }
 
@@ -403,13 +403,13 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
 
     /* Parameter validation */
     if (buf == NULL) {
-        debug_printf("Error: Invalid buffer pointer\r\n");
+        bsp_printf_full("Error: Invalid buffer pointer\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Check buffer alignment for DMA mode */
     if (dma_en && ((uintptr_t)buf & 0x3)) {
-        debug_printf("Error: DMA requires 4-byte aligned buffer\r\n");
+        bsp_printf_full("Error: DMA requires 4-byte aligned buffer\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -418,26 +418,26 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
     while (is_cmd_or_data_bus_busy()) {
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for bus ready\r\n");
+            bsp_printf_full("Error: Timeout waiting for bus ready\r\n");
             return ERR_TIMEOUT;
         }
     }
 
     /* Validate block count (must be within 16-bit range) */
     if (block_cnt == 0 || block_cnt > largest_number(16, 31)) {
-        debug_printf("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
+        bsp_printf_full("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
         return ERR_INVALID_PARAM;
     }
 
     /* For high-density eMMC (>2GB), write size must be multiple of 512 bytes */
     if ((EMMC_LARGE_DENSITY != 0) && (((block_cnt * EMMC_BLOCK_LEN) % 512) != 0x0)) {
-        debug_printf("Error: When emmc density > 2GB, write data length must be integer multiple of 512 byte\r\n");
+        bsp_printf_full("Error: When emmc density > 2GB, write data length must be integer multiple of 512 byte\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Verify EMMC_BLOCK_LEN is multiple of 4 for proper word-aligned access */
     if (EMMC_BLOCK_LEN % 4 != 0) {
-        debug_printf("Error: Block length must be a multiple of 4 bytes\r\n");
+        bsp_printf_full("Error: Block length must be a multiple of 4 bytes\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -448,7 +448,7 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
 
     boot_partition_size = boot_partition_size_calculate(mmc);  // byte
     if (boot_partition_size == 0) {
-        debug_printf("Error: Failed to calculate boot partition size\r\n");
+        bsp_printf_full("Error: Failed to calculate boot partition size\r\n");
         return ERR_IO;
     }
 
@@ -463,14 +463,14 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
     if (EMMC_LARGE_DENSITY == 0) {
         /* Check for potential overflow */
         if (block_cnt > ((u32)-1 - addr) / EMMC_BLOCK_LEN) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN) - 1;
     } else {
         /* Check for potential overflow */
         if (block_cnt > ((u32)-1 - addr) / (EMMC_BLOCK_LEN / 512)) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN / 512) - 1;
@@ -478,12 +478,12 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
 
     /* Validate start and end addresses are within range */
     if (addr > boot_addr_max) {
-        debug_printf("Error: Write start addr %u boot_addr_max %u out of range\r\n", addr, boot_addr_max);
+        bsp_printf_full("Error: Write start addr %u boot_addr_max %u out of range\r\n", addr, boot_addr_max);
         return ERR_INVALID_PARAM;
     }
 
     if (addr_end > boot_addr_max) {
-        debug_printf("Error: Write end addr out of range\r\n");
+        bsp_printf_full("Error: Write end addr out of range\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -522,7 +522,7 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
     if (dma_en) {
         ret = sd_ctrl_creat_Descriptor(mmc, block_cnt, EMMC_BLOCK_LEN, buf);
         if (ret != 0) {
-            debug_printf("Error: Failed to create DMA descriptor, error %d\r\n", ret);
+            bsp_printf_full("Error: Failed to create DMA descriptor, error %d\r\n", ret);
             return ERR_IO;
         }
     }
@@ -544,13 +544,13 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
             while (reg_is_bit_cleared(REG_PRESENT_STATE, 10)) {
                 bsp_uDelay(100);
                 if (++timeout_counter > MAX_TIMEOUT) {
-                    debug_printf("Error: Timeout waiting for buffer ready\r\n");
+                    bsp_printf_full("Error: Timeout waiting for buffer ready\r\n");
                     return ERR_TIMEOUT;
                 }
 
                 /* Check for error conditions */
                 if (check_for_error_status()) {
-                    debug_printf("Error: Error detected during transfer\r\n");
+                    bsp_printf_full("Error: Error detected during transfer\r\n");
                     return ERR_IO;
                 }
             }
@@ -576,13 +576,13 @@ static int efx_emmc_boot_send_data(struct mmc *mmc, u32 block_cnt, u32 addr, u32
         /* Check for timeout */
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for transfer completion\r\n");
+            bsp_printf_full("Error: Timeout waiting for transfer completion\r\n");
             return ERR_TIMEOUT;
         }
 
         /* Check for error conditions */
         if (check_for_error_status()) {
-            debug_printf("Error: Error detected during transfer\r\n");
+            bsp_printf_full("Error: Error detected during transfer\r\n");
             return ERR_IO;
         }
     }
@@ -624,13 +624,13 @@ static int efx_emmc_boot_receive_data_all(struct mmc *mmc, u32 block_cnt, u32 bl
 
     /* Parameter validation */
     if (buf == NULL) {
-        debug_printf("Error: Invalid buffer pointer\r\n");
+        bsp_printf_full("Error: Invalid buffer pointer\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Check buffer alignment for DMA mode */
     if (dma_en && ((uintptr_t)buf & 0x3)) {
-        debug_printf("Error: DMA requires 4-byte aligned buffer\r\n");
+        bsp_printf_full("Error: DMA requires 4-byte aligned buffer\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -639,26 +639,26 @@ static int efx_emmc_boot_receive_data_all(struct mmc *mmc, u32 block_cnt, u32 bl
     while (is_cmd_or_data_bus_busy()) {
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for bus ready\r\n");
+            bsp_printf_full("Error: Timeout waiting for bus ready\r\n");
             return ERR_TIMEOUT;
         }
     }
     
     /* Validate block count (must be within 16-bit range) */
     if (block_cnt == 0 || block_cnt > largest_number(16, 31)) {
-        debug_printf("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
+        bsp_printf_full("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
         return ERR_INVALID_PARAM;
     }
     
     /* For high-density eMMC (>2GB), read size must be multiple of 512 bytes */
     if ((EMMC_LARGE_DENSITY != 0) && (((block_cnt * block_size) % 512) != 0x0)) {
-        debug_printf("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
+        bsp_printf_full("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
         return ERR_INVALID_PARAM;
     }
     
     /* Verify block_size is multiple of 4 for proper word-aligned access */
     if (block_size % 4 != 0) {
-        debug_printf("Error: Block size must be a multiple of 4 bytes\r\n");
+        bsp_printf_full("Error: Block size must be a multiple of 4 bytes\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -691,7 +691,7 @@ static int efx_emmc_boot_receive_data_all(struct mmc *mmc, u32 block_cnt, u32 bl
     if (dma_en) {
         ret = sd_ctrl_creat_Descriptor(mmc, block_cnt, block_size, buf);
         if (ret != 0) {
-            debug_printf("Error: Failed to create DMA descriptor, error %d\r\n", ret);
+            bsp_printf_full("Error: Failed to create DMA descriptor, error %d\r\n", ret);
             return ERR_IO;
         }
     }
@@ -713,13 +713,13 @@ static int efx_emmc_boot_receive_data_all(struct mmc *mmc, u32 block_cnt, u32 bl
             while (reg_is_bit_cleared(REG_PRESENT_STATE, 11)) {
                 bsp_uDelay(100);
                 if (++timeout_counter > MAX_TIMEOUT) {
-                    debug_printf("Error: Timeout waiting for buffer ready\r\n");
+                    bsp_printf_full("Error: Timeout waiting for buffer ready\r\n");
                     return ERR_TIMEOUT;
                 }
 
                 /* Check for error conditions */
                 if (check_for_error_status()) {  // Implement this function to check error bits
-                    debug_printf("Error: Error detected during transfer\r\n");
+                    bsp_printf_full("Error: Error detected during transfer\r\n");
                     return ERR_IO;
                 }
             }
@@ -745,13 +745,13 @@ static int efx_emmc_boot_receive_data_all(struct mmc *mmc, u32 block_cnt, u32 bl
         /* Check for timeout */
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for transfer completion\r\n");
+            bsp_printf_full("Error: Timeout waiting for transfer completion\r\n");
             return ERR_TIMEOUT;
         }
 
         /* Check for error conditions */
         if (check_for_error_status()) {  // Implement this function to check error bits
-            debug_printf("Error: Error detected during transfer\r\n");
+            bsp_printf_full("Error: Error detected during transfer\r\n");
             return ERR_IO;
         }
     }
@@ -791,13 +791,13 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
 
     /* Parameter validation */
     if (buf == NULL) {
-        debug_printf("Error: Invalid buffer pointer\r\n");
+        bsp_printf_full("Error: Invalid buffer pointer\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Check buffer alignment for DMA mode */
     if (dma_en && ((uintptr_t)buf & 0x3)) {
-        debug_printf("Error: DMA requires 4-byte aligned buffer\r\n");
+        bsp_printf_full("Error: DMA requires 4-byte aligned buffer\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -806,26 +806,26 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
     while (is_cmd_or_data_bus_busy()) {
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for bus ready\r\n");
+            bsp_printf_full("Error: Timeout waiting for bus ready\r\n");
             return ERR_TIMEOUT;
         }
     }
 
     /* Validate block count (must be within 16-bit range) */
     if (block_cnt == 0 || block_cnt > largest_number(16, 31)) {
-        debug_printf("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
+        bsp_printf_full("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
         return ERR_INVALID_PARAM;
     }
 
     /* For high-density eMMC (>2GB), read size must be multiple of 512 bytes */
     if ((EMMC_LARGE_DENSITY != 0) && (((block_cnt * EMMC_BLOCK_LEN) % 512) != 0x0)) {
-        debug_printf("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
+        bsp_printf_full("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Verify EMMC_BLOCK_LEN is multiple of 4 for proper word-aligned access */
     if (EMMC_BLOCK_LEN % 4 != 0) {
-        debug_printf("Error: Block length must be a multiple of 4 bytes\r\n");
+        bsp_printf_full("Error: Block length must be a multiple of 4 bytes\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -836,7 +836,7 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
 
     boot_partition_size = boot_partition_size_calculate(mmc);  // byte
     if (boot_partition_size == 0) {
-        debug_printf("Error: Failed to calculate boot partition size\r\n");
+        bsp_printf_full("Error: Failed to calculate boot partition size\r\n");
         return ERR_IO;
     }
 
@@ -851,14 +851,14 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
     if (EMMC_LARGE_DENSITY == 0) {
         /* Check for potential overflow */
         if (block_cnt > ((u32)-1 - addr) / EMMC_BLOCK_LEN) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN) - 1;
     } else {
         /* Check for potential overflow */
         if (block_cnt > ((u32)-1 - addr) / (EMMC_BLOCK_LEN / 512)) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN / 512) - 1;
@@ -866,12 +866,12 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
 
     /* Validate start and end addresses are within range */
     if (addr > boot_addr_max) {
-        debug_printf("Error: Write start addr %u boot_addr_max %u out of range\r\n", addr, boot_addr_max);
+        bsp_printf_full("Error: Write start addr %u boot_addr_max %u out of range\r\n", addr, boot_addr_max);
         return ERR_INVALID_PARAM;
     }
 
     if (addr_end > boot_addr_max) {
-        debug_printf("Error: Write end addr out of range\r\n");
+        bsp_printf_full("Error: Write end addr out of range\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -910,7 +910,7 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
     if (dma_en) {
         ret = sd_ctrl_creat_Descriptor(mmc, block_cnt, EMMC_BLOCK_LEN, buf);
         if (ret != 0) {
-            debug_printf("Error: Failed to create DMA descriptor, error %d\r\n", ret);
+            bsp_printf_full("Error: Failed to create DMA descriptor, error %d\r\n", ret);
             return ERR_IO;
         }
     }
@@ -932,13 +932,13 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
             while (reg_is_bit_cleared(REG_PRESENT_STATE, 11)) {
                 bsp_uDelay(100);
                 if (++timeout_counter > MAX_TIMEOUT) {
-                    debug_printf("Error: Timeout waiting for buffer ready\r\n");
+                    bsp_printf_full("Error: Timeout waiting for buffer ready\r\n");
                     return ERR_TIMEOUT;
                 }
 
                 /* Check for error conditions */
                 if (check_for_error_status()) {  // Implement this function to check error bits
-                    debug_printf("Error: Error detected during transfer\r\n");
+                    bsp_printf_full("Error: Error detected during transfer\r\n");
                     return ERR_IO;
                 }
             }
@@ -964,13 +964,13 @@ static int efx_emmc_boot_receive_data_single(struct mmc *mmc, u32 block_cnt, u32
         /* Check for timeout */
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for transfer completion\r\n");
+            bsp_printf_full("Error: Timeout waiting for transfer completion\r\n");
             return ERR_TIMEOUT;
         }
 
         /* Check for error conditions */
         if (check_for_error_status()) {  // Implement this function to check error bits
-            debug_printf("Error: Error detected during transfer\r\n");
+            bsp_printf_full("Error: Error detected during transfer\r\n");
             return ERR_IO;
         }
     }

@@ -22,10 +22,12 @@
 
 #define TEST_USER_ENTIRE 1
 #define TEST_USER_SINGLE 2
-#define TEST_USER TEST_USER_ENTIRE
+#define TEST_USER TEST_USER_SINGLE
 
 void main()
 {
+	bsp_init();
+
 	struct mmc *mmc;
 	struct mmc_cmd *cmd;
 	struct mmc_data *data;
@@ -38,8 +40,8 @@ void main()
 	cmd=malloc(sizeof(struct mmc_cmd));
 	data=malloc(sizeof(struct mmc_data));
 
-	bsp_printf("\n\r--- EFX-eMMC Demo ---\n\r");
-	bsp_printf("\r\nInitializing...\r\n");
+	bsp_printf_full("\n\r--- EFX-eMMC Demo ---\n\r");
+	bsp_printf_full("\r\nInitializing...\r\n");
 
 	//Allocation Struct Space
 
@@ -78,7 +80,7 @@ void main()
 		u32 whole_space_test_num = 1;
 		test_entire_emmc(mmc, cmd, dma_mode, speed_mode, bus_width, clk_freq, len_mode, fixed_bk_num, erase_mode, whole_space_test_num);
 	#elif TEST_USER == TEST_USER_SINGLE
-		u32 test_size_mb = 487; //MB, max 487MB
+		u32 test_size_mb = 8; //MB, max 487MB
 		u32 start_addr = 100*(erase_unit_size_calculate(mmc,erase_mode)/EMMC_STEP);
 		u32 erase_en = (((start_addr * EMMC_STEP) % erase_unit_size_calculate(mmc,erase_mode)) != 0x0)? 0:1;
 		double write_speed = 0.0;
@@ -93,9 +95,9 @@ void main()
 		}
 
 		if (ret == 0) {
-			bsp_printf("-------------------Test Success-------------------\r\n");
+			bsp_printf_full("-------------------Test Success-------------------\r\n");
 		} else {
-			bsp_printf("-------------------Test Fail-------------------\r\n");
+			bsp_printf_full("-------------------Test Fail-------------------\r\n");
 		}
 	#endif
 #elif TEST_AREA == TEST_AREA_BOOT
@@ -117,33 +119,33 @@ void main()
 	u32 ret = 0;
 
 	efx_emmc_boot_write(mmc, cmd, bus_width, par_num, block_cnt, addr, src_buffer, dma_en);
-	debug_printf("-------------write finish-----------------\r\n");
+	bsp_printf_full("-------------write finish-----------------\r\n");
 
 	if (read_all == 1) {
 		efx_emmc_boot_read_all(mmc, cmd, bus_width, par_num, dest_buffer, dma_en);  //Read out all the data in the boot area at one time
 	} else {
 		efx_emmc_boot_read_single(mmc, cmd, bus_width, par_num, block_cnt, addr, dest_buffer, dma_en);
 	}
-	debug_printf("-------------read finish-----------------\r\n");
+	bsp_printf_full("-------------read finish-----------------\r\n");
 
 	test_fail = 0;
 	for(int i=0; i<boot_partition_size/4; i++) {
 		if(dest_buffer[i] != src_buffer[i]) {
-			debug_printf("dest_buffer[%d] = 0x%x, src_buffer[%d] = 0x%x\r\n", i, dest_buffer[i], i, src_buffer[i]);
-			debug_printf("-------------compare fail -----------------\r\n");
+			bsp_printf_full("dest_buffer[%d] = 0x%x, src_buffer[%d] = 0x%x\r\n", i, dest_buffer[i], i, src_buffer[i]);
+			bsp_printf_full("-------------compare fail -----------------\r\n");
 			test_fail = 1;
 			break;
 		}
 	}
 
 	if(test_fail == 1) {
-		debug_printf("*************write && read test fail *************\r\n");
+		bsp_printf_full("*************write && read test fail *************\r\n");
 		goto free_buffers;
 	} else {
-		debug_printf("*************write && read test success *************\r\n");
+		bsp_printf_full("*************write && read test success *************\r\n");
 	}
 
-	debug_printf("*************erase test begin *************\r\n");
+	bsp_printf_full("*************erase test begin *************\r\n");
 	efx_emmc_boot_erase(mmc, cmd, par_num, erase_start_addr, erase_unit_num, erase_type);
 	if (read_all == 1) {
 		efx_emmc_boot_read_all(mmc, cmd, bus_width, par_num, dest_buffer, dma_en);  //Read out all the data in the boot area at one time
@@ -160,13 +162,13 @@ void main()
 	}
 
 	if(test_fail == 1) {
-		debug_printf("-------------erase fail -----------------\r\n");
+		bsp_printf_full("-------------erase fail -----------------\r\n");
 		goto free_buffers;
 	} else {
-		debug_printf("-------------erase success -----------------\r\n");
+		bsp_printf_full("-------------erase success -----------------\r\n");
 	}
 
-	debug_printf("-------------Boot Area Test Success-----------------\r\n");
+	bsp_printf_full("-------------Boot Area Test Success-----------------\r\n");
 
 free_buffers:
 	free(src_buffer);

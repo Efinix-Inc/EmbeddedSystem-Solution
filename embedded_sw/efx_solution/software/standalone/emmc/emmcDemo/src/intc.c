@@ -7,9 +7,9 @@
 #include "intc.h"
 #include "efx_emmc_driver.h"
 #include "userDef.h"
+#include "device_config.h"
 
-
-IntStruct IntPtr;
+volatile IntStruct IntPtr;
 struct sd_ctrl_dev *dev;
 
 /************************** Function Definitions *****************************/
@@ -26,73 +26,61 @@ void UserInterruptAIsr()
 	if(int_status&INT_COMMAND_COMPLETE) {
 		IntPtr.command_complete = 0x1;
 		reg_write(INT_COMMAND_COMPLETE, REG_INTERRUPT_STATUS);
-	//	debug_printf("INT : COMMAND_COMPLETE\n\r");
+	//	bsp_printf_full("INT : COMMAND_COMPLETE\n\r");
 	}
 
 	if(int_status&INT_TRANSFER_COMPLETE) {
 		IntPtr.transfer_complete = 0x1;
 		reg_write(INT_TRANSFER_COMPLETE, REG_INTERRUPT_STATUS);
-//		debug_printf("INT : TRANSFER_COMPLETE\n\r");
+//		bsp_printf_full("INT : TRANSFER_COMPLETE\n\r");
 	}
 
 	if(int_status&INT_BLOCK_GAP_EVENT) {
 		IntPtr.block_gap_event = 0x1;
 		reg_write(INT_BLOCK_GAP_EVENT, REG_INTERRUPT_STATUS);
-		debug_printf("INT : BLOCK_GAP_EVENT\n\r");
+		bsp_printf_full("INT : BLOCK_GAP_EVENT\n\r");
 	}
 
 	if(int_status&INT_BUFFER_WRITE_READY) {
 		//IntPtr.buffer_write_ready = 0x1;
 		reg_write(INT_BUFFER_WRITE_READY, REG_INTERRUPT_STATUS);
-		debug_printf("INT : BUFFER_WRITE_READY\n\r");
+		bsp_printf_full("INT : BUFFER_WRITE_READY\n\r");
 	}
 
 	if(int_status&INT_BUFFER_READ_READY) {
 		//IntPtr.buffer_read_ready = 0x1;
 		reg_write(INT_BUFFER_READ_READY, REG_INTERRUPT_STATUS);
-		debug_printf("INT : BUFFER_READ_READY\n\r");
-	}
-
-	if(int_status&INT_CARD_INSERTION) {
-		IntPtr.card_insertion = 0x1;
-		reg_write(INT_CARD_INSERTION, REG_INTERRUPT_STATUS);
-		debug_printf("INT : CARD_INSERTION\n\r");
-	}
-
-	if(int_status&INT_CARD_REMOVAL) {
-		IntPtr.card_removal = 0x1;
-		reg_write(INT_CARD_REMOVAL, REG_INTERRUPT_STATUS);
-		debug_printf("INT : CARD_REMOVAL\n\r");
+		bsp_printf_full("INT : BUFFER_READ_READY\n\r");
 	}
 
 	if(int_status&INT_COMMAND_TIMEOUT_ERROR) {
 		IntPtr.command_timeout_error = 0x1;
 		reg_write(INT_COMMAND_TIMEOUT_ERROR, REG_INTERRUPT_STATUS);
-		debug_printf("INT : COMMAND_TIMEOUT_ERROR\n\r");
+		bsp_printf_full("INT : COMMAND_TIMEOUT_ERROR\n\r");
 	}
 
 	if(int_status&INT_COMMAND_CRC_ERROR) {
 		IntPtr.command_crc_error = 0x1;
 		reg_write(INT_COMMAND_CRC_ERROR, REG_INTERRUPT_STATUS);
-		debug_printf("INT : COMMAND_CRC_ERROR\n\r");
+		bsp_printf_full("INT : COMMAND_CRC_ERROR\n\r");
 	}
 
 	if(int_status&INT_COMMAND_END_BIT_ERROR) {
 		IntPtr.command_end_bit_error = 0x1;
 		reg_write(INT_COMMAND_END_BIT_ERROR, REG_INTERRUPT_STATUS);
-		debug_printf("INT : COMMAND_END_BIT_ERROR\n\r");
+		bsp_printf_full("INT : COMMAND_END_BIT_ERROR\n\r");
 	}
 
 	if(int_status&INT_COMMAND_INDEX_ERROR) {
 		IntPtr.command_index_error = 0x1;
 		reg_write(INT_COMMAND_INDEX_ERROR, REG_INTERRUPT_STATUS);
-		debug_printf("INT : COMMAND_INDEX_ERROR\n\r");
+		bsp_printf_full("INT : COMMAND_INDEX_ERROR\n\r");
 	}
 
 	if(int_status&INT_DATA_CRC_ERROR) {
 		IntPtr.data_crc_error = 0x1;
 		reg_write(INT_DATA_CRC_ERROR, REG_INTERRUPT_STATUS);
-		debug_printf("INT : DATA_CRC_ERROR\n\r");
+		bsp_printf_full("INT : DATA_CRC_ERROR\n\r");
 	}
 
 	reg_write(INT_ENABLE, REG_INTERRUPT_SIGNAL_ENABLE);
@@ -102,11 +90,6 @@ void UserInterruptAIsr()
 /********************************* Function **********************************/
 //Used on unexpected trap/interrupt codes
 void crash(){
-	int32_t mcause = csr_read(mcause);
-	int32_t interrupt = mcause < 0;    //Interrupt if true, exception if false
-	int32_t cause     = mcause & 0xF;
-	bsp_printf("mcause = %x \r\n",mcause);
-	bsp_printf("interrupt = %x \r\n",interrupt);
 	bsp_printf("\n*** CRASH ***\n");
 	while(1);
 }

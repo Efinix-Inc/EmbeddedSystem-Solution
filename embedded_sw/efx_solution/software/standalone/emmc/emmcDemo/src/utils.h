@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include "bsp.h"
-#include "device_config.h"
+//#include "device_config.h"
 #include "userDef.h"
 
 u32 reg_read(u32 reg);

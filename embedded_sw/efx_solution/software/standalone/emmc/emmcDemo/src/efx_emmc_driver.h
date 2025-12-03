@@ -75,8 +75,6 @@ typedef struct _IntStruct {
     u32 block_gap_event;            /* Block gap event flag */
     u32 buffer_write_ready;         /* Buffer write ready flag */
     u32 buffer_read_ready;          /* Buffer read ready flag */
-    u32 card_insertion;             /* Card insertion flag */
-    u32 card_removal;               /* Card removal flag */
     u32 command_timeout_error;      /* Command timeout error flag */
     u32 command_crc_error;          /* Command CRC error flag */
     u32 command_end_bit_error;      /* Command end bit error flag */
@@ -122,8 +120,8 @@ enum data_transfer_rate {
 	ddr
 };
 
-IntStruct IntPtr; 				/* Global interrupt status structure */
-u32 Descriptor[1024];				/* Array to hold Descriptor */
+extern volatile IntStruct IntPtr; 				/* Global interrupt status structure */
+extern u32 Descriptor[1024];				/* Array to hold Descriptor */
 
 static u32 is_cmd_or_data_bus_busy();
 static u32 is_cmd_bus_busy();
@@ -200,9 +198,9 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 	if(DEBUG_PRINTF_EN == 1)
 	{
 		if(dev->app_cmd)
-			bsp_printf("----[ACMD %d ARG 0x%x Rsp %d ]----\r\n",cmd->cmdidx, cmd->cmdarg,cmd->resp_type);
+			bsp_printf_full("----[ACMD %d ARG 0x%x Rsp %d ]----\r\n",cmd->cmdidx, cmd->cmdarg,cmd->resp_type);
 		else
-			bsp_printf("----[CMD %d ARG 0x%x Rsp %d ]----\r\n",cmd->cmdidx, cmd->cmdarg,cmd->resp_type);
+			bsp_printf_full("----[CMD %d ARG 0x%x Rsp %d ]----\r\n",cmd->cmdidx, cmd->cmdarg,cmd->resp_type);
 	}
 
 	reg_write(cmd->cmdarg, REG_ARGUMENT1);
@@ -234,7 +232,6 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 		case MMC_CMD_SWITCH:				Value |= 0x0<<21; break;	//CMD6
 		case MMC_CMD_READ_SINGLE_BLOCK:		Value |= 0x1<<21; break;	//CMD17
 		case MMC_CMD_READ_MULTIPLE_BLOCK:	Value |= 0x1<<21; break;	//CMD18
-		case MMC_CMD_SEND_TUNING_BLOCK:		Value |= 0x1<<21; break;	//CMD19
 		case MMC_CMD_WRITE_SINGLE_BLOCK:	Value |= 0x1<<21; break;	//CMD24
 		case MMC_CMD_WRITE_MULTIPLE_BLOCK:	Value |= 0x1<<21; break;	//CMD25
 		default:							Value |= 0x0<<21; break;	//else
@@ -247,7 +244,7 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 	Value |= (cmd->cmdidx&0x3f)<<24;
 
 	if(cmd->resp_type & MMC_RSP_BUSY) {
-		debug_printf("value 0x%x\r\n", Value);
+		bsp_printf_full("value 0x%x\r\n", Value);
 //		Value = 0x6030000;
 	}
 
@@ -255,7 +252,7 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 	while(is_cmd_bus_busy()) {
 		bsp_uDelay(1);
 	}
-	debug_printf("cmd%d value 0x%x\r\n", cmd->cmdidx, Value);
+	bsp_printf_full("cmd%d value 0x%x\r\n", cmd->cmdidx, Value);
 	reg_write(Value, REG_TRANFER_MODE_COMMAND);
 
 	if(cmd->resp_type & MMC_RSP_BUSY) {
@@ -270,7 +267,7 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 			IntPtr.command_complete = 0x0;
 			if((IntPtr.command_timeout_error == 0x0) && (IntPtr.command_crc_error == 0x0) &&
 			   (IntPtr.command_end_bit_error == 0x0) && (IntPtr.command_index_error == 0x0))  {
-				debug_printf("Info : CMD Succeed!\n\r");
+				bsp_printf_full("Info : CMD Succeed!\n\r");
 
 				if((cmd->resp_type&0xf) == 0x0) {//No Response
 				} else if(cmd->resp_type & MMC_RSP_136) {//Response Length 136
@@ -284,11 +281,11 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 				}
 
 			} else {
-				if (IntPtr.command_timeout_error) debug_printf("Error: CMD Failed. CMD timeout error!\n\r");
-				else if (IntPtr.command_crc_error) debug_printf("Error: CMD Failed. CMD CRC error!\n\r");
-				else if (IntPtr.command_end_bit_error) debug_printf("Error: CMD Failed. CMD end bit error!\n\r");
-				else if (IntPtr.command_index_error) debug_printf("Error: CMD Failed. CMD index error!\n\r");
-				else debug_printf("Error: CMD Failed. Unknown error!\n\r");
+				if (IntPtr.command_timeout_error) bsp_printf_full("Error: CMD Failed. CMD timeout error!\n\r");
+				else if (IntPtr.command_crc_error) bsp_printf_full("Error: CMD Failed. CMD CRC error!\n\r");
+				else if (IntPtr.command_end_bit_error) bsp_printf_full("Error: CMD Failed. CMD end bit error!\n\r");
+				else if (IntPtr.command_index_error) bsp_printf_full("Error: CMD Failed. CMD index error!\n\r");
+				else bsp_printf_full("Error: CMD Failed. Unknown error!\n\r");
 
 				IntPtr.command_timeout_error = 0x0;
 				IntPtr.command_crc_error = 0x0;
@@ -351,7 +348,7 @@ static int sd_ctrl_creat_Descriptor(struct mmc *mmc, u32 blocks, u32 block_size,
 
     /* Create the descriptor table entries */
     u32 remaining_length = total_length;
-    u32 curr_src_addr = (u32)src;
+    u32 curr_src_addr = (u32)(uintptr_t)src;
 
     for (u32 i = 0; i < desc_count; i++) {
         /* Calculate length for this descriptor */
@@ -388,7 +385,7 @@ static int sd_ctrl_creat_Descriptor(struct mmc *mmc, u32 blocks, u32 block_size,
     }
 
     /* Set the ADMA system address register to the physical address of the descriptor table */
-    reg_write((u32)desc_table, REG_ADMA_SYSTEM_ADDR0);
+    reg_write((u32)(uintptr_t)desc_table, REG_ADMA_SYSTEM_ADDR0);
 
     return 0;
 }
@@ -411,8 +408,8 @@ static int sd_ctrl_data(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *d
 	//Transfer Mode Set
 	if(DEBUG_PRINTF_EN == 1)
 	{
-		bsp_printf("Write OPS Addr = 0x%x\r\n",dev->base_addr);
-		bsp_printf("IntPtr.transfer_complete %d \r\n",IntPtr.transfer_complete);
+		bsp_printf_full("Write OPS Addr = 0x%x\r\n",dev->base_addr);
+		bsp_printf_full("IntPtr.transfer_complete %d \r\n",IntPtr.transfer_complete);
 	}
 
 #ifdef DMA_MODE
@@ -448,27 +445,27 @@ static int sd_ctrl_data(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *d
 
 		if(DEBUG_PRINTF_EN == 1)
 		{
-			if((cmd->response[0]>>3)&0x1) bsp_printf("CS-AKE_SEQ_ERROR\r\n");
-			if((cmd->response[0]>>5)&0x1) bsp_printf("CS-APP_CMD\r\n");
-			if((cmd->response[0]>>8)&0x1) bsp_printf("CS-READY_FOR_DATA\r\n");
-			bsp_printf("CS-CURRENT_STATE %d\r\n", (cmd->response[0]>>9)&0xf);
-			if((cmd->response[0]>>13)&0x1) bsp_printf("CS-ERASE_RESET\r\n");
-			if((cmd->response[0]>>14)&0x1) bsp_printf("CS-CARD_ECC_DISABLED\r\n");
-			if((cmd->response[0]>>15)&0x1) bsp_printf("CS-WP_ERASE_SKIP\r\n");
-			if((cmd->response[0]>>16)&0x1) bsp_printf("CS-CSD_OVERWRITE\r\n");
-			if((cmd->response[0]>>19)&0x1) bsp_printf("CS-ERROR\r\n");
-			if((cmd->response[0]>>20)&0x1) bsp_printf("CS-CC_ERROR\r\n");
-			if((cmd->response[0]>>21)&0x1) bsp_printf("CS-CARD_ECC_FAILED\r\n");
-			if((cmd->response[0]>>22)&0x1) bsp_printf("CS-ILLEGALCOMMAND\r\n");
-			if((cmd->response[0]>>23)&0x1) bsp_printf("CS-COM_CRC_ERROR\r\n");
-			if((cmd->response[0]>>24)&0x1) bsp_printf("CS-LOCK_UNLOCK_FAILED\r\n");
-			if((cmd->response[0]>>25)&0x1) bsp_printf("CS-CARD_IS_LOCKED\r\n");
-			if((cmd->response[0]>>26)&0x1) bsp_printf("CS-WP_VIOLATION\r\n");
-			if((cmd->response[0]>>27)&0x1) bsp_printf("CS-ERASE_PARAM\r\n");
-			if((cmd->response[0]>>28)&0x1) bsp_printf("CS-ERASE_SEQ_ERROR\r\n");
-			if((cmd->response[0]>>29)&0x1) bsp_printf("CS-BLOCK_LEN_ERROR\r\n");
-			if((cmd->response[0]>>30)&0x1) bsp_printf("CS-ADDRESS_ERROR\r\n");
-			if((cmd->response[0]>>31)&0x1) bsp_printf("CS-OUT_OF_RANGE\r\n");
+			if((cmd->response[0]>>3)&0x1) bsp_printf_full("CS-AKE_SEQ_ERROR\r\n");
+			if((cmd->response[0]>>5)&0x1) bsp_printf_full("CS-APP_CMD\r\n");
+			if((cmd->response[0]>>8)&0x1) bsp_printf_full("CS-READY_FOR_DATA\r\n");
+			bsp_printf_full("CS-CURRENT_STATE %d\r\n", (cmd->response[0]>>9)&0xf);
+			if((cmd->response[0]>>13)&0x1) bsp_printf_full("CS-ERASE_RESET\r\n");
+			if((cmd->response[0]>>14)&0x1) bsp_printf_full("CS-CARD_ECC_DISABLED\r\n");
+			if((cmd->response[0]>>15)&0x1) bsp_printf_full("CS-WP_ERASE_SKIP\r\n");
+			if((cmd->response[0]>>16)&0x1) bsp_printf_full("CS-CSD_OVERWRITE\r\n");
+			if((cmd->response[0]>>19)&0x1) bsp_printf_full("CS-ERROR\r\n");
+			if((cmd->response[0]>>20)&0x1) bsp_printf_full("CS-CC_ERROR\r\n");
+			if((cmd->response[0]>>21)&0x1) bsp_printf_full("CS-CARD_ECC_FAILED\r\n");
+			if((cmd->response[0]>>22)&0x1) bsp_printf_full("CS-ILLEGALCOMMAND\r\n");
+			if((cmd->response[0]>>23)&0x1) bsp_printf_full("CS-COM_CRC_ERROR\r\n");
+			if((cmd->response[0]>>24)&0x1) bsp_printf_full("CS-LOCK_UNLOCK_FAILED\r\n");
+			if((cmd->response[0]>>25)&0x1) bsp_printf_full("CS-CARD_IS_LOCKED\r\n");
+			if((cmd->response[0]>>26)&0x1) bsp_printf_full("CS-WP_VIOLATION\r\n");
+			if((cmd->response[0]>>27)&0x1) bsp_printf_full("CS-ERASE_PARAM\r\n");
+			if((cmd->response[0]>>28)&0x1) bsp_printf_full("CS-ERASE_SEQ_ERROR\r\n");
+			if((cmd->response[0]>>29)&0x1) bsp_printf_full("CS-BLOCK_LEN_ERROR\r\n");
+			if((cmd->response[0]>>30)&0x1) bsp_printf_full("CS-ADDRESS_ERROR\r\n");
+			if((cmd->response[0]>>31)&0x1) bsp_printf_full("CS-OUT_OF_RANGE\r\n");
 		}
 
 #ifndef DMA_MODE
@@ -491,7 +488,7 @@ static int sd_ctrl_data(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_data *d
 				buf |= data->src[tmp++]<<8;
 				buf |= data->src[tmp++]<<16;
 				buf |= data->src[tmp++]<<24;
-				//bsp_printf("WRITE %x \r\n",buf);
+				//bsp_printf_full("WRITE %x \r\n",buf);
 
 				reg_write(buf, REG_BUFFER_DATA_PORT);//sdhc_reg - buffer_data_port Register
 			}
@@ -583,32 +580,6 @@ static int sd_ctrl_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd, struct mmc_dat
 
 /*******************************************************************************
 *
-* @brief This function gets the card detect status.
-*
-* @param mmc Pointer to the MMC structure representing the MMC/SD card.
-* @return Returns 1 if the card is detected, otherwise returns 0.
-*
-*******************************************************************************/
-static int sd_ctrl_get_cd(struct mmc *mmc)
-{
-	return 1;
-}
-
-/*******************************************************************************
-*
-* @brief This function gets the write protect status.
-*
-* @param mmc Pointer to the MMC structure representing the MMC/SD card.
-* @return Returns 0 indicating no write protection.
-*
-*******************************************************************************/
-static int sd_ctrl_get_wp(struct mmc *mmc)
-{
-	return 0;
-}
-
-/*******************************************************************************
-*
 * @brief This function sets the I/O settings for the SD controller.
 *
 * @param mmc Pointer to the MMC structure representing the MMC/SD card.
@@ -632,8 +603,6 @@ static int sd_ctrl_set_ios(struct mmc *mmc)
 *******************************************************************************/
 static int sd_ctrl_init(struct mmc *mmc)
 {
-    mmc->cfg->ops->getcd(mmc); // Get card detect status
-    mmc->cfg->ops->getwp(mmc); // Get write protect status
     mmc->cfg->ops->set_ios(mmc); // Set I/O settings
     return 0;
 }
@@ -673,8 +642,6 @@ static int sd_ctrl_mmc_probe(struct mmc *mmc, int base_addr)
     mmc->cfg->name = "efx_sd_controller";
     mmc->cfg->ops->send_cmd = sd_ctrl_send_cmd;
     mmc->cfg->ops->set_ios = sd_ctrl_set_ios;
-    mmc->cfg->ops->getcd = sd_ctrl_get_cd;
-    mmc->cfg->ops->getwp = sd_ctrl_get_wp;
 
     // Set MMC clock frequency and capabilities
     mmc->cfg->b_max = 1024;
@@ -701,10 +668,10 @@ static void sd_send_cmd(struct mmc *mmc, struct mmc_cmd *cmd, u32 index, u32 res
 static u32 is_cmd_or_data_bus_busy()
 {
 	if (reg_is_bit_set(REG_BASE_STATUS_REGISTER0, 0)) {
-//		debug_printf("Command bus busy\r\n");
+//		bsp_printf_full("Command bus busy\r\n");
 		return 1;
 	} else if (reg_is_bit_set(REG_BASE_STATUS_REGISTER0, 1)) {
-//		debug_printf("Data bus busy\r\n");
+//		bsp_printf_full("Data bus busy\r\n");
 		return 1;
 	}
 	return 0;
@@ -713,7 +680,7 @@ static u32 is_cmd_or_data_bus_busy()
 static u32 is_cmd_bus_busy()
 {
 	if (reg_is_bit_set(REG_BASE_STATUS_REGISTER0, 0)) {
-//		debug_printf("Command bus busy\r\n");
+//		bsp_printf_full("Command bus busy\r\n");
 		return 1;
 	}
 	return 0;
@@ -742,7 +709,7 @@ static void efx_emmc_config_clk(struct mmc *mmc, u32 clk_khz)
 
 	if (clk_khz > 200000) {
 		clk_khz = 200000;
-		debug_printf("Warning: Target clock exceed limit. Limit to 200MHz\r\n");
+		bsp_printf_full("Warning: Target clock exceed limit. Limit to 200MHz\r\n");
 	}
 
 	mmc->clk_div = (mmc->base_clk_freq_mhz * 1000000.0) / (clk_khz * 1000.0);
@@ -750,7 +717,7 @@ static void efx_emmc_config_clk(struct mmc *mmc, u32 clk_khz)
 	reg_write((0x1 << 16) | (mmc->clk_div), REG_BASE_REGISTER0);
 	delay = cycle_to_us(clk_khz, 74);
 	bsp_uDelay(delay);
-	debug_printf("Clock %dkHz, clock divider %d, delay %dus\r\n", clk_khz, mmc->clk_div, delay);
+	bsp_printf_full("Clock %dkHz, clock divider %d, delay %dus\r\n", clk_khz, mmc->clk_div, delay);
 }
 
 static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
@@ -761,14 +728,14 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 	u32 voltage_supported = 0;
 
 	if (EMMC_RCA <= 1) {
-		bsp_printf("Error: Invalid EMMC_RCA, it must be greater than 1\r\n");
+		bsp_printf_full("Error: Invalid EMMC_RCA, it must be greater than 1\r\n");
 		return -1;
 	}
 
 	mmc->base_clk_freq_mhz = reg_read(REG_HOST_CAPABILITIES) & 0x3ff;
-	debug_printf("EMMC base clock: %dMHz\r\n", mmc->base_clk_freq_mhz);
+	bsp_printf_full("EMMC base clock: %dMHz\r\n", mmc->base_clk_freq_mhz);
 	mmc->max_block_len = (reg_read(REG_HOST_CAPABILITIES) >> 16) & 0xffff;
-	debug_printf("EMMC max block length: %d bytes\r\n", mmc->max_block_len);
+	bsp_printf_full("EMMC max block length: %d bytes\r\n", mmc->max_block_len);
 
 	efx_emmc_config_clk(mmc, 400);
 
@@ -789,22 +756,22 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 	} else if ((EMMC_VCCQ >= 2.7) && (EMMC_VCCQ <= 3.6)) {
 		ocr = (addr_mode << 29) | (0x1ff << 15);
 	} else {
-		debug_printf("Error: Invalid VCCQ\r\n");
+		bsp_printf_full("Error: Invalid VCCQ\r\n");
 		return -1;
 	}
-	debug_printf("Host sent OCR = 0x%x\r\n", ocr);
+	bsp_printf_full("Host sent OCR = 0x%x\r\n", ocr);
 
 	while (busy == 0) {
 		sd_send_cmd(mmc, cmd, MMC_CMD_SEND_OP_COND, MMC_RSP_R3, ocr);
 		busy = (cmd->response[0] >> 31) & 0x1;
 
 		if (busy == 0) {
-			debug_printf("eMMC not yet ready\r\n");
+			bsp_printf_full("eMMC not yet ready\r\n");
 			bsp_uDelay(200);
 			continue;
 		}
 
-		debug_printf("Device returned OCR = 0x%x\r\n", cmd->response[0]);
+		bsp_printf_full("Device returned OCR = 0x%x\r\n", cmd->response[0]);
 	}
 
 	efx_emmc_retrieve_cid(mmc, cmd);
@@ -816,7 +783,7 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 	sd_send_cmd(mmc, cmd, MMC_CMD_SEND_STATUS, MMC_RSP_R1, (EMMC_RCA << 16));
 
 	if (((cmd->response[0] >> 9) & 0xf) != stby) {
-		bsp_printf("Error: Failed to enter Stby state\r\n");
+		bsp_printf_full("Error: Failed to enter Stby state\r\n");
 		return -1;
 	}
 
@@ -825,7 +792,7 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 	sd_send_cmd(mmc, cmd, MMC_CMD_SEND_STATUS, MMC_RSP_R1, (EMMC_RCA << 16));
 
 	if (((cmd->response[0] >> 9) & 0xf) != tran) {
-		bsp_printf("Error: Failed to enter Tran state\r\n");
+		bsp_printf_full("Error: Failed to enter Tran state\r\n");
 		return -1;
 	}
 
@@ -835,20 +802,20 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 
     sd_send_cmd(mmc, cmd, MMC_CMD_SET_BLOCKLEN, MMC_RSP_R1, EMMC_BLOCK_LEN);
     if (val_is_bit_set(cmd->response[0], 29)) {
-    	bsp_printf("Error: Invalid BLOCK_LEN\r\n");
+    	bsp_printf_full("Error: Invalid BLOCK_LEN\r\n");
 	    return -1;
     }
 
 	if (EMMC_BLOCK_LEN > mmc->max_block_len) {
-		debug_printf("Error: EMMC_BLOCK_LEN cannot exceed %d\r\n", mmc->max_block_len);
+		bsp_printf_full("Error: EMMC_BLOCK_LEN cannot exceed %d\r\n", mmc->max_block_len);
 		return -1;
 	}
 
-	debug_printf("eMMC user data area capacity is 0x%llx bytes\r\n", uda_density_calculate(mmc));
-	debug_printf("erase_unit_size in erase mode is 0x%x bytes\r\n", erase_unit_size_calculate(mmc,erase));
-	debug_printf("erase_unit_size in trim mode is 0x%x bytes\r\n", erase_unit_size_calculate(mmc,trim));
+	bsp_printf_full("eMMC user data area capacity is 0x%llx bytes\r\n", uda_density_calculate(mmc));
+	bsp_printf_full("erase_unit_size in erase mode is 0x%x bytes\r\n", erase_unit_size_calculate(mmc,erase));
+	bsp_printf_full("erase_unit_size in trim mode is 0x%x bytes\r\n", erase_unit_size_calculate(mmc,trim));
 
-	bsp_printf("eMMC init done\r\n");
+	bsp_printf_full("eMMC init done\r\n");
 	return 0;
 }
 
@@ -857,11 +824,11 @@ static void efx_emmc_retrieve_cid(struct mmc *mmc, struct mmc_cmd *cmd)
 	u32 pnm[6] = {0};
 
 	sd_send_cmd(mmc, cmd, MMC_CMD_ALL_SEND_CID, MMC_RSP_R2, 0x0);
-	debug_printf("CID:\r\n");
-	debug_printf("cmd->response[3]:%.8x\r\n", cmd->response[3]);
-	debug_printf("cmd->response[2]:%.8x\r\n", cmd->response[2]);
-	debug_printf("cmd->response[1]:%.8x\r\n", cmd->response[1]);
-	debug_printf("cmd->response[0]:%.8x\r\n", cmd->response[0]);
+	bsp_printf_full("CID:\r\n");
+	bsp_printf_full("cmd->response[3]:%.8x\r\n", cmd->response[3]);
+	bsp_printf_full("cmd->response[2]:%.8x\r\n", cmd->response[2]);
+	bsp_printf_full("cmd->response[1]:%.8x\r\n", cmd->response[1]);
+	bsp_printf_full("cmd->response[0]:%.8x\r\n", cmd->response[0]);
 	pnm[5] = (cmd->response[2] >> 24) & 0x00ff;
 	pnm[4] = (cmd->response[2] >> 16) & 0x00ff;
 	pnm[3] = (cmd->response[2] >> 8 ) & 0x00ff;
@@ -869,17 +836,17 @@ static void efx_emmc_retrieve_cid(struct mmc *mmc, struct mmc_cmd *cmd)
 	pnm[1] = (cmd->response[1] >> 24) & 0x00ff;
 	pnm[0] = (cmd->response[1] >> 16) & 0x00ff;
 
-	debug_printf("\r\n");
-	debug_printf("---- CID table begin ----\r\n");
-	debug_printf("MID    = 0x%x\r\n", (cmd->response[3] >> 16) & 0x00ff);
-	debug_printf("CBX    = 0x%x\r\n", (cmd->response[3] >> 8 ) & 0x0003);
-	debug_printf("OID    = 0x%x\r\n", (cmd->response[3] >> 0 ) & 0x00ff);
-	debug_printf("PNM    = 0x%x%x%x%x%x%x\r\n", pnm[5], pnm[4], pnm[3], pnm[2], pnm[1], pnm[0]);
-	debug_printf("PRV    = 0x%x\r\n", (cmd->response[1] >> 8 ) & 0x00ff);
-	debug_printf("PSN    = 0x%x\r\n", ((cmd->response[1] & 0x00ff) << 24) | (cmd->response[0] >> 8 & 0xffffff));
-	debug_printf("MDT    = 0x%x\r\n", (cmd->response[0] >> 0 ) & 0x00ff);
-	debug_printf("---- CID table end ----\r\n");
-	debug_printf("\r\n");
+	bsp_printf_full("\r\n");
+	bsp_printf_full("---- CID table begin ----\r\n");
+	bsp_printf_full("MID    = 0x%x\r\n", (cmd->response[3] >> 16) & 0x00ff);
+	bsp_printf_full("CBX    = 0x%x\r\n", (cmd->response[3] >> 8 ) & 0x0003);
+	bsp_printf_full("OID    = 0x%x\r\n", (cmd->response[3] >> 0 ) & 0x00ff);
+	bsp_printf_full("PNM    = 0x%x%x%x%x%x%x\r\n", pnm[5], pnm[4], pnm[3], pnm[2], pnm[1], pnm[0]);
+	bsp_printf_full("PRV    = 0x%x\r\n", (cmd->response[1] >> 8 ) & 0x00ff);
+	bsp_printf_full("PSN    = 0x%x\r\n", ((cmd->response[1] & 0x00ff) << 24) | (cmd->response[0] >> 8 & 0xffffff));
+	bsp_printf_full("MDT    = 0x%x\r\n", (cmd->response[0] >> 0 ) & 0x00ff);
+	bsp_printf_full("---- CID table end ----\r\n");
+	bsp_printf_full("\r\n");
 }
 
 static void efx_emmc_assign_rca(struct mmc *mmc, struct mmc_cmd *cmd)
@@ -891,11 +858,11 @@ static void efx_emmc_retrieve_csd(struct mmc *mmc, struct mmc_cmd *cmd)
 {
 	sd_send_cmd(mmc, cmd,MMC_CMD_SEND_CSD, MMC_RSP_R2, (EMMC_RCA << 16));
 
-	debug_printf("CSD:\r\n");
-	debug_printf("cmd->response[3]:%.8x\r\n", cmd->response[3]);
-	debug_printf("cmd->response[2]:%.8x\r\n", cmd->response[2]);
-	debug_printf("cmd->response[1]:%.8x\r\n", cmd->response[1]);
-	debug_printf("cmd->response[0]:%.8x\r\n", cmd->response[0]);
+	bsp_printf_full("CSD:\r\n");
+	bsp_printf_full("cmd->response[3]:%.8x\r\n", cmd->response[3]);
+	bsp_printf_full("cmd->response[2]:%.8x\r\n", cmd->response[2]);
+	bsp_printf_full("cmd->response[1]:%.8x\r\n", cmd->response[1]);
+	bsp_printf_full("cmd->response[0]:%.8x\r\n", cmd->response[0]);
 	mmc->spec_vers = (cmd->response[3] >> 18) & 0x000f;
 	mmc->erase_grp_size = (cmd->response[1] >> 2 ) & 0x001f;
 	mmc->erase_grp_mult = ((cmd->response[1] & 0x0003) << 3) | ((cmd->response[0] >> 29) & 0x0007);
@@ -903,42 +870,42 @@ static void efx_emmc_retrieve_csd(struct mmc *mmc, struct mmc_cmd *cmd)
 	mmc->c_size_mult = ((cmd->response[1] >> 7 ) & 0x0007);
 	mmc->read_bl_len = ((cmd->response[2] >> 8 ) & 0x000f);
 
-	debug_printf("\r\n");
-	debug_printf("---- CSD table begin ----\r\n");
-	debug_printf("CSD_STRUCTURE      = 0x%x\r\n", (cmd->response[3] >> 22) & 0x0003);
-	debug_printf("SPEC_VERS          = 0x%x\r\n", (cmd->response[3] >> 18) & 0x000f);
-	debug_printf("TAAC               = 0x%x\r\n", (cmd->response[3] >> 8 ) & 0x00ff);
-	debug_printf("NSAC               = 0x%x\r\n", (cmd->response[3] >> 0 ) & 0x00ff);
-	debug_printf("TRAN_SPEED         = 0x%x\r\n", (cmd->response[2] >> 24) & 0x00ff);
-	debug_printf("CCC                = 0x%x\r\n", (cmd->response[2] >> 12) & 0x0fff);
-	debug_printf("READ_BL_LEN        = 0x%x\r\n", (cmd->response[2] >> 8 ) & 0x000f);
-	debug_printf("READ_BL_PARTIAL    = 0x%x\r\n", (cmd->response[2] >> 7 ) & 0x0001);
-	debug_printf("WRITE_BLK_MISALIGN = 0x%x\r\n", (cmd->response[2] >> 6 ) & 0x0001);
-	debug_printf("READ_BL_MISALIGN   = 0x%x\r\n", (cmd->response[2] >> 5 ) & 0x0001);
-	debug_printf("DSR_IMP            = 0x%x\r\n", (cmd->response[2] >> 4 ) & 0x0001);
-	debug_printf("C_SIZE             = 0x%x\r\n", ((cmd->response[2] & 0x0003) << 10) | ((cmd->response[1] >> 22) & 0x03ff));
-	debug_printf("VDD_R_CURR_MIN     = 0x%x\r\n", (cmd->response[1] >> 19) & 0x0007);
-	debug_printf("VDD_R_CURR_MAX     = 0x%x\r\n", (cmd->response[1] >> 16) & 0x0007);
-	debug_printf("VDD_W_CURR_MIN     = 0x%x\r\n", (cmd->response[1] >> 13) & 0x0007);
-	debug_printf("VDD_W_CURR_MAX     = 0x%x\r\n", (cmd->response[1] >> 10) & 0x0007);
-	debug_printf("C_SIZE_MULT        = 0x%x\r\n", (cmd->response[1] >> 7 ) & 0x0007);
-	debug_printf("ERASE_GRP_SIZE     = 0x%x\r\n", (cmd->response[1] >> 2 ) & 0x001f);
-	debug_printf("ERASE_GRP_MULT     = 0x%x\r\n", ((cmd->response[1] & 0x0003) << 3) | ((cmd->response[0] >> 29) & 0x0007));
-	debug_printf("WP_GRP_SIZE        = 0x%x\r\n", (cmd->response[0] >> 24) & 0x001f);
-	debug_printf("WP_GRP_ENABLE      = 0x%x\r\n", (cmd->response[0] >> 23) & 0x0001);
-	debug_printf("DEFAULT_ECC        = 0x%x\r\n", (cmd->response[0] >> 21) & 0x0003);
-	debug_printf("R2W_FACTOR         = 0x%x\r\n", (cmd->response[0] >> 18) & 0x0003);
-	debug_printf("WRITE_BL_LEN       = 0x%x\r\n", (cmd->response[0] >> 14) & 0x000f);
-	debug_printf("WRITE_BL_PARTIAL   = 0x%x\r\n", (cmd->response[0] >> 13) & 0x0001);
-	debug_printf("CONTENT_PROT_APP   = 0x%x\r\n", (cmd->response[0] >> 8 ) & 0x0001);
-	debug_printf("FILE_FORMAT_GRP    = 0x%x\r\n", (cmd->response[0] >> 7 ) & 0x0001);
-	debug_printf("COPY               = 0x%x\r\n", (cmd->response[0] >> 6 ) & 0x0001);
-	debug_printf("PERM_WRITE_PROTECT = 0x%x\r\n", (cmd->response[0] >> 5 ) & 0x0001);
-	debug_printf("TMP_WRITE_PROTECT  = 0x%x\r\n", (cmd->response[0] >> 4 ) & 0x0001);
-	debug_printf("FILE_FORMAT        = 0x%x\r\n", (cmd->response[0] >> 2 ) & 0x0003);
-	debug_printf("ECC                = 0x%x\r\n", (cmd->response[0] >> 0 ) & 0x0003);
-	debug_printf("---- CID table end ----\r\n");
-	debug_printf("\r\n");
+	bsp_printf_full("\r\n");
+	bsp_printf_full("---- CSD table begin ----\r\n");
+	bsp_printf_full("CSD_STRUCTURE      = 0x%x\r\n", (cmd->response[3] >> 22) & 0x0003);
+	bsp_printf_full("SPEC_VERS          = 0x%x\r\n", (cmd->response[3] >> 18) & 0x000f);
+	bsp_printf_full("TAAC               = 0x%x\r\n", (cmd->response[3] >> 8 ) & 0x00ff);
+	bsp_printf_full("NSAC               = 0x%x\r\n", (cmd->response[3] >> 0 ) & 0x00ff);
+	bsp_printf_full("TRAN_SPEED         = 0x%x\r\n", (cmd->response[2] >> 24) & 0x00ff);
+	bsp_printf_full("CCC                = 0x%x\r\n", (cmd->response[2] >> 12) & 0x0fff);
+	bsp_printf_full("READ_BL_LEN        = 0x%x\r\n", (cmd->response[2] >> 8 ) & 0x000f);
+	bsp_printf_full("READ_BL_PARTIAL    = 0x%x\r\n", (cmd->response[2] >> 7 ) & 0x0001);
+	bsp_printf_full("WRITE_BLK_MISALIGN = 0x%x\r\n", (cmd->response[2] >> 6 ) & 0x0001);
+	bsp_printf_full("READ_BL_MISALIGN   = 0x%x\r\n", (cmd->response[2] >> 5 ) & 0x0001);
+	bsp_printf_full("DSR_IMP            = 0x%x\r\n", (cmd->response[2] >> 4 ) & 0x0001);
+	bsp_printf_full("C_SIZE             = 0x%x\r\n", ((cmd->response[2] & 0x0003) << 10) | ((cmd->response[1] >> 22) & 0x03ff));
+	bsp_printf_full("VDD_R_CURR_MIN     = 0x%x\r\n", (cmd->response[1] >> 19) & 0x0007);
+	bsp_printf_full("VDD_R_CURR_MAX     = 0x%x\r\n", (cmd->response[1] >> 16) & 0x0007);
+	bsp_printf_full("VDD_W_CURR_MIN     = 0x%x\r\n", (cmd->response[1] >> 13) & 0x0007);
+	bsp_printf_full("VDD_W_CURR_MAX     = 0x%x\r\n", (cmd->response[1] >> 10) & 0x0007);
+	bsp_printf_full("C_SIZE_MULT        = 0x%x\r\n", (cmd->response[1] >> 7 ) & 0x0007);
+	bsp_printf_full("ERASE_GRP_SIZE     = 0x%x\r\n", (cmd->response[1] >> 2 ) & 0x001f);
+	bsp_printf_full("ERASE_GRP_MULT     = 0x%x\r\n", ((cmd->response[1] & 0x0003) << 3) | ((cmd->response[0] >> 29) & 0x0007));
+	bsp_printf_full("WP_GRP_SIZE        = 0x%x\r\n", (cmd->response[0] >> 24) & 0x001f);
+	bsp_printf_full("WP_GRP_ENABLE      = 0x%x\r\n", (cmd->response[0] >> 23) & 0x0001);
+	bsp_printf_full("DEFAULT_ECC        = 0x%x\r\n", (cmd->response[0] >> 21) & 0x0003);
+	bsp_printf_full("R2W_FACTOR         = 0x%x\r\n", (cmd->response[0] >> 18) & 0x0003);
+	bsp_printf_full("WRITE_BL_LEN       = 0x%x\r\n", (cmd->response[0] >> 14) & 0x000f);
+	bsp_printf_full("WRITE_BL_PARTIAL   = 0x%x\r\n", (cmd->response[0] >> 13) & 0x0001);
+	bsp_printf_full("CONTENT_PROT_APP   = 0x%x\r\n", (cmd->response[0] >> 8 ) & 0x0001);
+	bsp_printf_full("FILE_FORMAT_GRP    = 0x%x\r\n", (cmd->response[0] >> 7 ) & 0x0001);
+	bsp_printf_full("COPY               = 0x%x\r\n", (cmd->response[0] >> 6 ) & 0x0001);
+	bsp_printf_full("PERM_WRITE_PROTECT = 0x%x\r\n", (cmd->response[0] >> 5 ) & 0x0001);
+	bsp_printf_full("TMP_WRITE_PROTECT  = 0x%x\r\n", (cmd->response[0] >> 4 ) & 0x0001);
+	bsp_printf_full("FILE_FORMAT        = 0x%x\r\n", (cmd->response[0] >> 2 ) & 0x0003);
+	bsp_printf_full("ECC                = 0x%x\r\n", (cmd->response[0] >> 0 ) & 0x0003);
+	bsp_printf_full("---- CID table end ----\r\n");
+	bsp_printf_full("\r\n");
 }
 
 static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, enum bus_speed_mode mode, u32 bus_width, u32 clk_mhz, u32 driver_type)
@@ -952,19 +919,19 @@ static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, 
 	card_is_locked = val_is_bit_set(cmd->response[0], 25);
 
 	if (card_is_locked) {
-		debug_printf("Error: Card is locked\r\n");
+		bsp_printf_full("Error: Card is locked\r\n");
 		return -1;
 		//TODO: Support unlock via CMD42
 	}
 
 	if ((mode == hs200) || (mode == hs400)) {
 		if (mmc->spec_vers < 4) {
-			debug_printf("Error: HS200/HS400 mode only supported by SPEC_VERS >= 4 \r\n");
+			bsp_printf_full("Error: HS200/HS400 mode only supported by SPEC_VERS >= 4 \r\n");
 			return -1;
 		}
 
 		if ((EMMC_VCCQ != 1.2) && (EMMC_VCCQ != 1.8)) {
-			debug_printf("Error: HS200/HS400 mode only support 1.2V and 1.8V\r\n");
+			bsp_printf_full("Error: HS200/HS400 mode only support 1.2V and 1.8V\r\n");
 			return -1;
 		}
 
@@ -972,77 +939,77 @@ static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, 
 	}
 
 	if ((driver_type < 0x0) || (driver_type > 0x4)){
-		debug_printf("Error: Driver type value out of range");
+		bsp_printf_full("Error: Driver type value out of range");
 		return -1;
 	} else if (((1 << driver_type) & mmc->driver_strength) == 0x0){
-		debug_printf("Error: Device does not support target driver type value");
+		bsp_printf_full("Error: Device does not support target driver type value");
 		return -1;
 	}
 
 	if (mode == hs200) {
 		if ((bus_width != x4) && (bus_width != x8)) {
-			debug_printf("Error: HS200 mode only support 4-bit and 8-bit bus width\r\n");
+			bsp_printf_full("Error: HS200 mode only support 4-bit and 8-bit bus width\r\n");
 			return -1;
 		}
 		if (val_is_bit_cleared(mmc->device_type, 4) && (EMMC_VCCQ == 1.8)) {
-			debug_printf("Error: Device does not support HS200 - 1.8 V I/O\r\n");
+			bsp_printf_full("Error: Device does not support HS200 - 1.8 V I/O\r\n");
 			return -1;
 		}
 		if (val_is_bit_cleared(mmc->device_type, 5) && (EMMC_VCCQ == 1.2)) {
-			debug_printf("Error: Device does not support HS200 - 1.2 V I/O\r\n");
+			bsp_printf_full("Error: Device does not support HS200 - 1.2 V I/O\r\n");
 			return -1;
 		}
 	} else if (mode == hs400) {
 		if (bus_width != x8) {
-			debug_printf("Error: HS400 mode only support 8-bit bus width\r\n");
+			bsp_printf_full("Error: HS400 mode only support 8-bit bus width\r\n");
 			return -1;
 		}
 		if (val_is_bit_cleared(mmc->device_type, 6) && (EMMC_VCCQ == 1.8)) {
-			debug_printf("Error: Device does not support HS400 - 1.8 V I/O\r\n");
+			bsp_printf_full("Error: Device does not support HS400 - 1.8 V I/O\r\n");
 			return -1;
 		}
 		if (val_is_bit_cleared(mmc->device_type, 7) && (EMMC_VCCQ == 1.2)) {
-			debug_printf("Error: Device does not support HS400 - 1.2 V I/O\r\n");
+			bsp_printf_full("Error: Device does not support HS400 - 1.2 V I/O\r\n");
 			return -1;
 		}
 	}
 
 	if((mode == hs400) || (mode == hsddr)){
 		if(EMMC_BLOCK_LEN != 512){
-			debug_printf("Error: When data rate is ddr mode, EMMC_BLOCK_LEN must be 512 bytes\r\n");
+			bsp_printf_full("Error: When data rate is ddr mode, EMMC_BLOCK_LEN must be 512 bytes\r\n");
 			return -1;
 		}
 	}
 
 	if (mode == hs200) {
-		debug_printf("Switch to HS200 mode\r\n");
+		bsp_printf_full("Switch to HS200 mode\r\n");
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x1);
 		efx_emmc_config_bus_mode(mmc, cmd, sdr, bus_width);
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x2);
 		efx_emmc_config_clk(mmc, 1000 * clk_mhz);
 		efx_emmc_tuning(mmc, cmd, bus_width);
 	} else if (mode == hs400) {
-		debug_printf("Switch to HS400 mode\r\n");
+		bsp_printf_full("Switch to HS400 mode\r\n");
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x1);
 		efx_emmc_config_bus_mode(mmc, cmd, ddr, bus_width);
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x3);
 		efx_emmc_config_clk(mmc, 1000 * clk_mhz);
 		efx_emmc_tuning(mmc, cmd, bus_width);
 	} else if (mode == hssdr) {
-		debug_printf("Error: HS SDR mode not supported yet\r\n");
+		bsp_printf_full("Error: HS SDR mode not supported yet\r\n");
 		return -1;
 	} else if (mode == hsddr) {
-		debug_printf("Error: HS DDR mode not supported yet\r\n");
+		bsp_printf_full("Error: HS DDR mode not supported yet\r\n");
 		return -1;
 	} else {
-		debug_printf("Error: Legacy mode not supported yet\r\n");
+		bsp_printf_full("Error: Legacy mode not supported yet\r\n");
 		return -1;
 	}
 
 	if((mode != hs400) && (mode != hsddr)){
 	    sd_send_cmd(mmc, cmd, MMC_CMD_SET_BLOCKLEN, MMC_RSP_R1, EMMC_BLOCK_LEN);
 	    if (val_is_bit_set(cmd->response[0], 29)) {
-		    debug_printf("Error: Invalid BLOCK_LEN\r\n");
+		    bsp_printf_full("Error: Invalid BLOCK_LEN\r\n");
 		    return -1;
 	    }
 	}
@@ -1069,7 +1036,7 @@ static void efx_emmc_retrieve_ext_csd(struct mmc *mmc, struct mmc_cmd *cmd)
 		read_ready = reg_is_bit_set(REG_PRESENT_STATE, 11);
 		if (!read_ready) {
 			bsp_uDelay(200);
-			debug_printf("EXT_CSD not yet ready\r\n");
+			bsp_printf_full("EXT_CSD not yet ready\r\n");
 		}
 	}
 
@@ -1090,12 +1057,12 @@ static void efx_emmc_retrieve_ext_csd(struct mmc *mmc, struct mmc_cmd *cmd)
 	mmc->boot_info = ext_csd[228];
 	mmc->boot_size_mult = ext_csd[226];
 
-	debug_printf("ERASE_GROUP_DEF = 0x%x\r\n", mmc->erase_group_def);
-	debug_printf("DEVICE_TYPE = 0x%x\r\n", mmc->device_type);
-	debug_printf("DRIVER_STRENGTH = 0x%x\r\n", mmc->driver_strength);
-	debug_printf("SEC_COUNT = %d\r\n", mmc->sec_count);
-	debug_printf("HC_ERASE_GRP_SIZE = 0x%x\r\n", mmc->hc_erase_grp_size);
-	debug_printf("ERASE_TIMEOUT_MULT = 0x%x\r\n", mmc->erase_timeout_mult);
+	bsp_printf_full("ERASE_GROUP_DEF = 0x%x\r\n", mmc->erase_group_def);
+	bsp_printf_full("DEVICE_TYPE = 0x%x\r\n", mmc->device_type);
+	bsp_printf_full("DRIVER_STRENGTH = 0x%x\r\n", mmc->driver_strength);
+	bsp_printf_full("SEC_COUNT = %d\r\n", mmc->sec_count);
+	bsp_printf_full("HC_ERASE_GRP_SIZE = 0x%x\r\n", mmc->hc_erase_grp_size);
+	bsp_printf_full("ERASE_TIMEOUT_MULT = 0x%x\r\n", mmc->erase_timeout_mult);
 }
 
 static void efx_emmc_config_ip_bus_mode(u32 ddr_mode, u32 bus_width)
@@ -1118,14 +1085,14 @@ static int efx_emmc_config_dev_bus_mode(struct mmc *mmc, struct mmc_cmd *cmd, u3
 	} else if ((ddr_mode == sdr) && (bus_width == x1)) {
 		bus_mode = 0x0;
 	} else {
-		debug_printf("Error: Unsupported ddr_mode or bus_width\r\n");
+		bsp_printf_full("Error: Unsupported ddr_mode or bus_width\r\n");
 		return -1;
 	}
 
 	efx_emmc_write_ext_csd(mmc, cmd, 183, bus_mode);
 
 	if (!is_ext_csd_config_successful(mmc, cmd)) {
-		debug_printf("Error: Failed to configure BUS_WIDTH\r\n");
+		bsp_printf_full("Error: Failed to configure BUS_WIDTH\r\n");
 		return -1;
 	}
 
@@ -1158,7 +1125,7 @@ static void efx_emmc_write_ext_csd(struct mmc *mmc, struct mmc_cmd *cmd, u32 ind
 	cmd6_arg &= ~(0x1f << 3);  //[7:3]   Set to 0
 	cmd6_arg &= ~(0x7 << 0);   //[2:0]   Cmd Set, 000b
 
-	debug_printf("index %d value 0x%x cm6 arg 0x%x\r\n", index, value, cmd6_arg);
+	bsp_printf_full("index %d value 0x%x cm6 arg 0x%x\r\n", index, value, cmd6_arg);
 	sd_send_cmd(mmc, cmd, MMC_CMD_SWITCH, MMC_RSP_R1b, cmd6_arg);
 }
 
@@ -1168,7 +1135,7 @@ static void efx_emmc_config_hs_timing(struct mmc *mmc, struct mmc_cmd *cmd, u32 
 	hs_timing = (driver_strength << 4) | (timing_interface);
 	efx_emmc_write_ext_csd(mmc, cmd, 185, hs_timing);
 	if (!is_ext_csd_config_successful(mmc, cmd)) {
-		debug_printf("Error: Failed to configure HS_TIMING\r\n");
+		bsp_printf_full("Error: Failed to configure HS_TIMING\r\n");
 	}
 }
 
@@ -1177,7 +1144,7 @@ static u32 is_ext_csd_config_successful(struct mmc *mmc, struct mmc_cmd *cmd)
 	sd_send_cmd(mmc, cmd, MMC_CMD_SEND_STATUS, MMC_RSP_R1, (EMMC_RCA << 16));
 
 	if (val_is_bit_set(cmd->response[0], 7)) {
-		debug_printf("Error: Switch error\r\n");
+		bsp_printf_full("Error: Switch error\r\n");
 		return 0;
 	}
 
@@ -1198,7 +1165,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	u32 optimal_sample_cnt = 0;
 	u32 optimal_pll_shift = 0;
 	u32 map_all_zero = 1;
-	u32 tuning_time = 10;
+	u32 tuning_time = 1;
 
 	memset(result_map, 0, sizeof(result_map));
 
@@ -1214,7 +1181,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	} else if (bus_width == 0x2) {
 		block_size = 128; //byte
 	} else {
-		debug_printf("Error: eMMC tuning only applicable to 4 and 8 bit data bus\r\n");
+		bsp_printf_full("Error: eMMC tuning only applicable to 4 and 8 bit data bus\r\n");
 		return -1;
 	}
 
@@ -1223,7 +1190,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	for (int tuning_cnt = 0; tuning_cnt < tuning_time; tuning_cnt++) {
 		for (int sample_cnt = 0; sample_cnt < mmc->clk_div; sample_cnt++) {
 			for (int pll_shift = 0; pll_shift < pll_shift_num; pll_shift++) {
-				debug_printf("Tuning #%d: sample_cnt 0x%x pll_shift 0x%x\r\n", tuning_cnt, sample_cnt, pll_shift);
+				bsp_printf_full("Tuning #%d: sample_cnt 0x%x pll_shift 0x%x\r\n", tuning_cnt, sample_cnt, pll_shift);
 				IntPtr.data_crc_error = 0;
 				pattern_mismatch = 0;
 				efx_emmc_generate_pulse(sample_cnt, pll_shift);
@@ -1237,7 +1204,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 						break;
 					} else {
 						bsp_uDelay(200);
-	//					debug_printf("sample_cnt %d pll_shift %d data not yet ready\r\n", sample_cnt, pll_shift);
+	//					bsp_printf_full("sample_cnt %d pll_shift %d data not yet ready\r\n", sample_cnt, pll_shift);
 					}
 				}
 
@@ -1250,7 +1217,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 					}
 				}
 
-				debug_printf("Info :pattern_mismatch is %d\r\n", pattern_mismatch);
+				bsp_printf_full("Info :pattern_mismatch is %d\r\n", pattern_mismatch);
 				if ((result_map[sample_cnt][pll_shift] == 1) && (pattern_mismatch == 0)) {
 					result_map[sample_cnt][pll_shift] = 1;
 				} else {
@@ -1261,19 +1228,19 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	}
 	IntPtr.data_crc_error = 0;
 
-	debug_printf("Tuning map:\r\n");
+	bsp_printf_full("Tuning map:\r\n");
 	for (int i = 0; i < mmc-> clk_div; i++) {
 		for (int j = 0; j < pll_shift_num; j++) {
 			if (result_map[i][j] == 1) {
 				map_all_zero = 0;
 			}
-			debug_printf("%d ", result_map[i][j]);
+			bsp_printf_full("%d ", result_map[i][j]);
 		}
-		debug_printf("\r\n");
+		bsp_printf_full("\r\n");
 	}
 
 		if (map_all_zero) {
-			debug_printf("Error: No '1' detected in entire tuning map\r\n");
+			bsp_printf_full("Error: No '1' detected in entire tuning map\r\n");
 			return -1;
 		}
 
@@ -1287,14 +1254,14 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	ret = find_rows_with_longest_ones(rows, cols, result_map, result);
 
 	if (ret) {
-	debug_printf("Error: All sample_cnt and pll_shift combinations failed\r\n");
+	bsp_printf_full("Error: All sample_cnt and pll_shift combinations failed\r\n");
 	return -1;
 	}
 
 	// Print the result array
-	debug_printf("Result array:\r\n");
+	bsp_printf_full("Result array:\r\n");
 	for (int i = 0; i < rows; i++) {
-	debug_printf("%d\r\n", result[i][0]);
+	bsp_printf_full("%d\r\n", result[i][0]);
 	}
 
 	// Step 2: Find the center row of the result array
@@ -1302,19 +1269,19 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 
 	if (center_row != -1) {
 	optimal_sample_cnt = center_row;
-	debug_printf("Optimal sample count: %d\r\n", optimal_sample_cnt);
+	bsp_printf_full("Optimal sample count: %d\r\n", optimal_sample_cnt);
 
 	// Step 3: Find the center of the longest consecutive 1s in the original array
 	int center_col = find_center_of_row(center_row, cols, result_map[center_row]);
 
 	if (center_col != -1) {
 		optimal_pll_shift = center_col;
-		debug_printf("Optimal PLL shift: 0x%.1x\r\n", optimal_pll_shift);
+		bsp_printf_full("Optimal PLL shift: 0x%.1x\r\n", optimal_pll_shift);
 	} else {
-		debug_printf("No sequence of 1s found in row %d.\r\n", center_row);
+		bsp_printf_full("No sequence of 1s found in row %d.\r\n", center_row);
 	}
 	} else {
-	debug_printf("No sequence of 1s found.\r\n");
+	bsp_printf_full("No sequence of 1s found.\r\n");
 	}
 
 	efx_emmc_generate_pulse(optimal_sample_cnt, optimal_pll_shift);
@@ -1367,13 +1334,13 @@ static int check_for_error_status(void)
 
         // Log the specific error
         if (status & DATA_CRC_ERROR)
-            debug_printf("Error: Data CRC error detected\r\n");
+            bsp_printf_full("Error: Data CRC error detected\r\n");
         if (status & COMMAND_TIMEOUT_ERROR)
-            debug_printf("Error: Command timeout error detected\r\n");
+            bsp_printf_full("Error: Command timeout error detected\r\n");
         if (status & COMMAND_CRC_ERROR)
-            debug_printf("Error: Command CRC error detected\r\n");
+            bsp_printf_full("Error: Command CRC error detected\r\n");
         if (status & COMMAND_END_BIT_ERROR)
-            debug_printf("Error: Command end bit error detected\r\n");
+            bsp_printf_full("Error: Command end bit error detected\r\n");
 
         // Clear the error status bits if needed
         reg_write(status, REG_INTERRUPT_STATUS);
@@ -1421,13 +1388,13 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
 
     /* Parameter validation */
     if (buf == NULL) {
-        debug_printf("Error: Invalid buffer pointer\r\n");
+        bsp_printf_full("Error: Invalid buffer pointer\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Check buffer alignment for DMA mode */
     if (dma_en && ((uintptr_t)buf & 0x3)) {
-        debug_printf("Error: DMA requires 4-byte aligned buffer\r\n");
+        bsp_printf_full("Error: DMA requires 4-byte aligned buffer\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1436,26 +1403,26 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
     while (is_cmd_or_data_bus_busy()) {
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for bus ready\r\n");
+            bsp_printf_full("Error: Timeout waiting for bus ready\r\n");
             return ERR_TIMEOUT;
         }
     }
 
     /* Validate block count (must be within 16-bit range) */
     if (block_cnt == 0 || block_cnt > largest_number(16, 31)) {
-        debug_printf("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
+        bsp_printf_full("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
         return ERR_INVALID_PARAM;
     }
 
     /* For high-density eMMC (>2GB), read size must be multiple of 512 bytes */
     if ((EMMC_LARGE_DENSITY != 0) && (((block_cnt * EMMC_BLOCK_LEN) % 512) != 0x0)) {
-        debug_printf("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
+        bsp_printf_full("Error: When emmc density > 2GB, read data length must be integer multiple of 512 byte\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Verify EMMC_BLOCK_LEN is multiple of 4 for proper word-aligned access */
     if (EMMC_BLOCK_LEN % 4 != 0) {
-        debug_printf("Error: Block length must be a multiple of 4 bytes\r\n");
+        bsp_printf_full("Error: Block length must be a multiple of 4 bytes\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1466,7 +1433,7 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
 
     uda_density = uda_density_calculate(mmc);
     if (uda_density == 0) {
-        debug_printf("Error: Failed to calculate user data area density\r\n");
+        bsp_printf_full("Error: Failed to calculate user data area density\r\n");
         return ERR_IO;
     }
 
@@ -1481,14 +1448,14 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
     if (EMMC_LARGE_DENSITY == 0) {
         /* Check for potential overflow (simplified check) */
         if (block_cnt > ((u64)-1 - addr) / EMMC_BLOCK_LEN) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN) - 1;
     } else {
         /* Check for potential overflow (simplified check) */
         if (block_cnt > ((u64)-1 - addr) / (EMMC_BLOCK_LEN / 512)) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN / 512) - 1;
@@ -1496,12 +1463,12 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
 
     /* Validate start and end addresses are within range */
     if (addr > uda_addr_max) {
-        debug_printf("Error: Read start addr %u uda_addr_max %u out of range\r\n", addr, uda_addr_max);
+        bsp_printf_full("Error: Read start addr %u uda_addr_max %u out of range\r\n", addr, uda_addr_max);
         return ERR_INVALID_PARAM;
     }
 
     if (addr_end > uda_addr_max) {
-        debug_printf("Error: Read end addr out of range\r\n");
+        bsp_printf_full("Error: Read end addr out of range\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1540,7 +1507,7 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
     if (dma_en) {
         ret = sd_ctrl_creat_Descriptor(mmc, block_cnt, EMMC_BLOCK_LEN, buf);
         if (ret != 0) {
-            debug_printf("Error: Failed to create DMA descriptor, error %d\r\n", ret);
+            bsp_printf_full("Error: Failed to create DMA descriptor, error %d\r\n", ret);
             return ERR_IO;
         }
     }
@@ -1562,13 +1529,13 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
             while (reg_is_bit_cleared(REG_PRESENT_STATE, 11)) {
                 bsp_uDelay(100);
                 if (++timeout_counter > MAX_TIMEOUT) {
-                    debug_printf("Error: Timeout waiting for buffer ready\r\n");
+                    bsp_printf_full("Error: Timeout waiting for buffer ready\r\n");
                     return ERR_TIMEOUT;
                 }
 
                 /* Check for error conditions */
                 if (check_for_error_status()) {  // Implement this function to check error bits
-                    debug_printf("Error: Error detected during transfer\r\n");
+                    bsp_printf_full("Error: Error detected during transfer\r\n");
                     return ERR_IO;
                 }
             }
@@ -1594,13 +1561,13 @@ static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *bu
         /* Check for timeout */
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for transfer completion\r\n");
+            bsp_printf_full("Error: Timeout waiting for transfer completion\r\n");
             return ERR_TIMEOUT;
         }
 
         /* Check for error conditions */
         if (check_for_error_status()) {  // Implement this function to check error bits
-            debug_printf("Error: Error detected during transfer\r\n");
+            bsp_printf_full("Error: Error detected during transfer\r\n");
             return ERR_IO;
         }
     }
@@ -1651,13 +1618,13 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
 
     /* Parameter validation */
     if (buf == NULL) {
-        debug_printf("Error: Invalid buffer pointer\r\n");
+        bsp_printf_full("Error: Invalid buffer pointer\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Check buffer alignment for DMA mode */
     if (dma_en && ((uintptr_t)buf & 0x3)) {
-        debug_printf("Error: DMA requires 4-byte aligned buffer\r\n");
+        bsp_printf_full("Error: DMA requires 4-byte aligned buffer\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1666,26 +1633,26 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
     while (is_cmd_or_data_bus_busy()) {
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for bus ready\r\n");
+            bsp_printf_full("Error: Timeout waiting for bus ready\r\n");
             return ERR_TIMEOUT;
         }
     }
 
     /* Validate block count (must be within 16-bit range) */
     if (block_cnt == 0 || block_cnt > largest_number(16, 31)) {
-        debug_printf("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
+        bsp_printf_full("Error: Block count exceed limit. Max block count is %d\r\n", largest_number(16, 31));
         return ERR_INVALID_PARAM;
     }
 
     /* For high-density eMMC (>2GB), write size must be multiple of 512 bytes */
     if ((EMMC_LARGE_DENSITY != 0) && (((block_cnt * EMMC_BLOCK_LEN) % 512) != 0x0)) {
-        debug_printf("Error: When emmc density > 2GB, write data length must be integer multiple of 512 byte\r\n");
+        bsp_printf_full("Error: When emmc density > 2GB, write data length must be integer multiple of 512 byte\r\n");
         return ERR_INVALID_PARAM;
     }
 
     /* Verify EMMC_BLOCK_LEN is multiple of 4 for proper word-aligned access */
     if (EMMC_BLOCK_LEN % 4 != 0) {
-        debug_printf("Error: Block length must be a multiple of 4 bytes\r\n");
+        bsp_printf_full("Error: Block length must be a multiple of 4 bytes\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1696,7 +1663,7 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
 
     uda_density = uda_density_calculate(mmc);
     if (uda_density == 0) {
-        debug_printf("Error: Failed to calculate user data area density\r\n");
+        bsp_printf_full("Error: Failed to calculate user data area density\r\n");
         return ERR_IO;
     }
 
@@ -1711,14 +1678,14 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
     if (EMMC_LARGE_DENSITY == 0) {
         /* Check for potential overflow */
         if (block_cnt > ((u64)-1 - addr) / EMMC_BLOCK_LEN) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN) - 1;
     } else {
         /* Check for potential overflow */
         if (block_cnt > ((u64)-1 - addr) / (EMMC_BLOCK_LEN / 512)) {
-            debug_printf("Error: Address calculation would overflow\r\n");
+            bsp_printf_full("Error: Address calculation would overflow\r\n");
             return ERR_OVERFLOW;
         }
         addr_end = addr + (block_cnt * EMMC_BLOCK_LEN / 512) - 1;
@@ -1726,12 +1693,12 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
 
     /* Validate start and end addresses are within range */
     if (addr > uda_addr_max) {
-        debug_printf("Error: Write start addr %u uda_addr_max %u out of range\r\n", addr, uda_addr_max);
+        bsp_printf_full("Error: Write start addr %u uda_addr_max %u out of range\r\n", addr, uda_addr_max);
         return ERR_INVALID_PARAM;
     }
 
     if (addr_end > uda_addr_max) {
-        debug_printf("Error: Write end addr out of range\r\n");
+        bsp_printf_full("Error: Write end addr out of range\r\n");
         return ERR_INVALID_PARAM;
     }
 
@@ -1770,7 +1737,7 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
     if (dma_en) {
         ret = sd_ctrl_creat_Descriptor(mmc, block_cnt, EMMC_BLOCK_LEN, buf);
         if (ret != 0) {
-            debug_printf("Error: Failed to create DMA descriptor, error %d\r\n", ret);
+            bsp_printf_full("Error: Failed to create DMA descriptor, error %d\r\n", ret);
             return ERR_IO;
         }
     }
@@ -1792,13 +1759,13 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
             while (reg_is_bit_cleared(REG_PRESENT_STATE, 10)) {
                 bsp_uDelay(100);
                 if (++timeout_counter > MAX_TIMEOUT) {
-                    debug_printf("Error: Timeout waiting for buffer ready\r\n");
+                    bsp_printf_full("Error: Timeout waiting for buffer ready\r\n");
                     return ERR_TIMEOUT;
                 }
 
                 /* Check for error conditions */
                 if (check_for_error_status()) {
-                    debug_printf("Error: Error detected during transfer\r\n");
+                    bsp_printf_full("Error: Error detected during transfer\r\n");
                     return ERR_IO;
                 }
             }
@@ -1824,13 +1791,13 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
         /* Check for timeout */
         bsp_uDelay(100);
         if (++timeout_counter > MAX_TIMEOUT) {
-            debug_printf("Error: Timeout waiting for transfer completion\r\n");
+            bsp_printf_full("Error: Timeout waiting for transfer completion\r\n");
             return ERR_TIMEOUT;
         }
 
         /* Check for error conditions */
         if (check_for_error_status()) {
-            debug_printf("Error: Error detected during transfer\r\n");
+            bsp_printf_full("Error: Error detected during transfer\r\n");
             return ERR_IO;
         }
     }
@@ -1847,15 +1814,15 @@ static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *b
 static int check_erase_cmd_error(u32 val, u32 addr_check)
 {
 	if (val_is_bit_set(val, 27)) {
-		debug_printf("Error: Erase param error\r\n");
+		bsp_printf_full("Error: Erase param error\r\n");
 		return -1;
 	}
 	if (val_is_bit_set(val, 28)) {
-		debug_printf("Error: Erase sequence error\r\n");
+		bsp_printf_full("Error: Erase sequence error\r\n");
 		return -1;
 	}
 	if (addr_check && val_is_bit_set(val, 31)) {
-		debug_printf("Error: Erase address out of range\r\n");
+		bsp_printf_full("Error: Erase address out of range\r\n");
 		return -1;
 	}
 	return 0;
@@ -1889,27 +1856,27 @@ static int efx_emmc_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 start_addr, 
 
 	erase_unit_size = erase_unit_size_calculate(mmc,erase);
 	if(erase_unit_size == 0){
-		debug_printf("Error: erase_unit_size is 0 byte\r\n");
+		bsp_printf_full("Error: erase_unit_size is 0 byte\r\n");
 		return -1;
 	}
 
 	if (EMMC_LARGE_DENSITY == 0) {
 		if((start_addr % erase_unit_size) != 0x0) {
-			debug_printf("start_addr not on the erase unit boundary\r\n");
+			bsp_printf_full("start_addr not on the erase unit boundary\r\n");
 			return -1;
 		}
 	} else if(((start_addr * 512) % erase_unit_size) != 0x0) {
-		debug_printf("Error: start_addr not on the erase unit boundary\r\n");
+		bsp_printf_full("Error: start_addr not on the erase unit boundary\r\n");
 		return -1;
 	}
 
 	if ((EMMC_LARGE_DENSITY != 0) && (((erase_unit_num*erase_unit_size) % 512) != 0x0)) {
-		debug_printf("Error: when emmc density > 2GB , erase length must be integer multiple of 512 byte\r\n");
+		bsp_printf_full("Error: when emmc density > 2GB , erase length must be integer multiple of 512 byte\r\n");
 		return -1;
 	}
 
 	if (erase_unit_num < 1) {
-		debug_printf("Error: erase_unit_num must be greater than or equal to 1\r\n");
+		bsp_printf_full("Error: erase_unit_num must be greater than or equal to 1\r\n");
 		return -1;
 	}
 
@@ -1918,7 +1885,7 @@ static int efx_emmc_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 start_addr, 
 	else
 		end_addr = start_addr + (erase_unit_num * erase_unit_size / 512) - 1;
 
-	debug_printf("erase process test \r\n");
+	bsp_printf_full("erase process test \r\n");
 
 	sd_send_cmd(mmc, cmd, MMC_CMD_ERASE_GROUP_START, MMC_RSP_R1, start_addr);
 	ret = check_erase_cmd_error(cmd->response[0], 1);
@@ -1955,27 +1922,27 @@ static int efx_emmc_trim(struct mmc *mmc, struct mmc_cmd *cmd, u32 start_addr, u
 
 	erase_unit_size = erase_unit_size_calculate(mmc,trim);
 	if(erase_unit_size == 0){
-		debug_printf("Error: erase_unit_size is 0 byte\r\n");
+		bsp_printf_full("Error: erase_unit_size is 0 byte\r\n");
 		return -1;
 	}
 
 	if (EMMC_LARGE_DENSITY == 0) {
 		if ((start_addr % erase_unit_size) != 0x0) {
-			debug_printf("Error: start_addr not on the erase unit boundary\r\n");
+			bsp_printf_full("Error: start_addr not on the erase unit boundary\r\n");
 			return -1;
 		}
 	} else if (((start_addr * 512) % erase_unit_size) != 0x0) {
-		debug_printf("Error: start_addr not on the erase unit boundary\r\n");
+		bsp_printf_full("Error: start_addr not on the erase unit boundary\r\n");
 		return -1;
 	}
 
 	if ((EMMC_LARGE_DENSITY != 0) && (((erase_unit_num * erase_unit_size) % 512) != 0x0)) {
-		debug_printf("Error: When emmc density > 2GB , erase length must be integer multiple of 512 byte\r\n");
+		bsp_printf_full("Error: When emmc density > 2GB , erase length must be integer multiple of 512 byte\r\n");
 		return -1;
 	}
 
 	if (erase_unit_num < 1) {
-		debug_printf("Error: erase_unit_num must be greater than or equal to 1\r\n");
+		bsp_printf_full("Error: erase_unit_num must be greater than or equal to 1\r\n");
 		return -1;
 	}
 

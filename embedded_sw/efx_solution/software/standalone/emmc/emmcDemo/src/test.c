@@ -134,21 +134,21 @@ u32 compare_buffers(const u32* buffer1, const u32* buffer2, size_t size_mb) {
 
     // Check for NULL pointers
     if (buffer1 == NULL || buffer2 == NULL) {
-        debug_printf("Error: NULL buffer pointer(s) provided\r\n");
+        bsp_printf_full("Error: NULL buffer pointer(s) provided\r\n");
         return 0;
     }
 
     // Compare each element
     for (size_t i = 0; i < num_elements; i++) {
         if (buffer1[i] != buffer2[i]) {
-        	debug_printf("Error: Buffers differ at element %zu (%.2f MB): %u vs %u\r\n",
+        	bsp_printf_full("Error: Buffers differ at element %zu (%.2f MB): %u vs %u\r\n",
                    i, (float)(i * sizeof(u32)) / (1024 * 1024), buffer1[i], buffer2[i]);
             return 0;
         }
     }
 
     // If we get here, the buffers are identical
-    debug_printf("All %zu MB compared: Buffers are identical\r\n", size_mb);
+    bsp_printf_full("All %zu MB compared: Buffers are identical\r\n", size_mb);
     return 1;
 }
 
@@ -164,11 +164,11 @@ u32* create_empty_buffer(size_t size_mb) {
 
     // Check if allocation was successful
     if (buffer == NULL) {
-        bsp_printf("Error: Memory allocation failed!\r\n");
+        bsp_printf_full("Error: Memory allocation failed!\r\n");
         return NULL;
     }
 
-    debug_printf("Successfully allocated %zu MB (%zu elements)\r\n",
+    bsp_printf_full("Successfully allocated %zu MB (%zu elements)\r\n",
            size_mb, num_elements);
 
     return buffer;
@@ -186,11 +186,11 @@ u32* create_random_buffer(size_t size_mb) {
 
     // Check if allocation was successful
     if (buffer == NULL) {
-        bsp_printf("Error: Memory allocation failed!\r\n");
+        bsp_printf_full("Error: Memory allocation failed!\r\n");
         return NULL;
     }
 
-    debug_printf("Successfully allocated %zu MB (%zu elements)\r\n",
+    bsp_printf_full("Successfully allocated %zu MB (%zu elements)\r\n",
            size_mb, num_elements);
 
     // Seed the random number generator
@@ -204,6 +204,135 @@ u32* create_random_buffer(size_t size_mb) {
     }
 
     return buffer;
+}
+
+// Create 4KB-aligned buffers for DMA transfers
+//
+// REQUIREMENT: AXI4 protocol requires that burst transfers do not cross 4KB
+// (0x1000) address boundaries. The eMMC host controller generates 128-byte
+// bursts (32 beats × 4 bytes) without checking for 4KB boundaries. To prevent
+// violations, DMA buffers must be aligned to 4KB boundaries.
+//
+// NOTE: This implementation over-allocates to ensure alignment.
+// posix_memalign() is not available in newlib-nano (bare-metal).
+u32* create_aligned_empty_buffer(size_t size_mb) {
+    const size_t alignment_size = 4096;  // 4KB alignment for AXI4 compliance
+    size_t num_elements = (size_mb * 1024 * 1024) / sizeof(u32);
+    size_t buffer_size = num_elements * sizeof(u32);
+
+    // Allocate extra space: buffer + alignment padding + metadata storage
+    size_t alloc_size = buffer_size + alignment_size + sizeof(void*);
+    void* raw = malloc(alloc_size);
+
+    if (raw == NULL) {
+        bsp_printf_full("Error: Memory allocation failed for %u MB\r\n", (u32)size_mb);
+        return NULL;
+    }
+
+    // Calculate aligned address (reserve space for storing raw pointer)
+    uintptr_t addr = (uintptr_t)raw + sizeof(void*);
+    uintptr_t aligned = (addr + alignment_size - 1) & ~(alignment_size - 1);
+
+    // Verify alignment calculation didn't overflow our allocation
+    if ((aligned + buffer_size) > ((uintptr_t)raw + alloc_size)) {
+        bsp_printf_full("Error: Alignment calculation error\r\n");
+        free(raw);
+        return NULL;
+    }
+
+    u32* buffer = (u32*)aligned;
+
+    // Store raw pointer just before aligned buffer for proper free()
+    void** raw_ptr_location = (void**)(aligned - sizeof(void*));
+
+    // Verify we're not writing outside allocated memory
+    if ((uintptr_t)raw_ptr_location < (uintptr_t)raw) {
+        bsp_printf_full("Error: Invalid raw pointer storage location\r\n");
+        free(raw);
+        return NULL;
+    }
+
+    *raw_ptr_location = raw;
+
+    // Verify alignment succeeded
+    u32 alignment_4k = (uintptr_t)buffer & 0xFFF;
+    if (alignment_4k != 0) {
+        bsp_printf_full("Error: Buffer alignment failed! Offset: 0x%x\r\n", alignment_4k);
+        free(raw);
+        return NULL;
+    }
+
+    /* Address validation for 32-bit DMA compatibility */
+    uintptr_t full_addr = (uintptr_t)buffer;
+
+    bsp_printf_full("Aligned buffer: %u MB at 0x%lx (verified 4KB aligned)\r\n",
+           (u32)size_mb, (unsigned long)full_addr);
+
+    /* Check if address fits in 32-bit range (max 4GB-1)
+     * Only check high bits on systems where uintptr_t > 32 bits */
+#if UINTPTR_MAX > 0xFFFFFFFFUL
+    if (full_addr > 0xFFFFFFFFUL) {
+        bsp_printf_full("ERROR: Buffer allocated above 4GB! Address: 0x%lx\r\n",
+               (unsigned long)full_addr);
+        bsp_printf_full("       DMA with 32-bit addresses will FAIL!\r\n");
+        free(raw);
+        return NULL;
+    }
+#endif
+
+    return buffer;
+}
+
+// Create 4KB-aligned buffer filled with random data for DMA transfers
+// See create_aligned_empty_buffer() for alignment requirements
+u32* create_aligned_random_buffer(size_t size_mb) {
+    u32* buffer = create_aligned_empty_buffer(size_mb);
+    if (buffer == NULL) return NULL;
+
+    size_t num_elements = (size_mb * 1024 * 1024) / sizeof(u32);
+    for (size_t i = 0; i < num_elements; i++) {
+        buffer[i] = ((u32)rand() << 16) | ((u32)rand() & 0xFFFF);
+    }
+
+    return buffer;
+}
+
+// Free aligned buffers created by create_aligned_*_buffer functions
+//
+// IMPORTANT: Only use this with buffers created by create_aligned_empty_buffer()
+// or create_aligned_random_buffer(). Using with other pointers will cause
+// undefined behavior.
+void free_aligned_buffer(u32* buffer) {
+    if (buffer == NULL) {
+        bsp_printf_full("Warning: Attempt to free NULL buffer\r\n");
+        return;
+    }
+
+    // Verify buffer appears to be 4KB aligned (sanity check)
+    uintptr_t buf_addr = (uintptr_t)buffer;
+    if ((buf_addr & 0xFFF) != 0) {
+        bsp_printf_full("ERROR: Buffer at 0x%lx is not 4KB aligned!\r\n", (unsigned long)buf_addr);
+        bsp_printf_full("       This may not be an aligned buffer. Refusing to free.\r\n");
+        return;
+    }
+
+    // Retrieve raw pointer stored before the aligned buffer
+    void** raw_ptr_location = (void**)(buf_addr - sizeof(void*));
+    void* raw = *raw_ptr_location;
+
+    // Sanity check: raw pointer should be before aligned buffer
+    uintptr_t raw_addr = (uintptr_t)raw;
+    if (raw_addr >= buf_addr) {
+        bsp_printf_full("ERROR: Invalid raw pointer 0x%lx (expected < 0x%lx)\r\n",
+               (unsigned long)raw_addr, (unsigned long)buf_addr);
+        bsp_printf_full("       Buffer may be corrupted. Refusing to free.\r\n");
+        return;
+    }
+
+    bsp_printf_full("Freeing aligned buffer at 0x%lx (raw: 0x%lx)\r\n",
+           (unsigned long)buf_addr, (unsigned long)raw_addr);
+
+    free(raw);
 }
 
 int non_dma_wr_rd(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixed_bk_num, u32 start_addr, u32 test_size_mb,
@@ -224,12 +353,12 @@ int non_dma_wr_rd(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixed_
     double speed_mbps = 0.0; //MBps
 
 	if (len_mode != 0 && len_mode != 1) {
-		bsp_printf("Error: Invalid len mode\r\n");
+		bsp_printf_full("Error: Invalid len mode\r\n");
 		return -1;
 	}
 
 	if (fixed_bk_num < 1 || fixed_bk_num > 65535) {
-		bsp_printf("Error: Invalid fixed bk num\r\n");
+		bsp_printf_full("Error: Invalid fixed bk num\r\n");
 		return -1;
 	}
 
@@ -239,21 +368,21 @@ int non_dma_wr_rd(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixed_
     if (len_mode == 0) {
     	block_per_rw = fixed_bk_num;
         total_cycle = ceiling_division(total_blocks, block_per_rw);
-        debug_printf("Total block %d, total cycle %d\r\n", total_blocks, total_cycle);
+        bsp_printf_full("Total block %d, total cycle %d\r\n", total_blocks, total_cycle);
 
-        bsp_printf("Non-DMA fixed block: Writing...\r\n");
+        bsp_printf_full("Non-DMA fixed block: Writing...\r\n");
         start = get_timer_ticks();
         for (int i = 0; i < total_cycle; i++) {
         	if ((total_blocks % block_per_rw != 0) && (i == (total_cycle -1))) {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
         		ret = efx_emmc_block_write(mmc, total_blocks % block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 0);
         	} else {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, block_per_rw);
         		ret = efx_emmc_block_write(mmc, block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 0);
         	}
 
         	if(ret != 0) {
-        		bsp_printf("Error: Non-DMA fixed block: Write fail...\r\n");
+        		bsp_printf_full("Error: Non-DMA fixed block: Write fail...\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
@@ -261,21 +390,21 @@ int non_dma_wr_rd(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixed_
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *write_speed = ((double)test_size_mb / time_second);
-        debug_printf("Non-DMA fixed block: Write speed %f MBps\r\n", *write_speed);
+        bsp_printf_full("Non-DMA fixed block: Write speed %f MBps\r\n", *write_speed);
 
-        bsp_printf("Non-DMA fixed block: Reading...\r\n");
+        bsp_printf_full("Non-DMA fixed block: Reading...\r\n");
         start = get_timer_ticks();
         for (int i = 0; i < total_cycle; i++) {
         	if ((total_blocks % block_per_rw != 0) && (i == (total_cycle -1))) {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
         		ret = efx_emmc_block_read(mmc, total_blocks % block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 0);
         	} else {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, block_per_rw);
         		ret = efx_emmc_block_read(mmc, block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 0);
         	}
 
         	if(ret != 0) {
-        		bsp_printf("Error: Non-DMA fixed block: Read fail...\r\n");
+        		bsp_printf_full("Error: Non-DMA fixed block: Read fail...\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
@@ -283,59 +412,59 @@ int non_dma_wr_rd(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixed_
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *read_speed = ((double)test_size_mb / time_second);
-        debug_printf("Non-DMA fixed block: Read speed %f MBps\r\n", *read_speed);
+        bsp_printf_full("Non-DMA fixed block: Read speed %f MBps\r\n", *read_speed);
     } else {
         u32 total = total_blocks;
         u32 size = 0;
 
         u32* array = generate_random_array(total, &size);
 
-    	bsp_printf("Non-DMA random block: Writing...\r\n");
+    	bsp_printf_full("Non-DMA random block: Writing...\r\n");
         start = get_timer_ticks();
 		for (size_t i = 0; i < size; i++) {
 			block_per_rw = array[i];
-			//debug_printf("Writing： block_per_rw = %d\r\n", block_per_rw);
+			//bsp_printf_full("Writing： block_per_rw = %d\r\n", block_per_rw);
 			ret = efx_emmc_block_write(mmc, block_per_rw, start_addr + (block_written * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (block_written * EMMC_BLOCK_LEN / 4), 0);
         	if(ret != 0) {
-        		bsp_printf("Error: Non-DMA random block: Write fail\r\n");
+        		bsp_printf_full("Error: Non-DMA random block: Write fail\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
 			block_written += block_per_rw;
-			//debug_printf("Block written %d\r\n", block_written);
+			//bsp_printf_full("Block written %d\r\n", block_written);
 		}
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *write_speed = ((double)test_size_mb / time_second);
-        debug_printf("Non-DMA random block: Write speed %f MBps\r\n", *write_speed);
+        bsp_printf_full("Non-DMA random block: Write speed %f MBps\r\n", *write_speed);
 
-    	bsp_printf("Non-DMA random block: Reading...\r\n");
+    	bsp_printf_full("Non-DMA random block: Reading...\r\n");
         start = get_timer_ticks();
 		for (size_t i = 0; i < size; i++) {
 			block_per_rw = array[i];
-			//debug_printf("Reading: block_per_rw = %d\r\n", block_per_rw);
+			//bsp_printf_full("Reading: block_per_rw = %d\r\n", block_per_rw);
 			ret = efx_emmc_block_read(mmc, block_per_rw, start_addr + (block_read * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (block_read * EMMC_BLOCK_LEN / 4), 0);
         	if(ret != 0) {
-        		bsp_printf("Error: Non-DMA random block: Read fail\r\n");
+        		bsp_printf_full("Error: Non-DMA random block: Read fail\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
 			block_read += block_per_rw;
-			//debug_printf("Block read %d\r\n", block_read);
+			//bsp_printf_full("Block read %d\r\n", block_read);
 		}
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *read_speed = ((double)test_size_mb / time_second);
-        debug_printf("Non-DMA random block: Read speed %f MBps\r\n", *read_speed);
+        bsp_printf_full("Non-DMA random block: Read speed %f MBps\r\n", *read_speed);
 
         free(array);
     }
 
-    bsp_printf("Non-DMA: Comparing...\r\n");
+    bsp_printf_full("Non-DMA: Comparing...\r\n");
     if (compare_buffers(src_buffer, dest_buffer, test_size_mb)) {
-        bsp_printf("Non-DMA: Pass. Buffers are identical\r\n");
+        bsp_printf_full("Non-DMA: Pass. Buffers are identical\r\n");
     } else {
-    	bsp_printf("Error: Non-DMA: Fail. Buffers differ\r\n");
+    	bsp_printf_full("Error: Non-DMA: Fail. Buffers differ\r\n");
 		ret = -1;
 		goto free_buffers;
     }
@@ -366,26 +495,26 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
     double time_second = 0.0;
 
 	if (len_mode != 0 && len_mode != 1) {
-		bsp_printf("Error: Invalid len mode\r\n");
+		bsp_printf_full("Error: Invalid len mode\r\n");
 		return -1;
 	}
 
 	if (fixed_bk_num < 1 || fixed_bk_num > 65535) {
-		bsp_printf("Error: Invalid fixed bk num\r\n");
+		bsp_printf_full("Error: Invalid fixed bk num\r\n");
 		return -1;
 	}
 
 	if (erase_mode != erase && erase_mode != trim) {
-		bsp_printf("Error: Invalid erase mode\r\n");
+		bsp_printf_full("Error: Invalid erase mode\r\n");
 		return -1;
 	}
 
-    u32* src_buffer = create_random_buffer(test_size_mb);
-    u32* dest_buffer = create_empty_buffer(test_size_mb);
+    u32* src_buffer = create_aligned_random_buffer(test_size_mb);
+    u32* dest_buffer = create_aligned_empty_buffer(test_size_mb);
 
     // Check if memory allocation succeeded
     if (src_buffer == NULL || dest_buffer == NULL) {
-        bsp_printf("Error: Failed to allocate memory for buffers\r\n");
+        bsp_printf_full("Error: Failed to allocate memory for buffers\r\n");
         if (src_buffer) free(src_buffer);
         if (dest_buffer) free(dest_buffer);
         return -1;
@@ -394,21 +523,21 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
     if (len_mode == 0) {
     	block_per_rw = fixed_bk_num;
         total_cycle = ceiling_division(total_blocks, block_per_rw);
-        debug_printf("Total block %d, total cycle %d\r\n", total_blocks, total_cycle);
+        bsp_printf_full("Total block %d, total cycle %d\r\n", total_blocks, total_cycle);
 
-        bsp_printf("DMA fixed block: Writing...\r\n");
+        bsp_printf_full("DMA fixed block: Writing...\r\n");
         start = get_timer_ticks();
         for (int i = 0; i < total_cycle; i++) {
         	if ((total_blocks % block_per_rw != 0) && (i == (total_cycle -1))) {
-//        		bsp_printf("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
+//        		bsp_printf_full("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
         		ret = efx_emmc_block_write(mmc, total_blocks % block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
         	} else {
-//        		bsp_printf("block read %d, going to read %d\r\n", block_read, block_per_rw);
+//        		bsp_printf_full("block read %d, going to read %d\r\n", block_read, block_per_rw);
         		ret = efx_emmc_block_write(mmc, block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
         	}
 
         	if(ret != 0) {
-        		bsp_printf("Error: DMA fixed block: Write fail\r\n");
+        		bsp_printf_full("Error: DMA fixed block: Write fail\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
@@ -416,21 +545,21 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *write_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA fixed block: Write speed %f MBps\r\n", *write_speed);
+        bsp_printf_full("DMA fixed block: Write speed %f MBps\r\n", *write_speed);
 
-        bsp_printf("DMA fixed block: Reading...\r\n");
+        bsp_printf_full("DMA fixed block: Reading...\r\n");
         start = get_timer_ticks();
         for (int i = 0; i < total_cycle; i++) {
         	if ((total_blocks % block_per_rw != 0) && (i == (total_cycle -1))) {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
         		ret = efx_emmc_block_read(mmc, total_blocks % block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
         	} else {
-        		//bsp_printf("block read %d, going to read %d\r\n", block_read, block_per_rw);
+        		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, block_per_rw);
         		ret = efx_emmc_block_read(mmc, block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
         	}
 
         	if(ret != 0) {
-        		bsp_printf("Error: DMA fixed block: Read fail\r\n");
+        		bsp_printf_full("Error: DMA fixed block: Read fail\r\n");
         		ret = -1;
         		goto free_buffers;
         	}
@@ -438,7 +567,7 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *read_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA fixed block: Read speed %f MBps\r\n", *read_speed);
+        bsp_printf_full("DMA fixed block: Read speed %f MBps\r\n", *read_speed);
     } else {
         u32 total = total_blocks;
         u32 size = 0;
@@ -447,59 +576,59 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
 
         // Check if array allocation succeeded
         if (array == NULL) {
-            bsp_printf("Error: Failed to allocate memory for array\r\n");
+            bsp_printf_full("Error: Failed to allocate memory for array\r\n");
             ret = -1;
             goto free_buffers;
         }
 
-    	bsp_printf("DMA random block: Writing...\r\n");
+    	bsp_printf_full("DMA random block: Writing...\r\n");
         start = get_timer_ticks();
 		for (size_t i = 0; i < size; i++) {
 			block_per_rw = array[i];
-			//debug_printf("Writing： block_per_rw = %d\r\n", block_per_rw);
+			//bsp_printf_full("Writing： block_per_rw = %d\r\n", block_per_rw);
 			ret = efx_emmc_block_write(mmc, block_per_rw, start_addr + (block_written * EMMC_BLOCK_LEN / EMMC_STEP), src_buffer + (block_written * EMMC_BLOCK_LEN / 4), 1);
         	if(ret != 0) {
-        		bsp_printf("Error: DMA random block: Write fail\r\n");
+        		bsp_printf_full("Error: DMA random block: Write fail\r\n");
         		ret = -1;
                 free(array); // Free array before jumping to free_buffers
         		goto free_buffers;
         	}
 			block_written += block_per_rw;
-			//debug_printf("Block written %d\r\n", block_written);
+			//bsp_printf_full("Block written %d\r\n", block_written);
 		}
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *write_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA random block: Write speed %f MBps\r\n", *write_speed);
+        bsp_printf_full("DMA random block: Write speed %f MBps\r\n", *write_speed);
 
-    	bsp_printf("DMA random block: Reading...\r\n");
+    	bsp_printf_full("DMA random block: Reading...\r\n");
         start = get_timer_ticks();
 		for (size_t i = 0; i < size; i++) {
 			block_per_rw = array[i];
-			//debug_printf("Reading: block_per_rw = %d\r\n", block_per_rw);
+			//bsp_printf_full("Reading: block_per_rw = %d\r\n", block_per_rw);
 			ret = efx_emmc_block_read(mmc, block_per_rw, start_addr + (block_read * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (block_read * EMMC_BLOCK_LEN / 4), 1);
         	if(ret != 0) {
-        		bsp_printf("Error: DMA random block: Read fail\r\n");
+        		bsp_printf_full("Error: DMA random block: Read fail\r\n");
         		ret = -1;
                 free(array); // Free array before jumping to free_buffers
         		goto free_buffers;
         	}
 			block_read += block_per_rw;
-			//debug_printf("Block read %d\r\n", block_read);
+			//bsp_printf_full("Block read %d\r\n", block_read);
 		}
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *read_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA random block: Read speed %f MBps\r\n", *read_speed);
+        bsp_printf_full("DMA random block: Read speed %f MBps\r\n", *read_speed);
 
         free(array);
     }
 
-    bsp_printf("DMA: Comparing...\r\n");
+    bsp_printf_full("DMA: Comparing...\r\n");
     if (compare_buffers(src_buffer, dest_buffer, test_size_mb)) {
-        bsp_printf("DMA: Pass. Buffers are identical\r\n");
+        bsp_printf_full("DMA: Pass. Buffers are identical\r\n");
     } else {
-    	bsp_printf("Error: DMA: Fail. Buffers differ\r\n");
+    	bsp_printf_full("Error: DMA: Fail. Buffers differ\r\n");
 		ret = -1;
 		goto free_buffers;
     }
@@ -509,45 +638,45 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
     }
 
     if (erase_mode == erase) { // erase
-    	bsp_printf("DMA: Start erasing...\r\n");
+    	bsp_printf_full("DMA: Start erasing...\r\n");
     	start = get_timer_ticks();
     	erase_unit_size = erase_unit_size_calculate(mmc, erase);
     	if(erase_unit_size == 0) {
-            bsp_printf("Error: DMA: Failed to calculate erase unit size\r\n");
+            bsp_printf_full("Error: DMA: Failed to calculate erase unit size\r\n");
             ret = -1;
             goto free_buffers;
         }
     	erase_unit_num = test_size_mb * 1024 * 1024 / erase_unit_size;
     	ret = efx_emmc_erase(mmc, cmd, start_addr, erase_unit_num);
         if(ret != 0) {
-        	bsp_printf("Error: DMA: Erase fail\r\n");
+        	bsp_printf_full("Error: DMA: Erase fail\r\n");
         	ret = -1;
         	goto free_buffers;
         }
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *erase_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA: Erase speed %f MBps\r\n", *erase_speed);
+        bsp_printf_full("DMA: Erase speed %f MBps\r\n", *erase_speed);
     } else { // trim
-    	bsp_printf("DMA: Start trimming...\r\n");
+    	bsp_printf_full("DMA: Start trimming...\r\n");
     	start = get_timer_ticks();
     	erase_unit_size = erase_unit_size_calculate(mmc, trim);
     	if(erase_unit_size == 0) {
-            bsp_printf("Error: DMA: Failed to calculate trim unit size\r\n");
+            bsp_printf_full("Error: DMA: Failed to calculate trim unit size\r\n");
             ret = -1;
             goto free_buffers;
         }
     	erase_unit_num = test_size_mb * 1024 * 1024 / erase_unit_size;
     	ret = efx_emmc_trim(mmc, cmd, start_addr, erase_unit_num);
         if(ret != 0) {
-        	bsp_printf("Error: DMA: Trim fail\r\n");
+        	bsp_printf_full("Error: DMA: Trim fail\r\n");
         	ret = -1;
         	goto free_buffers;
         }
         end = get_timer_ticks();
         time_second = ticks_to_seconds(end - start);
         *erase_speed = ((double)test_size_mb / time_second);
-        debug_printf("DMA: Trim speed %f MBps\r\n", *erase_speed);
+        bsp_printf_full("DMA: Trim speed %f MBps\r\n", *erase_speed);
     }
 
     // Read back after erase/trim for verification
@@ -555,15 +684,15 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
     total_cycle = ceiling_division(total_blocks, block_per_rw);
     for (int i = 0; i < total_cycle; i++) {
     	if ((total_blocks % block_per_rw != 0) && (i == (total_cycle -1))) {
-    		//bsp_printf("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
+    		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, total_blocks%block_per_rw);
     		ret = efx_emmc_block_read(mmc, total_blocks % block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
     	} else {
-    		//bsp_printf("block read %d, going to read %d\r\n", block_read, block_per_rw);
+    		//bsp_printf_full("block read %d, going to read %d\r\n", block_read, block_per_rw);
     		ret = efx_emmc_block_read(mmc, block_per_rw, start_addr + (i * block_per_rw * EMMC_BLOCK_LEN / EMMC_STEP), dest_buffer + (i * block_per_rw * EMMC_BLOCK_LEN / 4), 1);
     	}
 
         if(ret != 0) {
-        	bsp_printf("Error: DMA: Read for erase verify fail\r\n");
+        	bsp_printf_full("Error: DMA: Read for erase verify fail\r\n");
         	ret = -1;
         	goto free_buffers;
         }
@@ -571,18 +700,18 @@ int dma_wr_rd_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 len_mode, u32 fixe
 
     u32 ret_val = check_buffer_zeros_or_ones(dest_buffer, test_size_mb);
     if ((erase_mode == erase) && (ret_val == 0 || ret_val == 1)) { // erase
-    	bsp_printf("DMA: Erase successful. Entire area are %d\r\n", ret_val);
+    	bsp_printf_full("DMA: Erase successful. Entire area are %d\r\n", ret_val);
     } else if ((erase_mode == trim) && (ret_val == 0 || ret_val == 1)) { // trim
-    	bsp_printf("DMA: Trim successful. Entire area are %d\r\n", ret_val);
+    	bsp_printf_full("DMA: Trim successful. Entire area are %d\r\n", ret_val);
     } else {
-    	bsp_printf("Error: DMA: Erase/Trim failed. Not entire area are 0 or 1\r\n");
+    	bsp_printf_full("Error: DMA: Erase/Trim failed. Not entire area are 0 or 1\r\n");
         ret = -1;
         goto free_buffers;
     }
 
 free_buffers:
-    free(src_buffer);
-    free(dest_buffer);
+	free_aligned_buffer(src_buffer);
+	free_aligned_buffer(dest_buffer);
 
     return ret;
 }
@@ -609,26 +738,26 @@ int test_entire_emmc(struct mmc *mmc, struct mmc_cmd *cmd, u32 dma, enum bus_spe
 
 	total_cycle = (uda_capacity % test_size_byte == 0)? ( uda_capacity / test_size_byte ) : ( uda_capacity / test_size_byte + 1 );
 	test_size_last_mb = (uda_capacity % test_size_byte == 0)? test_size_mb : (uda_capacity % test_size_byte)/1024/1024;
-	bsp_printf("test cycle is %d\r\n",total_cycle);
+	bsp_printf_full("test cycle is %d\r\n",total_cycle);
 
 	efx_emmc_switch_bus_speed_mode(mmc, cmd, transfer_mode, bus_width, clk_freq, 0x0);
 
 	for (int j = 1; j <= whole_space_test_num ; j++){
 		address = 0x0;
-		bsp_printf("-----------------all space test %d-----------------\r\n", j);
+		bsp_printf_full("-----------------all space test %d-----------------\r\n", j);
 		for (int i = 1; i <= total_cycle ; i++) {
-			bsp_printf("test cycle is %d/%d, test start addr is 0x%x\r\n",i,total_cycle,address);
+			bsp_printf_full("test cycle is %d/%d, test start addr is 0x%x\r\n",i,total_cycle,address);
 			test_size_real_mb = (i == total_cycle)? test_size_last_mb : test_size_mb;
 			if (dma) {
 				ret = dma_wr_rd_erase(mmc, cmd, len_mode, fixed_bk_num, address, erase_mode, erase_en, test_size_real_mb, &write_speed, &read_speed, &erase_speed);
 			} else {
 				ret = non_dma_wr_rd(mmc, cmd, len_mode, fixed_bk_num, address, test_size_real_mb, &write_speed, &read_speed);
 			}
-			debug_printf("test %d cycle %d, write: %f MBps, read: %f MBps, erase: %f MBps\r\n", j, i, write_speed, read_speed, erase_speed);
+			bsp_printf_full("test %d cycle %d, write: %f MBps, read: %f MBps, erase: %f MBps\r\n", j, i, write_speed, read_speed, erase_speed);
 
 			if (ret != 0) {
 				test_fail = 1;
-				bsp_printf("Error: all space test failed at cycle %d\r\n",i);
+				bsp_printf_full("Error: all space test failed at cycle %d\r\n",i);
 				break;
 			}
 			address = address + test_size_real_mb*1024*1024/EMMC_STEP;
@@ -640,17 +769,17 @@ int test_entire_emmc(struct mmc *mmc, struct mmc_cmd *cmd, u32 dma, enum bus_spe
 	}
 
 	if (test_fail == 0) {
-		bsp_printf("-------------------Test Success-------------------\r\n");
-		bsp_printf("Average write speed %.2f MBps\r\n", write_speed_sum / (whole_space_test_num * total_cycle));
-		bsp_printf("Average read speed %.2f MBps\r\n", read_speed_sum / (whole_space_test_num * total_cycle));
+		bsp_printf_full("-------------------Test Success-------------------\r\n");
+		bsp_printf_full("Average write speed %.2f MBps\r\n", write_speed_sum / (whole_space_test_num * total_cycle));
+		bsp_printf_full("Average read speed %.2f MBps\r\n", read_speed_sum / (whole_space_test_num * total_cycle));
 		if(erase_mode == erase) {
-			debug_printf("Average erase speed %.2f MBps\r\n", erase_speed_sum / (whole_space_test_num * total_cycle));
+			bsp_printf_full("Average erase speed %.2f MBps\r\n", erase_speed_sum / (whole_space_test_num * total_cycle));
 		} else if(erase_mode == trim) {
-			debug_printf("Average trim speed %.2f MBps\r\n", erase_speed_sum / (whole_space_test_num * total_cycle));
+			bsp_printf_full("Average trim speed %.2f MBps\r\n", erase_speed_sum / (whole_space_test_num * total_cycle));
 		}
 		ret = 0;
 	} else {
-		bsp_printf("-------------------Test Fail-------------------\r\n");
+		bsp_printf_full("-------------------Test Fail-------------------\r\n");
 		ret = -1;
 	}
 

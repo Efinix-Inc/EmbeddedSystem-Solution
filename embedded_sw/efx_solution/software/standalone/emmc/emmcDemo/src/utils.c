@@ -4,6 +4,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include "utils.h"
+#include "device_config.h"
 
 u32 reg_read(u32 reg)
 {
@@ -86,9 +87,9 @@ int are_arrays_equal(const u32 *arr1, const u32 *arr2, size_t size)
 {
 	int ret = 1;
     for (size_t i = 0; i < size; i++) {
-    	//debug_printf("arr1[%d] %d vs arr2[%d] %d\r\n", i, arr1[i], i, arr2[i]);
+    	//bsp_printf_full("arr1[%d] %d vs arr2[%d] %d\r\n", i, arr1[i], i, arr2[i]);
         if (arr1[i] != arr2[i]) {
-        	debug_printf("Arrays are not equal arr1[%d] %d vs arr2[%d] %d\r\n", i, arr1[i], i, arr2[i]);
+        	bsp_printf_full("Arrays are not equal arr1[%d] %d vs arr2[%d] %d\r\n", i, arr1[i], i, arr2[i]);
             ret = 0; // Arrays are not equal
         }
     }
@@ -99,7 +100,7 @@ int are_arrays_equal(const u32 *arr1, const u32 *arr2, size_t size)
 u32 largest_number(int start, int stop)
 {
     if (start < 0 || stop < 0 || start > stop) {
-        bsp_printf("Invalid start or stop bit.\r\n");
+        bsp_printf_full("Invalid start or stop bit.\r\n");
         return 0; // Return 0 for invalid input
     }
 
@@ -107,26 +108,6 @@ u32 largest_number(int start, int stop)
     u32 max_number = (1ULL << num_bits) - 1; // 2^num_bits - 1
 
     return max_number;
-}
-
-void debug_printf(const char *format, ...)
-{
-    #if DEBUG_PRINTF_EN
-        // Create a buffer to hold the formatted message
-        char formatted_message[1024];  // Adjust size as needed
-
-        // Variable argument list
-        va_list args;
-        va_start(args, format);
-
-        // Format the string into the buffer
-        vsnprintf(formatted_message, sizeof(formatted_message), format, args);
-
-        // Print the formatted message
-        bsp_printf("%s", formatted_message);
-
-        va_end(args);
-    #endif
 }
 
 u32 cycle_to_us(u32 clk_khz, u32 cycle)
@@ -139,7 +120,7 @@ u32 cycle_to_us(u32 clk_khz, u32 cycle)
 	if (delay < 1) {
 		delay = 1;
 	}
-	debug_printf("Clock %dkHz, cycle %d, delay %dus\r\n", clk_khz, cycle, delay);
+	bsp_printf_full("Clock %dkHz, cycle %d, delay %dus\r\n", clk_khz, cycle, delay);
 
 	return delay;
 }
@@ -156,6 +137,6 @@ uint64_t get_timer_ticks() {
 
 // Convert timer ticks to seconds (platform-specific)
 double ticks_to_seconds(uint64_t ticks) {
-	debug_printf("ticks %llu, second %f\r\n", ticks, ticks/(SYSTEM_CLINT_HZ/1.0));
+	bsp_printf_full("ticks %u, second %f\r\n", ticks, ticks/(SYSTEM_CLINT_HZ/1.0));
     return ticks/(SYSTEM_CLINT_HZ/1.0);
 }
