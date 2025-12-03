@@ -31,7 +31,6 @@
 #define MMC_CMD_SET_BLOCKLEN		    16 //Sets a block length for R/W cmd. Block length R/W cmd set to 512B in High Capacity card. 
 #define MMC_CMD_READ_SINGLE_BLOCK	    17 //Reads a block of the size selected by the SET_BLOCKLEN command. 
 #define MMC_CMD_READ_MULTIPLE_BLOCK	    18 //Continuously transfers data blocks from card to host until interupted.
-#define MMC_CMD_SEND_TUNING_BLOCK		19 //Reserved. 
 #define MMC_CMD_SEND_TUNING_BLOCK_HS200	21 
 #define MMC_CMD_SET_BLOCK_COUNT         23 //Reserved. 
 #define MMC_CMD_WRITE_SINGLE_BLOCK	    24 //Writes a block of the size selected by the SET_BLOCKLEN command. 
@@ -40,8 +39,6 @@
 #define MMC_CMD_ERASE_GROUP_END		    36
 #define MMC_CMD_ERASE			        38 //Erases all previously selected write blocks. 
 #define MMC_CMD_APP_CMD			        55 //Defines to the card that the next command is an app specific command. 
-#define MMC_CMD_SPI_READ_OCR		    58 //Reads the OCR register of a cord/ CCS bit is assigned to OCR[30]
-#define MMC_CMD_SPI_CRC_ON_OFF		    59 //Turns the CRC option on or off. 
 #define MMC_CMD_RES_MAN			        62 //Reserved for Manufacturer
 
 //Response Format
@@ -56,8 +53,6 @@
 #define MMC_RSP_R1b 	                (MMC_RSP_PRESENT|MMC_RSP_BUSY)	//Card Status with addtional of busy signal
 #define MMC_RSP_R2	                    (MMC_RSP_PRESENT|MMC_RSP_136|MMC_RSP_CRC)		//Two Bytes long 
 #define MMC_RSP_R3	                    (MMC_RSP_PRESENT)								//Sent by card when a READ_OCR is received
-#define MMC_RSP_R4	                    (MMC_RSP_PRESENT)								//Reserved for I/O mode
-#define MMC_RSP_R5	                    (MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)	//Reserved for I/O mode
 #define MMC_RSP_R6	                    (MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)	//Published RCA response
 #define MMC_RSP_R7	                    (MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)	//Card interface condition
 

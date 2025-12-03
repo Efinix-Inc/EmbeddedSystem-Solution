@@ -194,12 +194,12 @@ int test_tuning_algo(void)
     };
 #endif
 
-	bsp_printf("Test map:\r\n");
+	bsp_printf_full("Test map:\r\n");
 	for (int i = 0; i < rows; i++) {
 		for (int j = 0; j < cols; j++) {
-			bsp_printf("%d ", arr[i][j]);
+			bsp_printf_full("%d ", arr[i][j]);
 		}
-		bsp_printf("\r\n");
+		bsp_printf_full("\r\n");
 	}
 
     // Step 1: Find rows with the longest consecutive 1s
@@ -209,32 +209,32 @@ int test_tuning_algo(void)
     ret = find_rows_with_longest_ones(rows, cols, arr, result);
 
     if (ret) {
-    	bsp_printf("There is zero '1' in the entire array\r\n");
+    	bsp_printf_full("There is zero '1' in the entire array\r\n");
     	return -1;
     }
 
     // Print the result array
-    bsp_printf("Result array:\r\n");
+    bsp_printf_full("Result array:\r\n");
     for (int i = 0; i < rows; i++) {
-        bsp_printf("%d\r\n", result[i][0]);
+        bsp_printf_full("%d\r\n", result[i][0]);
     }
 
     // Step 2: Find the center row of the result array
     int center_row = find_center_row(rows, result);
 
     if (center_row != -1) {
-    	bsp_printf("Center row of the maximum consecutive 1s: %d\r\n", center_row);
+    	bsp_printf_full("Center row of the maximum consecutive 1s: %d\r\n", center_row);
 
         // Step 3: Find the center of the longest consecutive 1s in the original array
         int center_col = find_center_of_row(center_row, cols, arr[center_row]);
 
         if (center_col != -1) {
-        	bsp_printf("Center column of the longest consecutive 1s in row %d: %d\r\n", center_row, center_col);
+        	bsp_printf_full("Center column of the longest consecutive 1s in row %d: %d\r\n", center_row, center_col);
         } else {
-        	bsp_printf("No sequence of 1s found in row %d.\r\n", center_row);
+        	bsp_printf_full("No sequence of 1s found in row %d.\r\n", center_row);
         }
     } else {
-    	bsp_printf("No sequence of 1s found.\r\n");
+    	bsp_printf_full("No sequence of 1s found.\r\n");
     }
 
     return 0;
