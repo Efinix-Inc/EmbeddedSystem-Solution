@@ -29,7 +29,7 @@ It is compatible with both Titanium and Trion devices, ensuring flexibility and 
 
 #### High-Performance Sapphire SoC Top Module Block Diagram
 
-![HPS SoC block-diagram](docs/images/hps/hps-top-block-diagram.png)
+![HPS SoC block-diagram](docs/images/hps/hps_blk_diagram.png)
 
 Key Features:
 * Unified RTL Design.
