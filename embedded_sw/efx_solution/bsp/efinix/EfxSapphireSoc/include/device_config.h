@@ -9,6 +9,7 @@
 #define DEV_CONFIG
 
 // Axi-Interconnect Base Address (Master Interface)
+#define SLB_BASE                    (SYSTEM_AXI_A_BMB + 0x00000000 ) //Soft Logic Block
 #define SDHC_BASE                   (SYSTEM_AXI_A_BMB + 0x01000000 ) // SDHC
 #define TSEMAC_BASE                 (SYSTEM_AXI_A_BMB + 0x01100000 ) // TSEMAC
 #define ISP_AXI4_SLAVE_BASE         (SYSTEM_AXI_A_BMB + 0x01200000 ) // Hardware Accelerator
