@@ -13,6 +13,8 @@ module tseCore #(
     output                      mac_ext_rst,
     output                      dma_rx_rst,
     output                      dma_tx_rst,
+    output                      rx_hw_cs_en,
+    output                      tx_hw_cs_en,
     input                       dma_tx_descriptorUpdate,
     output [1:0]                dma_interrupts,
     output  [2:0]               eth_speed,
@@ -232,46 +234,119 @@ gTSE_streamControl #(
     .phy_sw_rst             ( phy_sw_rst ),
     .dma_rx_rst             ( dma_rx_rst ),
     .dma_tx_rst             ( dma_tx_rst ),
+    .rx_hw_cs_en           ( rx_hw_cs_en ),  
+    .tx_hw_cs_en           ( tx_hw_cs_en ),  
     .error                  ( ),
     .dma_descriptor_update  (dma_tx_descriptorUpdate)
 );
 
+// Fifo <=> Lso <=> Mac
 wire           lso_eth_tx_tvalid;
 wire           lso_eth_tx_tready;
 wire    [7:0]  lso_eth_tx_tdata;
 wire           lso_eth_tx_tlast;
 
+// Mac <=> Checksum <=> Dma
+wire           rx0_eth_rx_tvalid;
+wire           rx0_eth_rx_tready;
+wire    [7:0]  rx0_eth_rx_tdata;
+wire           rx0_eth_rx_tlast;
+
+wire            mux_rx_tready;
+wire            mux_tx_tready;
+wire            dma_rx_tready;
+wire            mac_tx_tready;
+wire            checksum_rx_ready;
+wire            checksum_tx_ready;
+
+wire            rx_mux_tvalid;
+wire    [7:0]   rx_mux_tdata;
+wire            rx_mux_tlast;
+wire            tx_mux_tvalid;
+wire    [7:0]   tx_mux_tdata;
+wire            tx_mux_tlast;
+
+
+//Send from Mac (Rx)
+assign rx0_eth_rx_tready    = (rx_hw_cs_en == 1'b1) ? checksum_rx_ready  :dma_rx_tready;
+assign mux_rx_tready        = (rx_hw_cs_en == 1'b1) ? dma_rx_tready      :1'b0;
+
+
+//Send to Mac (Tx)
+assign m_eth_tx_tready      = (tx_hw_cs_en == 1'b1) ? checksum_tx_ready :mac_tx_tready;
+assign mux_tx_tready        = (tx_hw_cs_en == 1'b1) ? mac_tx_tready     :1'b0;
+
 MacTxLso lso0
 (
   .io_input_valid(m_eth_tx_tvalid),
-  .io_input_ready(m_eth_tx_tready),
+  .io_input_ready(checksum_tx_ready),
   .io_input_payload_last(m_eth_tx_tlast),
   .io_input_payload_fragment_data(m_eth_tx_tdata),
   
   .io_output_valid(lso_eth_tx_tvalid),
-  .io_output_ready(lso_eth_tx_tready),
+  .io_output_ready(mux_tx_tready), //lso_eth_tx_tready
   .io_output_payload_last(lso_eth_tx_tlast),
   .io_output_payload_fragment_data(lso_eth_tx_tdata),
   .clk(tx_axis_clk),
   .reset(mac_ext_srst)
 );
 
-wire           rx0_eth_rx_tvalid;
-wire           rx0_eth_rx_tready;
-wire    [7:0]  rx0_eth_rx_tdata;
-wire           rx0_eth_rx_tlast;
+MuxChecksum mux_checksum_tx(
+
+    .mux_sw (tx_hw_cs_en),
+
+    // From original Data
+    .og_tvalid(m_eth_tx_tvalid),
+    .og_tlast (m_eth_tx_tlast),
+    .og_tdata (m_eth_tx_tdata),
+
+    // Checksum Data
+    .cks_tvalid(lso_eth_tx_tvalid),
+    .cks_tlast (lso_eth_tx_tlast),
+    .cks_tdata (lso_eth_tx_tdata),
+
+    // To next stage => to Mac
+    .mux_tvalid(tx_mux_tvalid),
+    .mux_tlast (tx_mux_tlast ),    
+    .mux_tdata (tx_mux_tdata )
+
+);
+
+
+MuxChecksum mux_checksum_rx(
+
+    .mux_sw (rx_hw_cs_en),
+
+    // From original Data
+    .og_tvalid(rx0_eth_rx_tvalid),
+    .og_tlast (rx0_eth_rx_tlast),
+    .og_tdata (rx0_eth_rx_tdata),
+
+    // Checksum Data
+    .cks_tvalid(s_eth_rx_tvalid),
+    .cks_tlast (s_eth_rx_tlast),
+    .cks_tdata (s_eth_rx_tdata),
+
+    // To next stage => to DMA
+    .mux_tvalid(rx_mux_tvalid),
+    .mux_tlast (rx_mux_tlast ),    
+    .mux_tdata (rx_mux_tdata )
+
+);
+
+
 
 MacRxCheckSumChecker rx0
 (
 
   .io_input_valid(rx0_eth_rx_tvalid),
-  .io_input_ready(rx0_eth_rx_tready),
+  .io_input_ready(checksum_rx_ready),
   .io_input_payload_last(rx0_eth_rx_tlast),
   .io_input_payload_fragment_error(1'b0),
   .io_input_payload_fragment_data(rx0_eth_rx_tdata),
   
   .io_output_valid(s_eth_rx_tvalid),
-  .io_output_ready(s_eth_rx_tready),
+  .io_output_ready(mux_rx_tready),
   .io_output_payload_last(s_eth_rx_tlast),
   .io_output_payload_fragment_error(),
   .io_output_payload_fragment_data(s_eth_rx_tdata),
@@ -296,12 +371,12 @@ gTSE u_gTSE (
     .rx_axis_mac_tready     ( rx0_eth_rx_tready ),
     // MAC TX
     .tx_axis_clk            ( tx_axis_clk ),
-    .tx_axis_mac_tdata      ( lso_eth_tx_tdata ),
-    .tx_axis_mac_tvalid     ( lso_eth_tx_tvalid ),
+    .tx_axis_mac_tdata      ( tx_mux_tdata ),   // lso_eth_tx_tdata
+    .tx_axis_mac_tvalid     ( tx_mux_tvalid  ), // lso_eth_tx_tvalid
     .tx_axis_mac_tstrb      ( 1'b1 ),
-    .tx_axis_mac_tlast      ( lso_eth_tx_tlast ),
+    .tx_axis_mac_tlast      ( tx_mux_tlast ), // lso_eth_tx_tlast
     .tx_axis_mac_tuser      ( 1'b0 ),
-    .tx_axis_mac_tready     ( lso_eth_tx_tready ),
+    .tx_axis_mac_tready     ( mac_tx_tready ), // lso_eth_tx_tready
     // AXI CSR
     .s_axi_aclk             ( io_peripheralClk ),
     .s_axi_awaddr           ( gTSE_m_awaddr[MAC*32 +: ADDR_WIDTH] ),
@@ -339,11 +414,15 @@ gTSE u_gTSE (
     .Mdc                    ( phy_mdc )
 );
 
-assign m_eth_rx_tvalid  = s_eth_rx_tvalid;
-assign m_eth_rx_tdata   = s_eth_rx_tdata;
+assign m_eth_rx_tvalid  = rx_mux_tvalid; // s_eth_rx_tvalid;
+assign m_eth_rx_tdata   = rx_mux_tdata;  // s_eth_rx_tdata;
 assign m_eth_rx_tkeep   = 1'b1;
-assign m_eth_rx_tlast   = s_eth_rx_tlast;
-assign s_eth_rx_tready  = m_eth_rx_tready;
+assign m_eth_rx_tlast   = rx_mux_tlast; // s_eth_rx_tlast;
+assign dma_rx_tready    = m_eth_rx_tready;
+
+
+//assign s_eth_rx_tready  = m_eth_rx_tready;
+
 
 endmodule
 
@@ -392,6 +471,8 @@ output  reg                     mac_sw_rst,
 output  reg                     phy_sw_rst,
 output  reg                     dma_rx_rst,
 output  reg                     dma_tx_rst,
+output  reg                     rx_hw_cs_en,
+output  reg                     tx_hw_cs_en,
 output  reg                     error,
 input                           dma_descriptor_update
 
@@ -556,6 +637,8 @@ begin
             'h081:s_axi_rdata <= {31'd0, phy_sw_rst};
             'h082:s_axi_rdata <= {31'd0, dma_rx_rst};
             'h083:s_axi_rdata <= {31'd0, dma_tx_rst};
+            'h084:s_axi_rdata <= {31'd0, rx_hw_cs_en};
+            'h085:s_axi_rdata <= {31'd0, tx_hw_cs_en};
             default:s_axi_rdata <= 32'hEEEE_1111;
             endcase
         end
@@ -630,6 +713,31 @@ begin
         end
 end
 
+//loc_addr = 0x004; axi_addr = 0x010; RW; //0x210
+always @(posedge s_axi_aclk or negedge s_axi_aresetn)
+begin
+    if(s_axi_aresetn == 1'b0)
+        begin
+            rx_hw_cs_en <= 1'b1;
+        end
+	else if((s_axi_bvalid == 1'b1) && (loc_waddr == 'h084))
+        begin
+            rx_hw_cs_en <= loc_wdata[0];
+        end
+end
+
+//loc_addr = 0x004; axi_addr = 0x010; RW; //0x214
+always @(posedge s_axi_aclk or negedge s_axi_aresetn)
+begin
+    if(s_axi_aresetn == 1'b0)
+        begin
+            tx_hw_cs_en <= 1'b1;
+        end
+	else if((s_axi_bvalid == 1'b1) && (loc_waddr == 'h085))
+        begin
+            tx_hw_cs_en <= loc_wdata[0];
+        end
+end
 
 /*----------------------------------------------------------------------------------*\
     Register Space -- The End
@@ -647,7 +755,7 @@ reset #(
 
 assign w_rd_en          = (next_rd_state == 1);
 assign write_cnt_next   = (s_eth_tx_tkeep ? write_cnt + 1 : write_cnt);
-assign s_eth_tx_tready  = !w_tx_full;
+assign s_eth_tx_tready  = !w_tx_full && !w_tx_size_busy;
 assign m_eth_tx_tvalid  = rd_state != 0;
 assign m_eth_tx_tdata   = w_eth_tx_tdata;
 assign m_eth_tx_tdest   = w_eth_tx_tdest;
@@ -752,20 +860,26 @@ end
 
 
 
+// Changes: 
+// * Change to Synchronous FIFO (R/W)
+// * Change to FWFT.
+// * USE OUTPUT_REG.
+// * Use RST_BUSY SIGNAL.
+
 common_efx_fifo_wrapper #(
    .FAMILY (FAMILY),       
-   .SYNC_CLK (0),
+   .SYNC_CLK (1),
    .SYNC_STAGE (2),
    .DATA_WIDTH (13),
-   .MODE ("STANDARD"),
-   .OUTPUT_REG (0),
-   .PROG_FULL_ASSERT (510),
+   .MODE ("FWFT"),
+   .OUTPUT_REG (1),
+   .PROG_FULL_ASSERT (4),
    .PROGRAMMABLE_FULL ("NONE"),
-   .PROG_FULL_NEGATE (510),
+   .PROG_FULL_NEGATE (4),
    .PROGRAMMABLE_EMPTY ("NONE"),
-   .PROG_EMPTY_ASSERT (2),
-   .PROG_EMPTY_NEGATE (3),
-   .OPTIONAL_FLAGS (0),
+   .PROG_EMPTY_ASSERT (0),
+   .PROG_EMPTY_NEGATE (0),
+   .OPTIONAL_FLAGS (1),
    .PIPELINE_REG (1),
    .DEPTH (4096),
    .ASYM_WIDTH_RATIO (4),
@@ -777,10 +891,9 @@ common_efx_fifo_wrapper #(
 
    )u_standard_tx_fifo_trans (
     .a_rst_i        (w_eth_mac_rst),
-    .wr_clk_i       (s_eth_tx_clk),
+    .clk_i          (s_eth_tx_clk),
     .wr_en_i        (s_eth_tx_tvalid && s_eth_tx_tready && s_eth_tx_tkeep),
     .wdata          ({s_eth_tx_tkeep,s_eth_tx_tdest, s_eth_tx_tdata}),
-    .rd_clk_i       (s_eth_tx_clk),
     .rd_en_i        (w_rd_en),
     .rdata          ({w_eth_tx_tkeep, w_eth_tx_tdest, w_eth_tx_tdata}),
     .full_o         (w_tx_full),
@@ -789,6 +902,7 @@ common_efx_fifo_wrapper #(
     .rd_datacount_o (w_txdata_rd_datacount),
     .rst_busy       (w_tx_size_busy)
 );
+
 
 common_efx_fifo_wrapper  #(
    .FAMILY (FAMILY),       

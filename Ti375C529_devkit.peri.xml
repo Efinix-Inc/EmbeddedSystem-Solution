@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.1.110.3.16" db_version="20252006" last_change_date="Fri Aug  1 16:46:58 2025" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
+<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.2.288" db_version="20252999" last_change_date="Thu Nov 20 10:35:17 2025" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
     <efxpt:device_info>
         <efxpt:iobank_info>
             <efxpt:iobank name="2A" iostd="1.8 V LVCMOS" is_dyn_voltage="false" mode_sel_name="2A_MODE_SEL"/>
@@ -93,6 +93,57 @@
         </efxpt:clkmux_info>
     </efxpt:device_info>
     <efxpt:gpio_info>
+        <efxpt:comp_gpio name="emmc_clk" gpio_def="GPIOT_P_64" mode="output" bus_name="" io_standard="1.8 V LVCMOS">
+            <efxpt:output_config name="emmc_clk_HI" name_ddio_lo="emmc_clk_LO" register_option="register" clock_name="clk90_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_cmd" gpio_def="GPIOT_N_63" mode="inout" bus_name="" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_cmd_IN_HI" name_ddio_lo="emmc_cmd_IN_LO" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="emmc_cmd_PULL_UP_ENA" dyn_delay_en_name="emmc_cmd_DLY_ENA" dyn_delay_reset_name="emmc_cmd_DLY_RST" dyn_delay_ctrl_name="emmc_cmd_DLY_CTRL" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_cmd_OUT_HI" name_ddio_lo="emmc_cmd_OUT_LO" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_cmd_OE" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_cmd_OEN"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[0]" gpio_def="GPIOT_P_56" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[0]" name_ddio_lo="emmc_dat_IN_LO[0]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[0]" dyn_delay_reset_name="emmc_dat_DLY_RST[0]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[0]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[0]" name_ddio_lo="emmc_dat_OUT_LO[0]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[0]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[0]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[1]" gpio_def="GPIOT_N_59" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[1]" name_ddio_lo="emmc_dat_IN_LO[1]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[1]" dyn_delay_reset_name="emmc_dat_DLY_RST[1]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[1]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[1]" name_ddio_lo="emmc_dat_OUT_LO[1]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[1]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[1]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[2]" gpio_def="GPIOT_P_60" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[2]" name_ddio_lo="emmc_dat_IN_LO[2]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[2]" dyn_delay_reset_name="emmc_dat_DLY_RST[2]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[2]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[2]" name_ddio_lo="emmc_dat_OUT_LO[2]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[2]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[2]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[3]" gpio_def="GPIOT_N_60" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[3]" name_ddio_lo="emmc_dat_IN_LO[3]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[3]" dyn_delay_reset_name="emmc_dat_DLY_RST[3]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[3]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[3]" name_ddio_lo="emmc_dat_OUT_LO[3]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[3]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[3]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[4]" gpio_def="GPIOT_P_61" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[4]" name_ddio_lo="emmc_dat_IN_LO[4]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[4]" dyn_delay_reset_name="emmc_dat_DLY_RST[4]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[4]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[4]" name_ddio_lo="emmc_dat_OUT_LO[4]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[4]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[4]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[5]" gpio_def="GPIOT_N_61" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[5]" name_ddio_lo="emmc_dat_IN_LO[5]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[5]" dyn_delay_reset_name="emmc_dat_DLY_RST[5]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[5]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[5]" name_ddio_lo="emmc_dat_OUT_LO[5]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[5]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[5]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[6]" gpio_def="GPIOT_P_62" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[6]" name_ddio_lo="emmc_dat_IN_LO[6]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[6]" dyn_delay_reset_name="emmc_dat_DLY_RST[6]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[6]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[6]" name_ddio_lo="emmc_dat_OUT_LO[6]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[6]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[6]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_dat[7]" gpio_def="GPIOT_N_62" mode="inout" bus_name="emmc_dat" io_standard="1.8 V LVCMOS">
+            <efxpt:input_config name="emmc_dat_IN_HI[7]" name_ddio_lo="emmc_dat_IN_LO[7]" conn_type="normal" is_register="true" clock_name="clk_200m_cal" is_clock_inverted="false" pull_option="weak pullup" is_schmitt_trigger="false" ddio_type="resync" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="" dyn_delay_en_name="emmc_dat_DLY_ENA[7]" dyn_delay_reset_name="emmc_dat_DLY_RST[7]" dyn_delay_ctrl_name="emmc_dat_DLY_CTRL[7]" clkmux_buf_name=""/>
+            <efxpt:output_config name="emmc_dat_OUT_HI[7]" name_ddio_lo="emmc_dat_OUT_LO[7]" register_option="register" clock_name="clk_200m" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="resync" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="emmc_dat_OE[7]" is_register="true" clock_name="clk_200m" is_clock_inverted="true" name_oen="emmc_dat_OEN[7]"/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="emmc_rstn" gpio_def="GPIOT_P_63" mode="output" bus_name="" io_standard="1.8 V LVCMOS">
+            <efxpt:output_config name="emmc_rstn" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+        </efxpt:comp_gpio>
         <efxpt:comp_gpio name="hdmi_pll_clk_ext_clk" gpio_def="GPIOL_32" mode="input" bus_name="" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="hdmi_pll_clk_ext_clk" name_ddio_lo="" conn_type="pll_clkin" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="hdmi_pll_clk_ext_clk_PULL_UP_ENA" dyn_delay_en_name="hdmi_pll_clk_ext_clk_DLY_ENA" dyn_delay_reset_name="hdmi_pll_clk_ext_clk_DLY_RST" dyn_delay_ctrl_name="hdmi_pll_clk_ext_clk_DLY_CTRL" clkmux_buf_name=""/>
         </efxpt:comp_gpio>
@@ -378,6 +429,7 @@
         <efxpt:bus name="sd_dat" mode="inout" msb="3" lsb="0"/>
         <efxpt:bus name="io_usb_dm" mode="inout" msb="3" lsb="0"/>
         <efxpt:bus name="io_usb_dp" mode="inout" msb="3" lsb="0"/>
+        <efxpt:bus name="emmc_dat" mode="inout" msb="7" lsb="0"/>
     </efxpt:gpio_info>
     <efxpt:pll_info>
         <efxpt:pll name="soc_pll_sys_clk" pll_def="PLL_BL0" ref_clock_name="" ref_clock_freq="100.0000" multiplier="1" pre_divider="1" post_divider="1" reset_name="" locked_name="pll_system_locked" is_ipfrz="false" is_bypass_lock="true">
@@ -592,6 +644,53 @@
                 </efxpt:gen_param>
             </efxpt:comp_output_clock>
             <efxpt:comp_output_clock name="i_pixel_clk" number="2" out_divider="27" is_dyn_phase="false" phase_setting="0" is_inverted="false" conn_type="gclk" clkmux_buf_name="">
+                <efxpt:gen_pin/>
+                <efxpt:gen_param/>
+            </efxpt:comp_output_clock>
+            <efxpt:comp_prop/>
+            <efxpt:gen_param>
+                <efxpt:param name="DYN_RECONFIG_EN" value="false" value_type="bool"/>
+                <efxpt:param name="FRACTIONAL_EN" value="false" value_type="bool"/>
+                <efxpt:param name="FRACTIONAL_K" value="0" value_type="int"/>
+                <efxpt:param name="REFCLK" value="CORE_CLK1" value_type="str"/>
+                <efxpt:param name="SSC_AMPLITUDE" value="0.5000" value_type="float"/>
+                <efxpt:param name="SSC_EN" value="DISABLE" value_type="str"/>
+                <efxpt:param name="SSC_FREQUENCY" value="30.0000" value_type="float"/>
+                <efxpt:param name="SSC_MODULATION_TYPE" value="DOWN" value_type="str"/>
+            </efxpt:gen_param>
+        </efxpt:pll>
+        <efxpt:pll name="emmc_pll" pll_def="PLL_BR1" ref_clock_name="io_peripheralClk" ref_clock_freq="200.0000" multiplier="2" pre_divider="2" post_divider="4" reset_name="" locked_name="emmc_pll_locked" is_ipfrz="false" is_bypass_lock="true">
+            <efxpt:adv_prop ref_clock_mode="core" ref_clock1_name="" ext_ref_clock_id="2" clksel_name="" feedback_clock_name="fb" feedback_mode="core"/>
+            <efxpt:gen_pin>
+                <efxpt:pin name="pll_SHIFT_ENA" type_name="SHIFT_ENA" is_bus="false"/>
+                <efxpt:pin name="" type_name="DESKEWED" is_bus="false"/>
+                <efxpt:pin name="" type_name="CFG_CLK" is_bus="false" is_clk="true" is_clk_invert="false"/>
+                <efxpt:pin name="" type_name="CFG_DATA_IN" is_bus="false"/>
+                <efxpt:pin name="" type_name="CFG_DATA_OUT" is_bus="false"/>
+                <efxpt:pin name="" type_name="CFG_SEL" is_bus="false"/>
+                <efxpt:pin name="" type_name="USER_SSC_EN" is_bus="false"/>
+                <efxpt:pin name="pll_SHIFT" type_name="SHIFT" is_bus="true"/>
+                <efxpt:pin name="pll_SHIFT_SEL" type_name="SHIFT_SEL" is_bus="true"/>
+            </efxpt:gen_pin>
+            <efxpt:comp_output_clock name="fb" number="0" out_divider="4" is_dyn_phase="false" phase_setting="0" is_inverted="false" conn_type="gclk" clkmux_buf_name="">
+                <efxpt:gen_pin/>
+                <efxpt:gen_param/>
+            </efxpt:comp_output_clock>
+            <efxpt:comp_output_clock name="clk_200m" number="1" out_divider="4" is_dyn_phase="false" phase_setting="0" is_inverted="false" conn_type="gclk" clkmux_buf_name="">
+                <efxpt:gen_pin/>
+                <efxpt:gen_param>
+                    <efxpt:param name="HALF_DC_SHIFT_EN" value="false" value_type="bool"/>
+                    <efxpt:param name="PDIV" value="2" value_type="int"/>
+                    <efxpt:param name="PROG_DUTY_CYCLE_EN" value="false" value_type="bool"/>
+                    <efxpt:param name="REQUEST_DUTY_CYCLE" value="50.0000" value_type="float"/>
+                    <efxpt:param name="SWALLOWING_DIV" value="2" value_type="int"/>
+                </efxpt:gen_param>
+            </efxpt:comp_output_clock>
+            <efxpt:comp_output_clock name="clk_200m_cal" number="2" out_divider="4" is_dyn_phase="true" phase_setting="0" is_inverted="false" conn_type="gclk" clkmux_buf_name="">
+                <efxpt:gen_pin/>
+                <efxpt:gen_param/>
+            </efxpt:comp_output_clock>
+            <efxpt:comp_output_clock name="clk90_200m" number="3" out_divider="4" is_dyn_phase="false" phase_setting="2" is_inverted="false" conn_type="gclk" clkmux_buf_name="">
                 <efxpt:gen_pin/>
                 <efxpt:gen_param/>
             </efxpt:comp_output_clock>
@@ -953,6 +1052,7 @@
                 <efxpt:param name="OCR_FILE_PATH" value="" value_type="str"/>
                 <efxpt:param name="PIPELINE_SOC_AXI_MEM_INTERFACE_EN" value="false" value_type="bool"/>
                 <efxpt:param name="SYS_CLK_SOURCE" value="Clock 0" value_type="str"/>
+                <efxpt:param name="WRITEBUFFER_SOC_AXI_INTERFACE_EN" value="false" value_type="bool"/>
             </efxpt:gen_param>
             <efxpt:gen_pin>
                 <efxpt:pin name="axiAInterrupt" type_name="AXIAINTERRUPT" is_bus="false"/>

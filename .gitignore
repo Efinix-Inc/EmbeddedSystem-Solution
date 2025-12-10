@@ -3,6 +3,7 @@ outflow
 *.vdb
 .lock
 .cproject
+.metadata
 .project
 .settings
 *.launch

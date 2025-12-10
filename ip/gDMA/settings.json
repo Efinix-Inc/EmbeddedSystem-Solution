@@ -9,7 +9,7 @@
             "vendor": "efinixinc.com",
             "library": "bridges_and_adaptors",
             "name": "efx_dma",
-            "version": "6.4.1"
+            "version": "6.4.2"
         }
     ],
     "conf": {
@@ -113,14 +113,14 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gDMA/gDMA_tmpl.vhd",
-            "gDMA/gDMA_define.vh",
             "gDMA/gDMA_tmpl.v",
-            "gDMA/gDMA.v"
+            "gDMA/gDMA_define.vh",
+            "gDMA/gDMA.v",
+            "gDMA/gDMA_tmpl.vhd"
         ],
         "external_script_script": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.110.2.15",
-    "generated_date": "2025-06-25T09:37:01.715528+00:00"
+    "sw_version": "2025.2.288",
+    "generated_date": "2025-11-18T06:53:48.903469+00:00"
 }
