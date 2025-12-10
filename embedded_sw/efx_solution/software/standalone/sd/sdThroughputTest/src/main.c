@@ -14,9 +14,8 @@
 #include "mmc.h"
 #include "efx_mmc_driver.h"
 
-char buf[BLOCK_SIZE*MAX_BLK_BUF];
-char rd_buf[BLOCK_SIZE*MAX_BLK_BUF];
-
+char buf[BLOCK_SIZE*MAX_BLK_BUF] __attribute((aligned (4096)));
+char rd_buf[BLOCK_SIZE*MAX_BLK_BUF]__attribute((aligned (4096)));
 
 void main() {
 
