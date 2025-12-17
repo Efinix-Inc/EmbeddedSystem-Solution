@@ -42,9 +42,8 @@
     *   [8.20 ADMA System Address Register (0x158)](#820-adma-system-address-register-0x158)
     *   [8.21 ADMA System Address Register (0x15C)](#821-adma-system-address-register-0x15c)
 *   **[9 Example Design Description](#9-example-design-description)**
-    *   [9.1 Directory Structure](#91-directory-structure)
-    *   [9.2 Block Diagram](#92-block-diagram)
-    *   [9.3 System Register](#93-system-register)
+    *   [9.1 Block Diagram](#91-block-diagram)
+    *   [9.2 System Register](#92-system-register)
 *   **[10 Driver Description](#10-driver-description)**
     *   [10.1 User Parameter](#101-user-parameter)
     *   [10.2 Functions](#102-functions)
@@ -139,13 +138,19 @@ If there is a change in the corresponding clock output port of `clk_200m_cal`, t
 
 ## 6. Resource Utilization
 
-The example design is built upon Ti375C529 device with software version Efinity 2024.2 patch 2, `ADMA_DATA_WIDTH` configured to 128, and eMMC Host Controller resource utilization as shown in the table below:
+The design is compiled with software version Efinity 2025.2.288, `ADMA_DATA_WIDTH` configured to 128, and eMMC System Register and Host Controller resource utilization are as shown in the table below:
 
-**Table 3: Resource utilization**
+**Table 3: eMMC System Register Resource utilization**
 
 | FFs | SRLs | ADDs | LUTs | COMB4s | RAMs | DSP/MULTs |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| 4434 | 80 | 621 | 4527 | 0 | 15 | 0 |
+| 122 | 0 | 0 | 53 | 0 | 0 | 0 |
+
+**Table 4: eMMC Host Controller Resource utilization**
+
+| FFs | SRLs | ADDs | LUTs | COMB4s | RAMs | DSP/MULTs |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 4595 | 0 | 565 | 4627 | 0 | 15 | 0 |
 
 ## 7. Interface Description
 
@@ -245,7 +250,7 @@ The example design is built upon Ti375C529 device with software version Efinity 
 
 ## 8. Register Space
 
-**Table 4: Register Attribute Definitions**
+**Table 5: Register Attribute Definitions**
 
 | Access Type | Definition |
 | :--- | :--- |
@@ -464,45 +469,29 @@ The example design is built upon Ti375C529 device with software version Efinity 
 
 ## 9. Example Design Description
 
-### 9.1 Directory Structure
-
-The eMMC Host Controller sample project is based on the Ti375C529 development board, and the project file structure is shown below, only important directory or files are shown.
-
-> **Figure 2:** Example Design Directory Structure
-
-| Directory/File | Description |
-| :--- | :--- |
-| `embedded_sw\efx_hard_soc\software\standalone\emmc\emmcDemo` | Driver of eMMC Host Controller |
-| `ip\` | IP used in the project |
-| `linux\` | Files related to Linux booting |
-| `sim\` | Files related to simulation |
-| `source\emmc\` | RTL of eMMC Host Controller |
-| `source\top_soc.v` | Top file of the project |
-| `ug\` | User guides |
-
-### 9.2 Block Diagram
+### 9.1 Block Diagram
 
 ![design-diagram.png](../images/emmc/design_diagram.png)
-> **Figure 3:** Example Design Block Diagram
+> **Figure 2:** Example Design Block Diagram
 
-As shown above, the DDR / system reg / eMMC Host Controller is connected to the RISC-V hard disk via an internal interconnect. The system reg generates a reset signal to soft reset the eMMC Host Controller and eMMC Device.
+As shown above, the DDR / system reg / eMMC Host Controller is connected to the RISC-V hard SoC via an internal interconnect. The system reg generates a reset signal to soft reset the eMMC Host Controller and eMMC Device.
 RISC-V can initialize the eMMC Device and select the transmission mode through the eMMC Host Controller; initiate the read/write/erase operation of the eMMC Device by sending cmd commands, and then realize the data transfer between DDR and eMMC Host Controller through ADMA.
 
-### 9.3 System Register
+### 9.2 System Register
 
-#### 9.3.1 Date Register (0x000)
+#### 9.2.1 Date Register (0x000)
 
 | Bit | Default Value | Description | Attribute |
 | :--- | :--- | :--- | :--- |
 | 31-0 | - | Date register | RO |
 
-#### 9.3.2 Test Register (0x004)
+#### 9.2.2 Test Register (0x004)
 
 | Bit | Default Value | Description | Attribute |
 | :--- | :--- | :--- | :--- |
 | 31-0 | 32'h0 | Read and Write Test Registers | R/W |
 
-#### 9.3.3 Reset Register (0x008)
+#### 9.2.3 Reset Register (0x008)
 
 | Bit | Default Value | Description | Attribute |
 | :--- | :--- | :--- | :--- |
@@ -516,13 +505,13 @@ RISC-V can initialize the eMMC Device and select the transmission mode through t
 
 The user parameters in the `userDef.h` file are shown below:
 
-**Table 5: Driver User Parameter Description**
+**Table 6: Driver User Parameter Description**
 
 | Name | Default Value | Description |
 | :--- | :--- | :--- |
-| `EMMC_ADDR` | `SYSTEM_AXI_A_BMB + 0x01200000` | Starting address of the `emmc_host_controller` module registers, where the offset address `0x01200000` is configured in the IP (`gAXIS_1to5_switch`) of the example design project |
-| `SYS_REG_ADDR` | `SYSTEM_AXI_A_BMB + 0x01300000` | Starting address of the system register module, where the offset address `0x01300000` is configured in the IP (`gAXIS_1to5_switch`) of the example design project |
-| `EMMC_INTERRUPT` | `SYSTEM_PLIC_USER_INTERRUPT_J_INTERRUPT` | `userInterruptJ` is chosen as the interrupt for `emmc_host_controller` in the example design project `top.v` |
+| `EMMC_ADDR` | `SYSTEM_AXI_A_BMB + 0x01300000` | Starting address of the `emmc_host_controller` module registers, where the offset address `0x01300000` is configured in the IP (`gAXIS_1to6_switch`) of the example design project |
+| `SYS_REG_ADDR` | `SYSTEM_AXI_A_BMB + 0x01400000` | Starting address of the system register module, where the offset address `0x01400000` is configured in the IP (`gAXIS_1to6_switch`) of the example design project |
+| `EMMC_INTERRUPT` | `SYSTEM_PLIC_USER_INTERRUPT_U_INTERRUPT` | `userInterruptU` is chosen as the interrupt for `emmc_host_controller` in the design project `top_soc.v` |
 | `EMMC_VCCQ` | 1.8 | VCCQ of on board eMMC circuitry |
 | `EMMC_LARGE_DENSITY` | 1 | 0: eMMC device capacity <= 2GB<br>1: eMMC device capacity > 2GB |
 | `EMMC_RCA` | 2 | The relative address assigned to the emmc device, the bit width is 16bit, the value of `EMMC_RCA` should be greater than 1, the value range is 2~65535 |
@@ -535,7 +524,7 @@ Initialize the eMMC device, after the initialization is completed, the eMMC devi
 
 #### 10.2.2 efx_emmc_switch_bus_speed_mode
 
-**Table 6: `efx_emmc_switch_bus_speed_mode` Parameter Description**
+**Table 7: `efx_emmc_switch_bus_speed_mode` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -549,7 +538,7 @@ Initialize the eMMC device, after the initialization is completed, the eMMC devi
 
 #### 10.2.3 efx_emmc_block_write
 
-**Table 7: `efx_emmc_block_write` Parameter Description**
+**Table 8: `efx_emmc_block_write` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -559,7 +548,7 @@ Initialize the eMMC device, after the initialization is completed, the eMMC devi
 
 #### 10.2.4 efx_emmc_block_read
 
-**Table 8: `efx_emmc_block_read` Parameter Description**
+**Table 9: `efx_emmc_block_read` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -573,7 +562,7 @@ Calculates the size of the erase unit in bytes corresponding to different erase 
 #### 10.2.6 efx_emmc_erase
 `efx_emmc_erase` is generally used for large area erase, such as erasing the entire card or certain partitions.
 
-**Table 9: `efx_emmc_erase` Parameter Description**
+**Table 10: `efx_emmc_erase` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -583,7 +572,7 @@ Calculates the size of the erase unit in bytes corresponding to different erase 
 #### 10.2.7 efx_emmc_trim
 `efx_emmc_trim` is generally used for small area erases, such as erasing only a write block.
 
-**Table 10: `efx_emmc_trim` Parameter Description**
+**Table 11: `efx_emmc_trim` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -598,7 +587,7 @@ Calculates the size of the user data area in bytes.
 #### 10.3.1 test_entire_emmc
 The `test_entire_emmc` function implements a full-space write/read/erase test of the user data area and also calculates the write/read/erase rate.
 
-**Table 11: `test_entire_emmc` Parameter Description**
+**Table 12: `test_entire_emmc` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -614,7 +603,7 @@ The `test_entire_emmc` function implements a full-space write/read/erase test of
 #### 10.3.2 dma_wr_rd_erase
 The `dma_wr_rd_erase` function implements a write/read/erase test on a single area, transferring data using dma mode while calculating the write/read/erase rate.
 
-**Table 12: `dma_wr_rd_erase` Parameter Description**
+**Table 13: `dma_wr_rd_erase` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -628,7 +617,7 @@ The `dma_wr_rd_erase` function implements a write/read/erase test on a single ar
 #### 10.3.3 non_dma_wr_rd
 The `non_dma_wr_rd` function implements a write/read/erase test for a single region, transferring data using non-dma mode while calculating the write/read rate.
 
-**Table 13: `non_dma_wr_rd` Parameter Description**
+**Table 14: `non_dma_wr_rd` Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
@@ -641,7 +630,7 @@ The `non_dma_wr_rd` function implements a write/read/erase test for a single reg
 
 ### 11.1 Parameter Description
 
-**Table 14: Simulation Parameter Description**
+**Table 15: Simulation Parameter Description**
 
 | Name | Description |
 | :--- | :--- |
