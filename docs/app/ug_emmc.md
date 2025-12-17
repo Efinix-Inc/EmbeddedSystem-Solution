@@ -503,7 +503,7 @@ RISC-V can initialize the eMMC Device and select the transmission mode through t
 
 ### 10.1 User Parameter
 
-The user parameters in the `userDef.h` file are shown below:
+The user parameters in the `device_config.h` and `userDef.h` file are shown below:
 
 **Table 6: Driver User Parameter Description**
 
