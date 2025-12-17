@@ -29,6 +29,8 @@ On the host side, a Python script repackages the received UDP data and reconstru
 
 
 ### Step to stream over ethernet:
+1. Refer to [lwipIperfServer](../app/ug_ethernet.md) for configuring the Ethernet network adapter on the host machine.
+
 1. Run the Python script (``recv_udp_raw.py``) before launching the application.
 
 2. Ensure the FPGA and the host machine are connected via Ethernet.
