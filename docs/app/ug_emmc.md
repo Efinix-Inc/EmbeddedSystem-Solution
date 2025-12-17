@@ -48,10 +48,7 @@
     *   [10.1 User Parameter](#101-user-parameter)
     *   [10.2 Functions](#102-functions)
     *   [10.3 Test Function](#103-test-function)
-*   **[11 Simulation Description](#11-simulation-description)**
-    *   [11.1 Parameter Description](#111-parameter-description)
-    *   [11.2 Operating Instructions](#112-operating-instructions)
-*   **[12 Usage](#12-usage)**
+*   **[11 Usage](#11-usage)**
 
 ---
 
@@ -626,28 +623,7 @@ The `non_dma_wr_rd` function implements a write/read/erase test for a single reg
 | `start_addr` | Starting address, when emmc device capacity > 2GB, data address is 32bit sector (512 bytes) address; when emmc device capacity <= 2GB, data address is 32bit byte address |
 | `test_size_mb` | Test area size in MByte |
 
-## 11. Simulation Description
-
-### 11.1 Parameter Description
-
-**Table 15: Simulation Parameter Description**
-
-| Name | Description |
-| :--- | :--- |
-| `CLK_DIV` | Clock divider factor, 1 or an even number |
-| `eMMC_RCA` | Relative address given to the eMMC device, value greater than 1 |
-| `BLOCK_SIZE` | Block size in bytes, fixed at 512 bytes for emulation |
-| `HC_BUS_WTH` | [10]:8-line mode.<br>[01]:4-line mode.<br>[00]:1-line mode |
-| `DDR_MODE` | [0]:sdr mode<br>[1]:ddr mode<br>Fixed to 0 because sdModel simulation model does not support ddr mode |
-| `ADMA_DATA_WIDTH` | ADMA AXI interface data bit width, fixed at 128 for emulation |
-| `MEM_WIDTH` | The total capacity of the simulation model sdModel is 2^`MEM_WIDTH` bytes |
-| `TEST_BK_NUM` | Number of read/write blocks for one read/write operation |
-
-### 11.2 Operating Instructions
-
-Example design project provides a complete simulation file. Users only need to edit the `run.bat` file in `sim` directory, configure the path of the simulation software, double-click `run.bat`, then the simulation will be run automatically.
-
-## 12 Usage
+## 11. Usage
 1. In Efinity RISC-V IDE, open the main.c from emmcDemo
 2. Clean and run the project by right click emmcDemo_ti.launch. 
 3. Go to the serial terminal. User should see the following messages display:
