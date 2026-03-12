@@ -1,9 +1,9 @@
 {
     "args": [
         "-o",
-        "gAXIS_1to6_switch",
+        "gAXIS_1to8_switch",
         "--base_path",
-        "/home/cslau/cslau/Workspace/Gitlab/embedded_solution/Ti375/ip",
+        "D:\\Work\\SDIO\\SDIO_PRJ\\Test\\All_Function_Prj_Test\\EmbeddedSystem-Solution-Ti375C529\\ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -21,19 +21,19 @@
         "TABLE0_AXI_S3__MIN": "32'd18874368",
         "TABLE0_AXI_S4__MIN": "32'd19922944",
         "TABLE0_AXI_S5__MIN": "32'd20971520",
-        "TABLE0_AXI_S6__MIN": "32'd1073741824",
-        "TABLE0_AXI_S7__MIN": "32'd1090519040",
+        "TABLE0_AXI_S6__MIN": "32'd22020096",
+        "TABLE0_AXI_S7__MIN": "32'd23068672",
         "TABLE0_AXI_S0__MAX": "32'd24",
         "TABLE0_AXI_S1__MAX": "32'd16",
         "TABLE0_AXI_S2__MAX": "32'd16",
         "TABLE0_AXI_S3__MAX": "32'd16",
         "TABLE0_AXI_S4__MAX": "32'd16",
         "TABLE0_AXI_S5__MAX": "32'd16",
-        "TABLE0_AXI_S6__MAX": "32'd24",
-        "TABLE0_AXI_S7__MAX": "32'd20",
+        "TABLE0_AXI_S6__MAX": "32'd16",
+        "TABLE0_AXI_S7__MAX": "32'd16",
         "DATA_WIDTH": "32",
         "ADDR_WIDTH": "32",
-        "M_PORTS": "6",
+        "M_PORTS": "8",
         "ID_WIDTH": "8",
         "USER_WIDTH": "3",
         "PROTOCOL": "\"AXI4\""
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIS_1to6_switch/gAXIS_1to6_switch_tmpl.vhd",
-            "gAXIS_1to6_switch/gAXIS_1to6_switch_tmpl.v",
-            "gAXIS_1to6_switch/gAXIS_1to6_switch_define.vh",
-            "gAXIS_1to6_switch/gAXIS_1to6_switch.v"
+            "gAXIS_1to8_switch\\gAXIS_1to8_switch_define.vh",
+            "gAXIS_1to8_switch\\gAXIS_1to8_switch.v",
+            "gAXIS_1to8_switch\\gAXIS_1to8_switch_tmpl.v",
+            "gAXIS_1to8_switch\\gAXIS_1to8_switch_tmpl.vhd"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.2.261",
-    "generated_date": "2025-10-07T06:27:31.448400+00:00"
+    "sw_version": "2025.2.288",
+    "generated_date": "2026-03-02T09:42:22.517243+00:00"
 }

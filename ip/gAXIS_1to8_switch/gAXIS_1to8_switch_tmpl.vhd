@@ -37,7 +37,7 @@
 --
 --------------------------------------------------------------------------------
 ------------- Begin Cut here for COMPONENT Declaration ------
-component gAXIS_1to6_switch is
+component gAXIS_1to8_switch is
 port (
     rst_n : in std_logic;
     clk : in std_logic;
@@ -64,29 +64,29 @@ port (
     s_axi_rvalid : out std_logic_vector(0 to 0);
     s_axi_rlast : out std_logic_vector(0 to 0);
     s_axi_wstrb : in std_logic_vector(3 downto 0);
-    m_axi_awvalid : out std_logic_vector(5 downto 0);
-    m_axi_awaddr : out std_logic_vector(191 downto 0);
-    m_axi_awlock : out std_logic_vector(11 downto 0);
-    m_axi_awready : in std_logic_vector(5 downto 0);
-    m_axi_arvalid : out std_logic_vector(5 downto 0);
-    m_axi_araddr : out std_logic_vector(191 downto 0);
-    m_axi_arlock : out std_logic_vector(11 downto 0);
-    m_axi_arready : in std_logic_vector(5 downto 0);
-    m_axi_wvalid : out std_logic_vector(5 downto 0);
-    m_axi_wlast : out std_logic_vector(5 downto 0);
-    m_axi_bready : out std_logic_vector(5 downto 0);
-    m_axi_bresp : in std_logic_vector(11 downto 0);
-    m_axi_rready : out std_logic_vector(5 downto 0);
-    m_axi_bid : in std_logic_vector(47 downto 0);
-    m_axi_rid : in std_logic_vector(47 downto 0);
-    m_axi_wdata : out std_logic_vector(191 downto 0);
-    m_axi_rdata : in std_logic_vector(191 downto 0);
-    m_axi_rresp : in std_logic_vector(11 downto 0);
-    m_axi_bvalid : in std_logic_vector(5 downto 0);
-    m_axi_rvalid : in std_logic_vector(5 downto 0);
-    m_axi_rlast : in std_logic_vector(5 downto 0);
-    m_axi_wstrb : out std_logic_vector(23 downto 0);
-    m_axi_wready : in std_logic_vector(5 downto 0);
+    m_axi_awvalid : out std_logic_vector(7 downto 0);
+    m_axi_awaddr : out std_logic_vector(255 downto 0);
+    m_axi_awlock : out std_logic_vector(15 downto 0);
+    m_axi_awready : in std_logic_vector(7 downto 0);
+    m_axi_arvalid : out std_logic_vector(7 downto 0);
+    m_axi_araddr : out std_logic_vector(255 downto 0);
+    m_axi_arlock : out std_logic_vector(15 downto 0);
+    m_axi_arready : in std_logic_vector(7 downto 0);
+    m_axi_wvalid : out std_logic_vector(7 downto 0);
+    m_axi_wlast : out std_logic_vector(7 downto 0);
+    m_axi_bready : out std_logic_vector(7 downto 0);
+    m_axi_bresp : in std_logic_vector(15 downto 0);
+    m_axi_rready : out std_logic_vector(7 downto 0);
+    m_axi_bid : in std_logic_vector(63 downto 0);
+    m_axi_rid : in std_logic_vector(63 downto 0);
+    m_axi_wdata : out std_logic_vector(255 downto 0);
+    m_axi_rdata : in std_logic_vector(255 downto 0);
+    m_axi_rresp : in std_logic_vector(15 downto 0);
+    m_axi_bvalid : in std_logic_vector(7 downto 0);
+    m_axi_rvalid : in std_logic_vector(7 downto 0);
+    m_axi_rlast : in std_logic_vector(7 downto 0);
+    m_axi_wstrb : out std_logic_vector(31 downto 0);
+    m_axi_wready : in std_logic_vector(7 downto 0);
     s_axi_wready : out std_logic_vector(0 to 0);
     s_axi_awprot : in std_logic_vector(3 downto 0);
     s_axi_awcache : in std_logic_vector(3 downto 0);
@@ -94,7 +94,7 @@ port (
     s_axi_awuser : in std_logic_vector(2 downto 0);
     s_axi_arqos : in std_logic_vector(3 downto 0);
     s_axi_arcache : in std_logic_vector(3 downto 0);
-    m_axi_awprot : out std_logic_vector(23 downto 0);
+    m_axi_awprot : out std_logic_vector(31 downto 0);
     s_axi_arid : in std_logic_vector(7 downto 0);
     s_axi_arsize : in std_logic_vector(2 downto 0);
     s_axi_arlen : in std_logic_vector(7 downto 0);
@@ -104,36 +104,36 @@ port (
     s_axi_awburst : in std_logic_vector(1 downto 0);
     s_axi_awlen : in std_logic_vector(7 downto 0);
     s_axi_awsize : in std_logic_vector(2 downto 0);
-    m_axi_awid : out std_logic_vector(47 downto 0);
-    m_axi_awburst : out std_logic_vector(11 downto 0);
-    m_axi_awlen : out std_logic_vector(47 downto 0);
-    m_axi_awsize : out std_logic_vector(17 downto 0);
-    m_axi_awcache : out std_logic_vector(23 downto 0);
-    m_axi_awqos : out std_logic_vector(23 downto 0);
-    m_axi_awuser : out std_logic_vector(17 downto 0);
-    m_axi_arprot : out std_logic_vector(23 downto 0);
-    m_axi_arburst : out std_logic_vector(11 downto 0);
-    m_axi_arlen : out std_logic_vector(47 downto 0);
-    m_axi_arsize : out std_logic_vector(17 downto 0);
-    m_axi_arcache : out std_logic_vector(23 downto 0);
-    m_axi_arqos : out std_logic_vector(23 downto 0);
-    m_axi_aruser : out std_logic_vector(17 downto 0);
-    m_axi_awregion : out std_logic_vector(23 downto 0);
-    m_axi_arregion : out std_logic_vector(23 downto 0);
-    m_axi_arid : out std_logic_vector(47 downto 0);
-    m_axi_wuser : out std_logic_vector(17 downto 0);
-    m_axi_ruser : in std_logic_vector(17 downto 0);
-    m_axi_buser : in std_logic_vector(17 downto 0);
+    m_axi_awid : out std_logic_vector(63 downto 0);
+    m_axi_awburst : out std_logic_vector(15 downto 0);
+    m_axi_awlen : out std_logic_vector(63 downto 0);
+    m_axi_awsize : out std_logic_vector(23 downto 0);
+    m_axi_awcache : out std_logic_vector(31 downto 0);
+    m_axi_awqos : out std_logic_vector(31 downto 0);
+    m_axi_awuser : out std_logic_vector(23 downto 0);
+    m_axi_arprot : out std_logic_vector(31 downto 0);
+    m_axi_arburst : out std_logic_vector(15 downto 0);
+    m_axi_arlen : out std_logic_vector(63 downto 0);
+    m_axi_arsize : out std_logic_vector(23 downto 0);
+    m_axi_arcache : out std_logic_vector(31 downto 0);
+    m_axi_arqos : out std_logic_vector(31 downto 0);
+    m_axi_aruser : out std_logic_vector(23 downto 0);
+    m_axi_awregion : out std_logic_vector(31 downto 0);
+    m_axi_arregion : out std_logic_vector(31 downto 0);
+    m_axi_arid : out std_logic_vector(63 downto 0);
+    m_axi_wuser : out std_logic_vector(23 downto 0);
+    m_axi_ruser : in std_logic_vector(23 downto 0);
+    m_axi_buser : in std_logic_vector(23 downto 0);
     s_axi_aruser : in std_logic_vector(2 downto 0);
     s_axi_wuser : in std_logic_vector(2 downto 0);
     s_axi_buser : out std_logic_vector(2 downto 0);
     s_axi_ruser : out std_logic_vector(2 downto 0)
 );
-end component gAXIS_1to6_switch;
+end component gAXIS_1to8_switch;
 
 ---------------------- End COMPONENT Declaration ------------
 ------------- Begin Cut here for INSTANTIATION Template -----
-u_gAXIS_1to6_switch : gAXIS_1to6_switch
+u_gAXIS_1to8_switch : gAXIS_1to8_switch
 port map (
     rst_n => rst_n,
     clk => clk,
