@@ -420,6 +420,27 @@ output  wire    [7:0]           emmc_dat_OE,
 
 `endif //ENABLE_EMMC
 
+// SDIO
+input           sdio_base_clk      ,
+input           sdio_base_clk_cal  ,
+input           sdio_pll_locked    ,
+output [2:0]    sdio_pll_SHIFT     ,
+output [4:0]    sdio_pll_SHIFT_SEL ,
+output          sdio_pll_SHIFT_ENA ,
+output          sdio_dev_rst_n     ,
+output          sdio_clk_HI        ,
+output          sdio_clk_LO        ,
+input           sdio_cmd_IN_HI     ,
+input           sdio_cmd_IN_LO     ,
+output          sdio_cmd_OUT_HI    ,
+output          sdio_cmd_OUT_LO    ,
+output          sdio_cmd_OE        ,
+input  [3:0]    sdio_dat_IN_HI     ,
+input  [3:0]    sdio_dat_IN_LO     ,
+output [3:0]    sdio_dat_OUT_HI    ,
+output [3:0]    sdio_dat_OUT_LO    ,
+output [3:0]    sdio_dat_OE        ,
+
 //DDR AXI 0
 output          ddr_inst1_ARSTN_0,
 //DDR AXI 0 Read Address Channel
@@ -496,8 +517,8 @@ output  ddr_inst1_WVALID_0                              //Write valid. This sign
 
 
 // AXI Interconnect
-localparam AXIS_DEV     = 6; 
-localparam AXIM_DEV     = 4; 
+localparam AXIS_DEV     = 8;
+localparam AXIM_DEV     = 5;
 
 // AXI (Slave Interface)
 localparam SLB          = 0; // Soft Logic Block
@@ -506,12 +527,15 @@ localparam TSE          = 2; // TSE Ethernet
 localparam HW_ACCEL     = 3; // Hardware Accelerator
 localparam S_EMMC_HC    = 4; // EMMC
 localparam S_REG_SYS    = 5; // EMMC
+localparam S_SDIO_HC    = 6; // SDIO
+localparam S_REG_SDIO   = 7; // SDIO
 
 // AXI (Master Interface)
 localparam MSDHC        = 0; // SD Host Controller
 localparam MTSE         = 1; // TSE Ethernet
 localparam MUSB         = 2; // USB Controller
 localparam M_EMMC_HC    = 3; // EMMC
+localparam M_SDIO_HC    = 4; // SDIO
 
 // EMMC
 parameter ADMA_DATA_WIDTH = 128;
@@ -592,6 +616,7 @@ wire        axi4Interrupt_or;
 wire        axiAInterrupt_slb; 
 wire        usb_interrupt;
 wire        emmc_int;
+wire        sdio_int;
 //reset
 wire        io_asyncReset_soc;
 wire        watchdog_reset;
@@ -636,7 +661,7 @@ assign userInterruptR = dma_interrupts[1];
 assign userInterruptS = sd_int;
 assign userInterruptT = usb_interrupt;
 assign userInterruptU = emmc_int;
-assign userInterruptV = 1'b0;
+assign userInterruptV = sdio_int;
 assign userInterruptW = 1'b0;
 assign userInterruptX = 1'b0;
 //DDR
@@ -745,7 +770,9 @@ wire [AXIM_DEV-1:0]         gAXIM_s_rready;
  * 
 **************************************************/ 
 /*
-Master Base Address (AXI): 
+Master Base Address (AXI):
+            32'h1600000,    // S7: REG_SDIO
+            32'h1500000,    // S6: SDIO
             32'h1400000,    // S5: SYS_REG
             32'h1300000,    // S4: EMMC 
             32'h1200000,    // S3: Hardware Accelerator
@@ -753,7 +780,7 @@ Master Base Address (AXI):
             32'h1000000,    // S1: SDHC
             32'h0           // S0: Soft Logic Block
 */
-gAXIS_1to6_switch u_AXIS_1to6_switch
+gAXIS_1to8_switch u_AXIS_1to8_switch
 (
     .rst_n              ( ~io_peripheralReset ),
     .clk                ( io_peripheralClk ),
@@ -885,12 +912,13 @@ Master Interface (AXI)
     * MTSE         = 1; // TSE Ethernet
     * MUSB         = 2; // USB Controller
     * M_EMMC_HC    = 3; // EMMC
+    * M_SDIO_HC    = 4; // SDIO
 
 */
 axi_interconnect_v1_1 #(
 
-    .S_COUNT                            (4                                  ),
-    .S_BUFFER_EN                        ({4{1'b1}}                          ),
+    .S_COUNT                            (AXIM_DEV                           ),
+    .S_BUFFER_EN                        ({AXIM_DEV{1'b1}}                   ),
     .AXI_DW                             (128                                ),
     .FAMILY                             ("TITANIUM"                         ),
     .RD_QUEUE_FIFO_RAM_STYLE            ("block_ram"                        ),
@@ -963,17 +991,17 @@ axi4_id_seq #(
     .AXI_DATA_WIDTH     (128),
     .AXI_ADDR_WIDTH     (32),
     .AXI_ID_WIDTH       (4),
-    .S_COUNT            (4)
+    .S_COUNT            (AXIM_DEV)
 ) u_axi4_id_seq (
     .axi_clk            ( io_ddrMasters_0_clk ),
     .axi_rstn           ( ~io_ddrMasters_0_reset ),
     .s_axi_awaddr       ( gAXIM_s_awaddr ),
-    .s_axi_awid         ( {4'h3,4'h2,4'h1,4'h0} ),
+    .s_axi_awid         ( {4'h4,4'h3,4'h2,4'h1,4'h0} ),
     .s_axi_awlen        ( gAXIM_s_awlen ),
     .s_axi_awvalid      ( gAXIM_s_awvalid ),
     .s_axi_awready      ( gAXIM_s_awready ),
     .s_axi_araddr       ( gAXIM_s_araddr ),
-    .s_axi_arid         ( {4'h3,4'h2,4'h1,4'h0}  ),
+    .s_axi_arid         ( {4'h4,4'h3,4'h2,4'h1,4'h0}  ),
     .s_axi_arlen        ( gAXIM_s_arlen ),
     .s_axi_arvalid      ( gAXIM_s_arvalid ),
     .s_axi_arready      ( gAXIM_s_arready ),
@@ -1666,10 +1694,10 @@ system_reg  u_system_reg
     .s_axi_rdata                        (gAXIS_m_rdata[S_REG_SYS*32 +: 32]    ),
     .s_axi_rvalid                       (gAXIS_m_rvalid[S_REG_SYS*1 +: 1]     ),
     .s_axi_rlast                        (gAXIS_m_rlast[S_REG_SYS*1 +: 1]      ),
-    .s_axi_rready                       (gAXIS_m_rready[S_REG_SYS*1 +: 1]     ),                       
+    .s_axi_rready                       (gAXIS_m_rready[S_REG_SYS*1 +: 1]     ),
 
-    .emmc_dev_rst_o                     (emmc_dev_rst                       ),                        
-    .emmc_ip_rst_o                      (emmc_ip_rst                        )                         
+    .emmc_dev_rst_o                     (emmc_dev_rst                       ),
+    .emmc_ip_rst_o                      (emmc_ip_rst                        )
 
 );
 
@@ -1768,12 +1796,140 @@ u_emmc_host_controller
     .m_axi_rlast                        (gAXIM_s_rlast[M_EMMC_HC*1 +: 1]    ),
     .m_axi_rresp                        (gAXIM_s_rresp[M_EMMC_HC*2 +: 2]    ),
     .m_axi_rready                       (gAXIM_s_rready[M_EMMC_HC*1 +: 1]   )
-  
+
 );
 
 `endif //ENABLE_EMMC 
 
+/********************************************* SDIO ********************************************/
 
+wire    sdio_dev_rst;
+wire    sdio_ip_rst;
+reg     sdio_rst;
+
+always @(posedge io_peripheralClk) begin
+    sdio_rst <= io_peripheralReset | sdio_ip_rst;
+end
+
+assign sdio_dev_rst_n = ~sdio_dev_rst;
+
+system_reg_sdio  u_system_reg_sdio
+(
+    .s_axi_aclk                         (io_peripheralClk                      ),
+    .s_axi_aresetn                      (~io_peripheralReset                   ),
+    .s_axi_awaddr                       (gAXIS_m_awaddr[S_REG_SDIO*32 +: 32]   ),
+    .s_axi_awready                      (gAXIS_m_awready[S_REG_SDIO*1 +: 1]    ),
+    .s_axi_awvalid                      (gAXIS_m_awvalid[S_REG_SDIO*1 +: 1]    ),
+    .s_axi_wstrb                        (gAXIS_m_wstrb[S_REG_SDIO*4 +: 4]      ),
+    .s_axi_wdata                        (gAXIS_m_wdata[S_REG_SDIO*32 +: 32]    ),
+    .s_axi_wready                       (gAXIS_m_wready[S_REG_SDIO*1 +: 1]     ),
+    .s_axi_wvalid                       (gAXIS_m_wvalid[S_REG_SDIO*1 +: 1]     ),
+    .s_axi_bresp                        (gAXIS_m_bresp[S_REG_SDIO*2 +: 2]      ),
+    .s_axi_bvalid                       (gAXIS_m_bvalid[S_REG_SDIO*1 +: 1]     ),
+    .s_axi_araddr                       (gAXIS_m_araddr[S_REG_SDIO*32 +: 32]   ),
+    .s_axi_bready                       (gAXIS_m_bready[S_REG_SDIO*1 +: 1]     ),
+    .s_axi_arready                      (gAXIS_m_arready[S_REG_SDIO*1 +: 1]    ),
+    .s_axi_arvalid                      (gAXIS_m_arvalid[S_REG_SDIO*1 +: 1]    ),
+    .s_axi_rresp                        (gAXIS_m_rresp[S_REG_SDIO*2 +: 2]      ),
+    .s_axi_rdata                        (gAXIS_m_rdata[S_REG_SDIO*32 +: 32]    ),
+    .s_axi_rvalid                       (gAXIS_m_rvalid[S_REG_SDIO*1 +: 1]     ),
+    .s_axi_rlast                        (gAXIS_m_rlast[S_REG_SDIO*1 +: 1]      ),
+    .s_axi_rready                       (gAXIS_m_rready[S_REG_SDIO*1 +: 1]     ),
+
+    .sdio_dev_rst                       (sdio_dev_rst                          ),
+    .sdio_ip_rst                        (sdio_ip_rst                           )
+
+);
+
+sdio_host_controller#(
+    .ADMA_DATA_WIDTH                    (128                                ),
+    .BASE_CLK_FREQ                      (200                                ), // MHz, the frequency of sdio_base_clk
+    .IO_VOLTAGE                         (0                                  ), // the voltage of cmd line and data line  0: 1.8v  1: 3.3v
+    .SHIFT_SEL                          (5'h4                               ),
+    .FAMILY                             (FAMILY                             ),
+    .RAM_STYLE                          ("block_ram"                        )
+) u_sdio_host_controller
+(
+    .sdio_rst                           (sdio_rst                           ),
+    .sdio_base_clk                      (sdio_base_clk                      ),
+    .sdio_base_clk_cal                  (sdio_base_clk_cal                  ),
+    .sdio_int                           (sdio_int                           ),
+    .pll_SHIFT                          (sdio_pll_SHIFT                     ),
+    .pll_SHIFT_SEL                      (sdio_pll_SHIFT_SEL                 ),
+    .pll_SHIFT_ENA                      (sdio_pll_SHIFT_ENA                 ),
+
+//AXI4 lite Slave interface(configure channel)
+    .s_axi_aclk                         (io_peripheralClk                   ),
+    .s_axi_awaddr                       (gAXIS_m_awaddr[S_SDIO_HC*32 +: 32] ),
+    .s_axi_awready                      (gAXIS_m_awready[S_SDIO_HC*1 +: 1]  ),
+    .s_axi_awvalid                      (gAXIS_m_awvalid[S_SDIO_HC*1 +: 1]  ),
+    .s_axi_wstrb                        (gAXIS_m_wstrb[S_SDIO_HC*4 +: 4]    ),
+    .s_axi_wdata                        (gAXIS_m_wdata[S_SDIO_HC*32 +: 32]  ),
+    .s_axi_wready                       (gAXIS_m_wready[S_SDIO_HC*1 +: 1]   ),
+    .s_axi_wvalid                       (gAXIS_m_wvalid[S_SDIO_HC*1 +: 1]   ),
+    .s_axi_bresp                        (gAXIS_m_bresp[S_SDIO_HC*2 +: 2]    ),
+    .s_axi_bvalid                       (gAXIS_m_bvalid[S_SDIO_HC*1 +: 1]   ),
+    .s_axi_araddr                       (gAXIS_m_araddr[S_SDIO_HC*32 +: 32] ),
+    .s_axi_bready                       (gAXIS_m_bready[S_SDIO_HC*1 +: 1]   ),
+    .s_axi_arready                      (gAXIS_m_arready[S_SDIO_HC*1 +: 1]  ),
+    .s_axi_arvalid                      (gAXIS_m_arvalid[S_SDIO_HC*1 +: 1]  ),
+    .s_axi_rresp                        (gAXIS_m_rresp[S_SDIO_HC*2 +: 2]    ),
+    .s_axi_rdata                        (gAXIS_m_rdata[S_SDIO_HC*32 +: 32]  ),
+    .s_axi_rvalid                       (gAXIS_m_rvalid[S_SDIO_HC*1 +: 1]   ),
+    .s_axi_rlast                        (gAXIS_m_rlast[S_SDIO_HC*1 +: 1]    ),
+    .s_axi_rready                       (gAXIS_m_rready[S_SDIO_HC*1 +: 1]   ),
+
+//AXI Master interface(data channel)
+  //AXI4 Memory Bus Interface
+    .m_axi_clk                          (io_ddrMasters_0_clk                ),
+//--Write Bus Interface
+    .m_axi_awvalid                      (gAXIM_s_awvalid[M_SDIO_HC*1 +: 1]  ),
+    .m_axi_awaddr                       (gAXIM_s_awaddr[M_SDIO_HC*32 +: 32] ),
+    .m_axi_awlen                        (gAXIM_s_awlen[M_SDIO_HC*8 +: 8]    ),
+    .m_axi_awready                      (gAXIM_s_awready[M_SDIO_HC*1 +: 1]  ),
+    .m_axi_awburst                      (gAXIM_s_awburst[M_SDIO_HC*2 +: 2]  ),
+    .m_axi_awsize                       (gAXIM_s_awsize[M_SDIO_HC*3 +: 3]   ),
+    .m_axi_awcache                      (gAXIM_s_awcache[M_SDIO_HC*4 +: 4]  ),
+    .m_axi_awlock                       (gAXIM_s_awlock[M_SDIO_HC*2 +: 2]   ),
+    .m_axi_awprot                       (gAXIM_s_awprot[M_SDIO_HC*4 +: 4]   ),
+    .m_axi_wdata                        (gAXIM_s_wdata[M_SDIO_HC*128 +: 128]),
+    .m_axi_wstrb                        (gAXIM_s_wstrb[M_SDIO_HC*16 +: 16]  ),
+    .m_axi_wlast                        (gAXIM_s_wlast[M_SDIO_HC*1 +: 1]    ),
+    .m_axi_wvalid                       (gAXIM_s_wvalid[M_SDIO_HC*1 +: 1]   ),
+    .m_axi_wready                       (gAXIM_s_wready[M_SDIO_HC*1 +:1]    ),
+    .m_axi_bresp                        (gAXIM_s_bresp[M_SDIO_HC*2 +: 2]    ),
+    .m_axi_bvalid                       (gAXIM_s_bvalid[M_SDIO_HC*1 +: 1]   ),
+    .m_axi_bready                       (gAXIM_s_bready[M_SDIO_HC*1 +: 1]   ),
+//--Read Bus Interface
+    .m_axi_arvalid                      (gAXIM_s_arvalid[M_SDIO_HC*1 +: 1]  ),
+    .m_axi_araddr                       (gAXIM_s_araddr[M_SDIO_HC*32 +: 32] ),
+    .m_axi_arlen                        (gAXIM_s_arlen[M_SDIO_HC*8 +: 8]    ),
+    .m_axi_arsize                       (gAXIM_s_arsize[M_SDIO_HC*3 +: 3]   ),
+    .m_axi_arburst                      (gAXIM_s_arburst[M_SDIO_HC*2 +: 2]  ),
+    .m_axi_arprot                       (gAXIM_s_arprot[M_SDIO_HC*4 +: 4]   ),
+    .m_axi_arlock                       (gAXIM_s_arlock[M_SDIO_HC*2 +: 2]   ),
+    .m_axi_arcache                      (gAXIM_s_arcache[M_SDIO_HC*4 +: 4]  ),
+    .m_axi_arready                      (gAXIM_s_arready[M_SDIO_HC*1 +: 1]  ),
+    .m_axi_rvalid                       (gAXIM_s_rvalid[M_SDIO_HC*1 +: 1]   ),
+    .m_axi_rdata                        (gAXIM_s_rdata[M_SDIO_HC*128 +: 128]),
+    .m_axi_rlast                        (gAXIM_s_rlast[M_SDIO_HC*1 +: 1]    ),
+    .m_axi_rresp                        (gAXIM_s_rresp[M_SDIO_HC*2 +: 2]    ),
+    .m_axi_rready                       (gAXIM_s_rready[M_SDIO_HC*1 +: 1]   ),
+
+//--------SDIO Interface
+    .sdio_clk_HI                        (sdio_clk_HI                        ),
+    .sdio_clk_LO                        (sdio_clk_LO                        ),
+    .sdio_cmd_IN_HI                     (sdio_cmd_IN_HI                     ),
+    .sdio_cmd_IN_LO                     (sdio_cmd_IN_LO                     ),
+    .sdio_cmd_OUT_HI                    (sdio_cmd_OUT_HI                    ),
+    .sdio_cmd_OUT_LO                    (sdio_cmd_OUT_LO                    ),
+    .sdio_cmd_OE                        (sdio_cmd_OE                        ),
+    .sdio_dat_IN_HI                     (sdio_dat_IN_HI                     ),
+    .sdio_dat_IN_LO                     (sdio_dat_IN_LO                     ),
+    .sdio_dat_OUT_HI                    (sdio_dat_OUT_HI                    ),
+    .sdio_dat_OUT_LO                    (sdio_dat_OUT_LO                    ),
+    .sdio_dat_OE                        (sdio_dat_OE                        )
+);
 
 /*********************************************Miscellaneous Module  ****************************************************/
 `ifdef ENABLE_CI

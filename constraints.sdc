@@ -5,7 +5,7 @@
 
 # Efinity Interface Designer SDC
 # Version: 2025.2.288
-# Date: 2025-11-18 16:06
+# Date: 2026-03-03 11:35
 
 # Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
 
@@ -36,11 +36,17 @@ create_clock -period 5.000 -name fb [get_ports {fb}]
 create_clock -period 5.000 -name clk_200m [get_ports {clk_200m}]
 create_clock -period 5.000 -name clk_200m_cal [get_ports {clk_200m_cal}]
 create_clock -waveform {1.250 3.750} -period 5.000 -name clk90_200m [get_ports {clk90_200m}]
+create_clock -period 5.000 -name sdio_pll_fb [get_ports {sdio_pll_fb}]
+create_clock -period 5.000 -name sdio_base_clk [get_ports {sdio_base_clk}]
+create_clock -period 5.000 -name sdio_base_clk_cal [get_ports {sdio_base_clk_cal}]
+create_clock -waveform {1.875 4.375} -period 5.000 -name sdio_base_clk_shift [get_ports {sdio_base_clk_shift}]
 
 # Exclusive Clock Group
 set_clock_groups -exclusive -group {cam_ck_CLKOUT} -group {io_usbClk} -group {core_clk} -group {rgmii_rxc io_tseClk_90 io_tseClk} -group {io_memoryClk} -group {i_pixel_clk} -group {i_hdmi_clk_148p5MHz} -group {io_ddrMasters_0_clk} -group {sd_base_clk} -group {io_peripheralClk} -group {i_sys_clk_25mhz} -group {io_cfuClk} -group {jtagCtrl_tck}
 set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
 set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
+set_clock_groups -asynchronous -group sdio_base_clk -group sdio_base_clk_cal
+set_clock_groups -asynchronous -group sdio_base_clk -group io_peripheralClk
 
 # GPIO Constraints
 ####################
@@ -349,6 +355,10 @@ set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~36
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~365~964}] -min -0.371 [get_ports {rgmii_txd_LO[2] rgmii_txd_HI[2]}]
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~376~964}] -max 0.985 [get_ports {rgmii_txd_LO[3] rgmii_txd_HI[3]}]
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~376~964}] -min -0.371 [get_ports {rgmii_txd_LO[3] rgmii_txd_HI[3]}]
+set_output_delay -clock_fall -clock sdio_base_clk_shift -reference_pin [get_ports {sdio_base_clk_shift~CLKOUT~385~2}] -max 0.968 [get_ports {sdio_clk_LO sdio_clk_HI}]
+set_output_delay -clock_fall -clock sdio_base_clk_shift -reference_pin [get_ports {sdio_base_clk_shift~CLKOUT~385~2}] -min -0.375 [get_ports {sdio_clk_LO sdio_clk_HI}]
+# set_output_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {sdio_dev_rst_n}]
+# set_output_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -min <MIN CALCULATION> [get_ports {sdio_dev_rst_n}]
 set_output_delay -clock io_peripheralClk -reference_pin [get_ports {io_peripheralClk~CLKOUT~418~2}] -max 0.968 [get_ports {system_spi_0_io_sclk_write}]
 set_output_delay -clock io_peripheralClk -reference_pin [get_ports {io_peripheralClk~CLKOUT~418~2}] -min -0.375 [get_ports {system_spi_0_io_sclk_write}]
 set_output_delay -clock io_peripheralClk -reference_pin [get_ports {io_peripheralClk~CLKOUT~407~2}] -max 0.968 [get_ports {system_spi_0_io_ss[0]}]
@@ -437,6 +447,36 @@ set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~38
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~384~964}] -min -0.371 [get_ports {phy_mdo}]
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~384~964}] -max 0.985 [get_ports {phy_mdo_en}]
 set_output_delay -clock io_tseClk -reference_pin [get_ports {io_tseClk~CLKOUT~384~964}] -min -0.371 [get_ports {phy_mdo_en}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~386~1}] -max 1.180 [get_ports {sdio_cmd_IN_LO sdio_cmd_IN_HI}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~386~1}] -min 0.543 [get_ports {sdio_cmd_IN_LO sdio_cmd_IN_HI}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~381~2}] -max 0.968 [get_ports {sdio_cmd_OUT_LO sdio_cmd_OUT_HI}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~381~2}] -min -0.375 [get_ports {sdio_cmd_OUT_LO sdio_cmd_OUT_HI}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~381~2}] -max 0.968 [get_ports {sdio_cmd_OE}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~381~2}] -min -0.375 [get_ports {sdio_cmd_OE}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~377~1}] -max 1.180 [get_ports {sdio_dat_IN_LO[0] sdio_dat_IN_HI[0]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~377~1}] -min 0.543 [get_ports {sdio_dat_IN_LO[0] sdio_dat_IN_HI[0]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~379~2}] -max 0.968 [get_ports {sdio_dat_OUT_LO[0] sdio_dat_OUT_HI[0]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~379~2}] -min -0.375 [get_ports {sdio_dat_OUT_LO[0] sdio_dat_OUT_HI[0]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~379~2}] -max 0.968 [get_ports {sdio_dat_OE[0]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~379~2}] -min -0.375 [get_ports {sdio_dat_OE[0]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~224~2}] -max 0.996 [get_ports {sdio_dat_IN_LO[1] sdio_dat_IN_HI[1]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~224~2}] -min 0.326 [get_ports {sdio_dat_IN_LO[1] sdio_dat_IN_HI[1]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~223~2}] -max 0.691 [get_ports {sdio_dat_OUT_LO[1] sdio_dat_OUT_HI[1]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~223~2}] -min -0.115 [get_ports {sdio_dat_OUT_LO[1] sdio_dat_OUT_HI[1]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~223~2}] -max 0.691 [get_ports {sdio_dat_OE[1]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~223~2}] -min -0.115 [get_ports {sdio_dat_OE[1]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~349~1}] -max 1.180 [get_ports {sdio_dat_IN_LO[2] sdio_dat_IN_HI[2]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~349~1}] -min 0.543 [get_ports {sdio_dat_IN_LO[2] sdio_dat_IN_HI[2]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~351~1}] -max 0.968 [get_ports {sdio_dat_OUT_LO[2] sdio_dat_OUT_HI[2]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~351~1}] -min -0.375 [get_ports {sdio_dat_OUT_LO[2] sdio_dat_OUT_HI[2]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~351~1}] -max 0.968 [get_ports {sdio_dat_OE[2]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~351~1}] -min -0.375 [get_ports {sdio_dat_OE[2]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~258~2}] -max 0.996 [get_ports {sdio_dat_IN_LO[3] sdio_dat_IN_HI[3]}]
+set_input_delay -clock sdio_base_clk_cal -reference_pin [get_ports {sdio_base_clk_cal~CLKOUT~258~2}] -min 0.326 [get_ports {sdio_dat_IN_LO[3] sdio_dat_IN_HI[3]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~259~1}] -max 0.691 [get_ports {sdio_dat_OUT_LO[3] sdio_dat_OUT_HI[3]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~259~1}] -min -0.115 [get_ports {sdio_dat_OUT_LO[3] sdio_dat_OUT_HI[3]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~259~1}] -max 0.691 [get_ports {sdio_dat_OE[3]}]
+set_output_delay -clock_fall -clock sdio_base_clk -reference_pin [get_ports {sdio_base_clk~CLKOUT~259~1}] -min -0.115 [get_ports {sdio_dat_OE[3]}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {system_gpio_0_io_read[0]}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -min <MIN CALCULATION> [get_ports {system_gpio_0_io_read[0]}]
 # set_output_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {system_gpio_0_io_write[0]}]
@@ -733,6 +773,14 @@ set_input_delay -clock jtagCtrl_tck -reference_pin [get_ports {jtagCtrl_tck~CLKO
 # set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 0.000> [get_ports {clk_200m_cal}]
 # set_clock_latency -source -setup <pll_clk_latency_io_peripheralClk_max + 0.000> [get_ports {clk90_200m}]
 # set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 0.000> [get_ports {clk90_200m}]
+# set_clock_latency -source -setup <pll_clk_latency_io_peripheralClk_max + 2.111> [get_ports {sdio_pll_fb}]
+# set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 1.367> [get_ports {sdio_pll_fb}]
+# set_clock_latency -source -setup <pll_clk_latency_io_peripheralClk_max + 2.111> [get_ports {sdio_base_clk}]
+# set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 1.367> [get_ports {sdio_base_clk}]
+# set_clock_latency -source -setup <pll_clk_latency_io_peripheralClk_max + 2.111> [get_ports {sdio_base_clk_cal}]
+# set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 1.367> [get_ports {sdio_base_clk_cal}]
+# set_clock_latency -source -setup <pll_clk_latency_io_peripheralClk_max + 2.111> [get_ports {sdio_base_clk_shift}]
+# set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 1.367> [get_ports {sdio_base_clk_shift}]
 # set_clock_latency -source -setup <board_max> [get_ports {io_tseClk}]
 # set_clock_latency -source -hold <board_min> [get_ports {io_tseClk}]
 # set_clock_latency -source -setup <board_max> [get_ports {rgmii_rxc}]
