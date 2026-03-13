@@ -1128,7 +1128,7 @@
                 <efxpt:param name="CUSTOM_INSTRUCTION_3_EN" value="true" value_type="bool"/>
                 <efxpt:param name="JTAG_TYPE" value="FPGA" value_type="str"/>
                 <efxpt:param name="MEM_CLK_SOURCE" value="Clock 0" value_type="str"/>
-                <efxpt:param name="OCR_FILE_PATH" value="linux/bootloader.hex" value_type="str"/>
+		<efxpt:param name="OCR_FILE_PATH" value="" value_type="str"/>
                 <efxpt:param name="PIPELINE_SOC_AXI_MEM_INTERFACE_EN" value="false" value_type="bool"/>
                 <efxpt:param name="SYS_CLK_SOURCE" value="Clock 0" value_type="str"/>
                 <efxpt:param name="WRITEBUFFER_SOC_AXI_INTERFACE_EN" value="false" value_type="bool"/>
