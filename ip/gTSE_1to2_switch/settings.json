@@ -3,13 +3,13 @@
         "-o",
         "gTSE_1to2_switch",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "/home/sakhor/Workspace/unified-hardware/hardware/embedded-solution-patch4-2/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "axi_infra",
             "name": "efx_axi_interconnect",
-            "version": "5.4"
+            "version": "5.5"
         }
     ],
     "conf": {
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v",
             "gTSE_1to2_switch/gTSE_1to2_switch_define.vh",
             "gTSE_1to2_switch/gTSE_1to2_switch.v",
-            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd"
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.vhd",
+            "gTSE_1to2_switch/gTSE_1to2_switch_tmpl.v"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.96",
-    "generated_date": "2025-04-16T05:19:05.897111+00:00"
+    "sw_version": "2025.2.288.4.15",
+    "generated_date": "2026-04-07T05:52:06.525763+00:00"
 }

@@ -3,13 +3,13 @@
         "-o",
         "gTSE",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "/home/sakhor/Workspace/unified-hardware/hardware/embedded-solution-patch4-2/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "ethernet",
             "name": "efx_tsemac",
-            "version": "7.0"
+            "version": "7.2"
         }
     ],
     "conf": {
@@ -32,13 +32,13 @@
     },
     "output": {
         "external_source_source": [
-            "gTSE/gTSE_define.svh",
+            "gTSE/gTSE_tmpl.vhd",
             "gTSE/gTSE.sv",
-            "gTSE/gTSE_tmpl.sv",
-            "gTSE/gTSE_tmpl.vhd"
+            "gTSE/gTSE_define.svh",
+            "gTSE/gTSE_tmpl.sv"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.2.288",
-    "generated_date": "2025-11-18T06:50:48.286107+00:00"
+    "sw_version": "2025.2.288.4.15",
+    "generated_date": "2026-04-07T05:51:57.459653+00:00"
 }
