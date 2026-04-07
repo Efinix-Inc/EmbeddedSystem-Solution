@@ -3,13 +3,13 @@
         "-o",
         "gAXIS_1to8_switch",
         "--base_path",
-        "D:\\Work\\SDIO\\SDIO_PRJ\\Test\\All_Function_Prj_Test\\EmbeddedSystem-Solution-Ti375C529\\ip",
+        "/home/sakhor/Workspace/unified-hardware/hardware/embedded-solution-patch4-2/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
             "library": "axi_infra",
             "name": "efx_axi_interconnect",
-            "version": "5.4"
+            "version": "5.5"
         }
     ],
     "conf": {
@@ -41,13 +41,13 @@
     "output": {
         "external_script_generator": [],
         "external_source_source": [
-            "gAXIS_1to8_switch\\gAXIS_1to8_switch_define.vh",
-            "gAXIS_1to8_switch\\gAXIS_1to8_switch.v",
-            "gAXIS_1to8_switch\\gAXIS_1to8_switch_tmpl.v",
-            "gAXIS_1to8_switch\\gAXIS_1to8_switch_tmpl.vhd"
+            "gAXIS_1to8_switch/gAXIS_1to8_switch_define.vh",
+            "gAXIS_1to8_switch/gAXIS_1to8_switch.v",
+            "gAXIS_1to8_switch/gAXIS_1to8_switch_tmpl.vhd",
+            "gAXIS_1to8_switch/gAXIS_1to8_switch_tmpl.v"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.2.288",
-    "generated_date": "2026-03-02T09:42:22.517243+00:00"
+    "sw_version": "2025.2.288.4.15",
+    "generated_date": "2026-04-07T05:52:20.223995+00:00"
 }
