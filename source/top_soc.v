@@ -45,6 +45,7 @@
 `define ENABLE_ETHERNET           // Comment out this line to disable Ethernet, Modify gAXIS_1to4_switch IP manually !!
 `define ENABLE_CI                 // Comment out this line to disable the Custom Instructions. 
 `define ENABLE_EMMC               // Comment out this line to disable the EMMC. 
+`define ENABLE_SDIO               // Comment out this line to disable the SDIO.
 `define ENABLE_USB_CONTROLLER     // Comment out this line to disable USB Controller.
 `define DISPLAY_1920x1080_60Hz    // Set "i_hdmi_clk_148p5MHz" clk to 148.5MHz if switch to this 1080p mode.
 //`define DISPLAY_1280x720_60Hz   // Set "i_hdmi_clk_148p5MHz" clk to 74.25MHz if switch to this 720p mode.
@@ -420,6 +421,7 @@ output  wire    [7:0]           emmc_dat_OE,
 
 `endif //ENABLE_EMMC
 
+`ifdef ENABLE_SDIO
 // SDIO
 input           sdio_base_clk      ,
 input           sdio_base_clk_cal  ,
@@ -440,6 +442,8 @@ input  [3:0]    sdio_dat_IN_LO     ,
 output [3:0]    sdio_dat_OUT_HI    ,
 output [3:0]    sdio_dat_OUT_LO    ,
 output [3:0]    sdio_dat_OE        ,
+
+`endif //ENABLE_SDIO
 
 //DDR AXI 0
 output          ddr_inst1_ARSTN_0,
@@ -1803,6 +1807,7 @@ u_emmc_host_controller
 
 /********************************************* SDIO ********************************************/
 
+`ifdef ENABLE_SDIO
 wire    sdio_dev_rst;
 wire    sdio_ip_rst;
 reg     sdio_rst;
@@ -1930,6 +1935,8 @@ sdio_host_controller#(
     .sdio_dat_OUT_LO                    (sdio_dat_OUT_LO                    ),
     .sdio_dat_OE                        (sdio_dat_OE                        )
 );
+
+`endif //ENABLE_SDIO
 
 /*********************************************Miscellaneous Module  ****************************************************/
 `ifdef ENABLE_CI

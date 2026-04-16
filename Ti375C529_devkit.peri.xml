@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.2.288.4.15" db_version="20261006" last_change_date="Wed Apr 15 20:45:47 2026" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
+<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.2.288.4.15" db_version="20261006" last_change_date="Thu Apr 16 12:50:45 2026" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
     <efxpt:device_info>
         <efxpt:iobank_info>
             <efxpt:iobank name="2A" iostd="1.8 V LVCMOS" is_dyn_voltage="false" mode_sel_name="2A_MODE_SEL"/>
@@ -1128,7 +1128,7 @@
                 <efxpt:param name="CUSTOM_INSTRUCTION_3_EN" value="true" value_type="bool"/>
                 <efxpt:param name="JTAG_TYPE" value="FPGA" value_type="str"/>
                 <efxpt:param name="MEM_CLK_SOURCE" value="Clock 0" value_type="str"/>
-		<efxpt:param name="OCR_FILE_PATH" value="" value_type="str"/>
+                <efxpt:param name="OCR_FILE_PATH" value="" value_type="str"/>
                 <efxpt:param name="PIPELINE_SOC_AXI_MEM_INTERFACE_EN" value="false" value_type="bool"/>
                 <efxpt:param name="SYS_CLK_SOURCE" value="Clock 0" value_type="str"/>
                 <efxpt:param name="WRITEBUFFER_SOC_AXI_INTERFACE_EN" value="false" value_type="bool"/>
