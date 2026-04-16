@@ -22,6 +22,8 @@ The base address of AXI Interconnect ``SYSTEM_AXI_A_BMB`` is ``0xe8000000``.
 | SYSTEM_AXI_A_BMB + 0xe1100000  | Axi Slave 2  | Triple Speed Ethernet           | -                |
 | SYSTEM_AXI_A_BMB + 0xe1200000 | Axi Slave 3  | Vision Hardware Accelerator     | -                |
 | SYSTEM_AXI_A_BMB + 0xe1300000  | Axi Slave 4  | eMMC       | 21                |
-| SYSTEM_AXI_A_BMB + 0xe1400000 | Axi Slave 5  | Control Block EMM (sys_reg)    | -                |
+| SYSTEM_AXI_A_BMB + 0xe1400000 | Axi Slave 5  | Control Block EMMC (sys_reg)     | -                |
+| SYSTEM_AXI_A_BMB + 0xe1500000  | Axi Slave 6  | SDIO       | 22                |
+| SYSTEM_AXI_A_BMB + 0xe1600000 | Axi Slave 7  | Control Block SDIO (sys_reg)    | -                |
 
 Interrupt number of USB Controller: 20
