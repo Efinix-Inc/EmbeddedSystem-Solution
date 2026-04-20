@@ -106,6 +106,15 @@ Available Embedded Software Demo:
 | Ti180J484    |      298         |         89         |
 | T120F576     |       50         |          25         |
 
+### WiFi Throughput - TCP (With External Antenna)
+The throughput shown below is based on our setup and may vary depending on the configuration and environmental conditions.
+Values are approximate.
+
+| Device       | RX (Mbits/sec)   | TX (Mbits/sec)      |
+|--------------|------------------|---------------------|
+| Ti375C529    |      75        |         100         |
+
+
 ### Resource Consumption
 
 | Device       | XLR              | Memory Block | DSP Block /Multiplier |
