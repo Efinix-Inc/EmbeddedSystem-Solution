@@ -31,35 +31,25 @@ It is compatible with both Titanium and Trion devices, ensuring flexibility and 
 
 ![HPS SoC block-diagram](docs/images/hps/hps_blk_diagram.png)
 
-Key Features:
-* Unified RTL Design.
-* Support Camera & Display Design for Vision Applications: Optimized for vision-based applications, providing enhanced capabilities for image processing and analysis.
-* Support Titanium and Trion Devices: Ensures compatibility and flexibility with different hardware devices, catering to a broad spectrum of applications.
-* Support Triple-Speed Ethernet MAC: Provides high-speed Ethernet support, essential for applications requiring fast data transmission.
-* Wide Range of Applications for Embedded Software: Offers extensive support for various embedded software applications, making it versatile for numerous embedded system projects.
-* Linux Support for Titanium Device (Ti375 & Ti180)
-* FreeRTOS Support for all devices.
+#### Key Features
+* **Unified RTL Design:** A single, cohesive hardware architecture.
+* **Broad Device Compatibility:** Fully supports both Titanium and Trion FPGA families.
+* **Comprehensive OS Support:** Linux capabilities for Titanium devices (Ti375 & Ti180), and FreeRTOS support across all devices.
+* **Vision & Display Ready:** Includes camera and display reference designs optimized for image processing.
+* **High-Speed Connectivity:** Integrated Triple-Speed Ethernet MAC for rapid data transmission.
+* **Wireless Enablement:** Includes an SDIO Controller to support Linux-based WiFi solutions.
+* **Extensive Embedded Ecosystem:** Provides a wide range of embedded software examples to accelerate system development.
 
+### User Guide Index
 
-Available Embedded Software Demo:
-- [Emmc](docs/app/ug_emmc.md)
-  - [x] [emmcDemo](docs/app/ug_emmc.md#emmcDemo)
-- [Tsemac](docs/app/ug_ethernet.md)
-  - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
-- [Sensors](docs/app/ug_sensors.md)
-  - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
-  - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
-- [Solution](docs/app/ug_solution.md)
-  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
-  - [x] [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth)
-  - [x] [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) 
-  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
- 
-- [FreeRTOS](docs/app/ug_freertos.md)
-  - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
-  - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
-  - [x] [freertosEchoServerDemo](docs/app/ug_freertos.md#freertosechoserverdemo)
-  - [x] [freertosFatDemo](docs/app/ug_freertos.md#freertosfatdemo)
+| Category | Documentation | Demo / Status |
+| :--- | :--- | :--- |
+| **Storage** | [SDIO](docs/app/ug_sdio.md) |  *Tested for WiFi Solution (br2-efinix)* |
+| | [eMMC](docs/app/ug_emmc.md) | [emmcDemo](docs/app/ug_emmc.md#emmcDemo) |
+| **Network** | [TSEMAC](docs/app/ug_ethernet.md) | [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver) |
+| **Sensors** | [Sensors](docs/app/ug_sensors.md) | [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc) <br> [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp) |
+| **Solutions** | [Solution](docs/app/ug_solution.md) | [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi) <br> [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth) <br> [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) <br> [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi) |
+| **RTOS** | [FreeRTOS](docs/app/ug_freertos.md) | [iperf](docs/app/ug_freertos.md#freertosiperfdemo), [MQTT](docs/app/ug_freertos.md#freertosmqttplaintextdemo), [EchoServer](docs/app/ug_freertos.md#freertosechoserverdemo), [FAT](docs/app/ug_freertos.md#freertosfatdemo) |
 
 
 ## Embedded System Solution Hardware Settings
@@ -83,6 +73,7 @@ Available Embedded Software Demo:
 - 1 SD host controller
 - 1 MIPI camera + 1 HDMI
 - 1 Ethernet
+- 1 EMMC
 - 2\*SPI + 3\*I2C + UART + 4 pins GPIO + 2\*user timers
 
 
@@ -106,13 +97,22 @@ Available Embedded Software Demo:
 | Ti180J484    |      298         |         89         |
 | T120F576     |       50         |          25         |
 
+### WiFi Throughput - TCP (With External Antenna)
+The throughput shown below is based on our setup and may vary depending on the configuration and environmental conditions.
+Values are approximate.
+
+| Device       | RX (Mbits/sec)   | TX (Mbits/sec)      |
+|--------------|------------------|---------------------|
+| Ti375C529    |      75        |         100         |
+
+
 ### Resource Consumption
 
 | Device       | XLR              | Memory Block | DSP Block /Multiplier |
 |--------------|------------------|---------------------|------------------|
 | T120F576    |      81614/112128         |         707/1056         |       17/320 (Multiplier*)       |
 | Ti180J484    |      77670/172800         |        612/1280         |       17/640       |
-| Ti375C529     |       57656/ 362880         |          357/2688         |        0/1344       |
+| Ti375C529     |       81304/ 362880         |          395/2688         |        0/1344       |
 
 ## Directory structure of Embedded System Solution
 
