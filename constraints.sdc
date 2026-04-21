@@ -4,8 +4,8 @@
 # WARNING: Any manual changes made to this file will be lost when generating constraints.
 
 # Efinity Interface Designer SDC
-# Version: 2025.2.288
-# Date: 2026-03-03 11:35
+# Version: 2025.2.288.4.15
+# Date: 2026-04-21 15:29
 
 # Copyright (C) 2013 - 2025 Efinix Inc. All rights reserved.
 
@@ -20,7 +20,6 @@ create_clock -period 1.000 -name io_systemClk [get_ports {io_systemClk}]
 create_clock -period 5.000 -name io_memoryClk [get_ports {io_memoryClk}]
 create_clock -period 5.000 -name io_cfuClk [get_ports {io_cfuClk}]
 create_clock -period 8.000 -name io_tseClk [get_ports {io_tseClk}]
-create_clock -period 8.000 -name rgmii_rxc [get_ports {rgmii_rxc}]
 create_clock -waveform {2.000 6.000} -period 8.000 -name io_tseClk_90 [get_ports {io_tseClk_90}]
 create_clock -period 13.468 -name hdmi_clk_fb [get_ports {hdmi_clk_fb}]
 create_clock -period 6.734 -name i_hdmi_clk_148p5MHz [get_ports {i_hdmi_clk_148p5MHz}]
@@ -40,9 +39,18 @@ create_clock -period 5.000 -name sdio_pll_fb [get_ports {sdio_pll_fb}]
 create_clock -period 5.000 -name sdio_base_clk [get_ports {sdio_base_clk}]
 create_clock -period 5.000 -name sdio_base_clk_cal [get_ports {sdio_base_clk_cal}]
 create_clock -waveform {1.875 4.375} -period 5.000 -name sdio_base_clk_shift [get_ports {sdio_base_clk_shift}]
+create_clock -period 8.000 -name tse_pll_rxc_CLKOUT0 [get_ports {tse_pll_rxc_CLKOUT0}]
+create_clock -period 8.000 -name rgmii_rxc [get_ports {rgmii_rxc}]
+
+# Clock Latency Constraints
+############################
+set_clock_latency -source -setup 2.070 [get_ports {rgmii_rxc_slow}]
+set_clock_latency -source -hold 1.043 [get_ports {rgmii_rxc_slow}]
+set_clock_latency -source -setup 1.970 [get_ports {rgmii_rxc_phy}]
+set_clock_latency -source -hold 0.943 [get_ports {rgmii_rxc_phy}]
 
 # Exclusive Clock Group
-set_clock_groups -exclusive -group {cam_ck_CLKOUT} -group {io_usbClk} -group {core_clk} -group {rgmii_rxc io_tseClk_90 io_tseClk} -group {io_memoryClk} -group {i_pixel_clk} -group {i_hdmi_clk_148p5MHz} -group {io_ddrMasters_0_clk} -group {sd_base_clk} -group {io_peripheralClk} -group {i_sys_clk_25mhz} -group {io_cfuClk} -group {jtagCtrl_tck}
+set_clock_groups -exclusive -group {cam_ck_CLKOUT} -group {io_usbClk} -group {core_clk} -group {mux_clk} -group {io_tseClk_90 io_tseClk} -group {io_memoryClk} -group {i_pixel_clk} -group {i_hdmi_clk_148p5MHz} -group {io_ddrMasters_0_clk} -group {sd_base_clk} -group {io_peripheralClk} -group {i_sys_clk_25mhz} -group {io_cfuClk} -group {jtagCtrl_tck}
 set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
 set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
 set_clock_groups -asynchronous -group sdio_base_clk -group sdio_base_clk_cal
@@ -285,20 +293,18 @@ set_input_delay -clock io_memoryClk -reference_pin [get_ports {io_memoryClk~CLKO
 
 # HSIO GPIO Constraints
 #########################
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~391~964}] -max 1.240 [get_ports {rgmii_rx_ctl_LO rgmii_rx_ctl_HI}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~391~964}] -min 0.596 [get_ports {rgmii_rx_ctl_LO rgmii_rx_ctl_HI}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~391~964}] -max 1.240 [get_ports {rgmii_rx_ctl_LO rgmii_rx_ctl_HI}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~391~964}] -min 0.596 [get_ports {rgmii_rx_ctl_LO rgmii_rx_ctl_HI}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {rgmii_rxc_phy}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -min <MIN CALCULATION> [get_ports {rgmii_rxc_phy}]
-# set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {rgmii_rxc_slow}]
-# set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -min <MIN CALCULATION> [get_ports {rgmii_rxc_slow}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~395~964}] -max 1.240 [get_ports {rgmii_rxd_LO[0] rgmii_rxd_HI[0]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~395~964}] -min 0.596 [get_ports {rgmii_rxd_LO[0] rgmii_rxd_HI[0]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~397~964}] -max 1.240 [get_ports {rgmii_rxd_LO[1] rgmii_rxd_HI[1]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~397~964}] -min 0.596 [get_ports {rgmii_rxd_LO[1] rgmii_rxd_HI[1]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~408~964}] -max 1.240 [get_ports {rgmii_rxd_LO[2] rgmii_rxd_HI[2]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~408~964}] -min 0.596 [get_ports {rgmii_rxd_LO[2] rgmii_rxd_HI[2]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~412~963}] -max 1.240 [get_ports {rgmii_rxd_LO[3] rgmii_rxd_HI[3]}]
-set_input_delay -clock rgmii_rxc -reference_pin [get_ports {rgmii_rxc~CLKOUT~412~963}] -min 0.596 [get_ports {rgmii_rxd_LO[3] rgmii_rxd_HI[3]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~395~964}] -max 1.240 [get_ports {rgmii_rxd_LO[0] rgmii_rxd_HI[0]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~395~964}] -min 0.596 [get_ports {rgmii_rxd_LO[0] rgmii_rxd_HI[0]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~397~964}] -max 1.240 [get_ports {rgmii_rxd_LO[1] rgmii_rxd_HI[1]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~397~964}] -min 0.596 [get_ports {rgmii_rxd_LO[1] rgmii_rxd_HI[1]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~408~964}] -max 1.240 [get_ports {rgmii_rxd_LO[2] rgmii_rxd_HI[2]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~408~964}] -min 0.596 [get_ports {rgmii_rxd_LO[2] rgmii_rxd_HI[2]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~412~963}] -max 1.240 [get_ports {rgmii_rxd_LO[3] rgmii_rxd_HI[3]}]
+set_input_delay -clock mux_clk -reference_pin [get_ports {mux_clk~CLKOUT~412~963}] -min 0.596 [get_ports {rgmii_rxd_LO[3] rgmii_rxd_HI[3]}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -max <MAX CALCULATION> [get_ports {sd_cd_n}]
 # set_input_delay -clock <CLOCK> [-reference_pin <clkout_pad>] -min <MIN CALCULATION> [get_ports {sd_cd_n}]
 set_output_delay -clock_fall -clock clk90_200m -reference_pin [get_ports {clk90_200m~CLKOUT~453~964}] -max 0.985 [get_ports {emmc_clk_LO emmc_clk_HI}]
@@ -783,8 +789,6 @@ set_input_delay -clock jtagCtrl_tck -reference_pin [get_ports {jtagCtrl_tck~CLKO
 # set_clock_latency -source -hold <pll_clk_latency_io_peripheralClk_min + 1.367> [get_ports {sdio_base_clk_shift}]
 # set_clock_latency -source -setup <board_max> [get_ports {io_tseClk}]
 # set_clock_latency -source -hold <board_min> [get_ports {io_tseClk}]
-# set_clock_latency -source -setup <board_max> [get_ports {rgmii_rxc}]
-# set_clock_latency -source -hold <board_min> [get_ports {rgmii_rxc}]
 # set_clock_latency -source -setup <board_max> [get_ports {io_tseClk_90}]
 # set_clock_latency -source -hold <board_min> [get_ports {io_tseClk_90}]
 # set_clock_latency -source -setup <board_max + 1.428> [get_ports {i_sys_clk_25mhz}]
@@ -797,3 +801,7 @@ set_input_delay -clock jtagCtrl_tck -reference_pin [get_ports {jtagCtrl_tck~CLKO
 # set_clock_latency -source -hold <board_min + 0.648> [get_ports {io_ddrMasters_0_clk}]
 # set_clock_latency -source -setup <board_max + 1.428> [get_ports {core_clk}]
 # set_clock_latency -source -hold <board_min + 0.648> [get_ports {core_clk}]
+# set_clock_latency -source -setup <board_max + 1.570> [get_ports {tse_pll_rxc_CLKOUT0}]
+# set_clock_latency -source -hold <board_min + 0.844> [get_ports {tse_pll_rxc_CLKOUT0}]
+# set_clock_latency -source -setup <board_max + 1.570> [get_ports {rgmii_rxc}]
+# set_clock_latency -source -hold <board_min + 0.844> [get_ports {rgmii_rxc}]
