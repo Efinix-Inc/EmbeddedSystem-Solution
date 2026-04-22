@@ -40,26 +40,16 @@ It is compatible with both Titanium and Trion devices, ensuring flexibility and 
 * **Wireless Enablement:** Includes an SDIO Controller to support Linux-based WiFi solutions.
 * **Extensive Embedded Ecosystem:** Provides a wide range of embedded software examples to accelerate system development.
 
+### User Guide Index
 
-Available Embedded Software Demo:
-- [Emmc](docs/app/ug_emmc.md)
-  - [x] [emmcDemo](docs/app/ug_emmc.md#emmcDemo)
-- [Tsemac](docs/app/ug_ethernet.md)
-  - [x] [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver)
-- [Sensors](docs/app/ug_sensors.md)
-  - [x] [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc)
-  - [x] [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp)
-- [Solution](docs/app/ug_solution.md)
-  - [x] [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi)
-  - [x] [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth)
-  - [x] [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) 
-  - [x] [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi)
- 
-- [FreeRTOS](docs/app/ug_freertos.md)
-  - [x] [freertosIperfDemo](docs/app/ug_freertos.md#freertosiperfdemo)
-  - [x] [freertosMqttPlainTextDemo](docs/app/ug_freertos.md#freertosmqttplaintextdemo)
-  - [x] [freertosEchoServerDemo](docs/app/ug_freertos.md#freertosechoserverdemo)
-  - [x] [freertosFatDemo](docs/app/ug_freertos.md#freertosfatdemo)
+| Category | Documentation | Demo / Status |
+| :--- | :--- | :--- |
+| **Storage** | [SDIO](docs/app/ug_sdio.md) |  *Tested for WiFi Solution (br2-efinix)* |
+| | [eMMC](docs/app/ug_emmc.md) | [emmcDemo](docs/app/ug_emmc.md#emmcDemo) |
+| **Network** | [TSEMAC](docs/app/ug_ethernet.md) | [lwipIperfServer](docs/app/ug_ethernet.md#lwipiperfserver) |
+| **Sensors** | [Sensors](docs/app/ug_sensors.md) | [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc) <br> [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp) |
+| **Solutions** | [Solution](docs/app/ug_solution.md) | [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi) <br> [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth) <br> [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) <br> [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi) |
+| **RTOS** | [FreeRTOS](docs/app/ug_freertos.md) | [iperf](docs/app/ug_freertos.md#freertosiperfdemo), [MQTT](docs/app/ug_freertos.md#freertosmqttplaintextdemo), [EchoServer](docs/app/ug_freertos.md#freertosechoserverdemo), [FAT](docs/app/ug_freertos.md#freertosfatdemo) |
 
 
 ## Embedded System Solution Hardware Settings
