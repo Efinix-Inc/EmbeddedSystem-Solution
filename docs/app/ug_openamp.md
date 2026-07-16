@@ -50,29 +50,30 @@ TI375C529 development kit.
 
 ## Directory Structure
 
-+---software
-+---standalone
-+---openamp
-+---lib                 auto-fetched at build time
-│   +---open-amp        upstream OpenAMP  (not committed)
-│   +---libmetal        upstream libmetal (not committed)
-+---port
-│   +---metal/system/generic/efinix_ti375_rv32
-│       +---sys.c       libmetal machine port
-│       +---sys.h
-+---shared
-│   +---shm_layout.h    AMP shared-memory
-│   +---sbi.h           openSBI inline helpers
-│   +---openamp_transport.c/.h   libmetal init, vring bring-up
-│   +---amp_rsc_table.c/.h       resource-table publication
-│   +---amp_trap.c/.h            S-mode software-interrupt handler
-│   +---amp_remote.c/.h          remote bring-up
-+---openamp_libs.mk     builds libopen_amp.a + libmetal.a
-+---openamp_app.mk      application facing
-+---openampEcho         openAMP echo sample application
-+---makefile
-+---src/main.c      endpoint callback + main loop
+```
+  +---software
+    +---standalone
+        +---openamp
+        ¦    +---lib
+        ¦    ¦    +---open-amp
+        ¦    ¦    +---libmetal
+        ¦    +---port
+        ¦    ¦    +---metal/system/generic/efinix_ti375_rv32
+        ¦    ¦        +---sys.c/.h
+        ¦    +---shared
+        ¦    ¦   +---shm_layout.h
+        ¦    ¦   +---sbi.h
+        ¦    ¦   +---openamp_transport.c/.h
+        ¦    ¦   +---amp_rsc_table.c/.h
+        ¦    ¦   +---amp_trap.c/.h
+        ¦    ¦   +---amp_remote.c/.h
+        ¦    +---openamp_libs.mk
+        ¦    +---openamp_app.mk
+        +---openampEcho
+            +---makefile
+            +---src/main.c
 
+```
 
 ## Software Requirements
 
