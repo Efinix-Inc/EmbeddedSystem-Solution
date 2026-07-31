@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
--- Copyright (C) 2013-2025 Efinix Inc. All rights reserved.              
+-- Copyright (C) 2013-2026 Efinix Inc. All rights reserved.              
 --
 -- This   document  contains  proprietary information  which   is        
 -- protected by  copyright. All rights  are reserved.  This notice       
@@ -89,6 +89,8 @@ port (
     system_spi_1_io_ss : out std_logic_vector(3 downto 0);
     system_uart_0_io_rxd : in std_logic;
     system_uart_0_io_txd : out std_logic;
+    system_uart_1_io_rxd : in std_logic;
+    system_uart_1_io_txd : out std_logic;
     system_i2c_0_io_scl_read : in std_logic;
     system_i2c_0_io_scl_write : out std_logic;
     system_i2c_0_io_sda_read : in std_logic;
@@ -146,6 +148,7 @@ port (
     userInterruptF : out std_logic;
     userInterruptG : out std_logic;
     userInterruptH : out std_logic;
+    userInterruptI : out std_logic;
     io_apbSlave_0_PADDR : out std_logic_vector(31 downto 0);
     io_apbSlave_0_PENABLE : out std_logic;
     io_apbSlave_0_PRDATA : in std_logic_vector(31 downto 0);
@@ -250,6 +253,8 @@ port map (
     system_spi_1_io_ss => system_spi_1_io_ss,
     system_uart_0_io_rxd => system_uart_0_io_rxd,
     system_uart_0_io_txd => system_uart_0_io_txd,
+    system_uart_1_io_rxd => system_uart_1_io_rxd,
+    system_uart_1_io_txd => system_uart_1_io_txd,
     system_i2c_0_io_scl_read => system_i2c_0_io_scl_read,
     system_i2c_0_io_scl_write => system_i2c_0_io_scl_write,
     system_i2c_0_io_sda_read => system_i2c_0_io_sda_read,
@@ -307,6 +312,7 @@ port map (
     userInterruptF => userInterruptF,
     userInterruptG => userInterruptG,
     userInterruptH => userInterruptH,
+    userInterruptI => userInterruptI,
     io_apbSlave_0_PADDR => io_apbSlave_0_PADDR,
     io_apbSlave_0_PENABLE => io_apbSlave_0_PENABLE,
     io_apbSlave_0_PRDATA => io_apbSlave_0_PRDATA,

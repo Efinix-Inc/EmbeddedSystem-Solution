@@ -3,7 +3,7 @@
         "-o",
         "EfxSapphireHpSoc_slb",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -59,7 +59,7 @@
         "PERI_APB_4": "1'b1",
         "PERI_GEN": "1'b1",
         "PERI_UART_0": "1'b1",
-        "PERI_UART_1": "1'b0",
+        "PERI_UART_1": "1'b1",
         "PERI_UART_2": "1'b0",
         "PERI_GPIO_0_WIDTH": "4",
         "PERI_GPIO_1_WIDTH": "4",
@@ -123,17 +123,12 @@
     },
     "output": {
         "external_script_Peripheral_Generator": [],
-        "external_source_source": [
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.v",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_define.vh",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb.v",
-            "EfxSapphireHpSoc_slb/EfxSapphireHpSoc_slb_tmpl.vhd"
-        ],
+        "external_source_source": [],
         "external_script_PT_Configuration": [],
         "external_script_Peripheral_Post_Script": [],
         "external_script_Embedded_SW": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.2.288",
-    "generated_date": "2025-11-18T06:57:25.464059+00:00"
+    "sw_version": "2026.1.132.1.15",
+    "external_path_option": "RELATIVE_PATH"
 }

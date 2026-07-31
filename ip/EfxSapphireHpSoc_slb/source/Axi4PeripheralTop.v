@@ -33,6 +33,8 @@ module Axi4PeripheralTop (
   output wire          axi_rlast,
   output wire          system_uart_0_io_txd,
   input  wire          system_uart_0_io_rxd,
+  output wire          system_uart_1_io_txd,
+  input  wire          system_uart_1_io_rxd,
   output wire          system_i2c_0_io_sda_write,
   input  wire          system_i2c_0_io_sda_read,
   output wire          system_i2c_0_io_scl_write,
@@ -44,14 +46,6 @@ module Axi4PeripheralTop (
   input  wire [3:0]    system_gpio_0_io_read,
   output wire [3:0]    system_gpio_0_io_write,
   output wire [3:0]    system_gpio_0_io_writeEnable,
-  output wire [11:0]   io_apbSlave_3_PADDR,
-  output wire [0:0]    io_apbSlave_3_PSEL,
-  output wire          io_apbSlave_3_PENABLE,
-  input  wire          io_apbSlave_3_PREADY,
-  output wire          io_apbSlave_3_PWRITE,
-  output wire [31:0]   io_apbSlave_3_PWDATA,
-  input  wire [31:0]   io_apbSlave_3_PRDATA,
-  input  wire          io_apbSlave_3_PSLVERROR,
   output wire [11:0]   io_apbSlave_2_PADDR,
   output wire [0:0]    io_apbSlave_2_PSEL,
   output wire          io_apbSlave_2_PENABLE,
@@ -60,6 +54,14 @@ module Axi4PeripheralTop (
   output wire [31:0]   io_apbSlave_2_PWDATA,
   input  wire [31:0]   io_apbSlave_2_PRDATA,
   input  wire          io_apbSlave_2_PSLVERROR,
+  output wire [11:0]   io_apbSlave_3_PADDR,
+  output wire [0:0]    io_apbSlave_3_PSEL,
+  output wire          io_apbSlave_3_PENABLE,
+  input  wire          io_apbSlave_3_PREADY,
+  output wire          io_apbSlave_3_PWRITE,
+  output wire [31:0]   io_apbSlave_3_PWDATA,
+  input  wire [31:0]   io_apbSlave_3_PRDATA,
+  input  wire          io_apbSlave_3_PSLVERROR,
   output wire [11:0]   io_apbSlave_0_PADDR,
   output wire [0:0]    io_apbSlave_0_PSEL,
   output wire          io_apbSlave_0_PENABLE,
@@ -68,14 +70,6 @@ module Axi4PeripheralTop (
   output wire [31:0]   io_apbSlave_0_PWDATA,
   input  wire [31:0]   io_apbSlave_0_PRDATA,
   input  wire          io_apbSlave_0_PSLVERROR,
-  output wire [11:0]   io_apbSlave_1_PADDR,
-  output wire [0:0]    io_apbSlave_1_PSEL,
-  output wire          io_apbSlave_1_PENABLE,
-  input  wire          io_apbSlave_1_PREADY,
-  output wire          io_apbSlave_1_PWRITE,
-  output wire [31:0]   io_apbSlave_1_PWDATA,
-  input  wire [31:0]   io_apbSlave_1_PRDATA,
-  input  wire          io_apbSlave_1_PSLVERROR,
   output wire [11:0]   io_apbSlave_4_PADDR,
   output wire [0:0]    io_apbSlave_4_PSEL,
   output wire          io_apbSlave_4_PENABLE,
@@ -84,7 +78,16 @@ module Axi4PeripheralTop (
   output wire [31:0]   io_apbSlave_4_PWDATA,
   input  wire [31:0]   io_apbSlave_4_PRDATA,
   input  wire          io_apbSlave_4_PSLVERROR,
+  output wire [11:0]   io_apbSlave_1_PADDR,
+  output wire [0:0]    io_apbSlave_1_PSEL,
+  output wire          io_apbSlave_1_PENABLE,
+  input  wire          io_apbSlave_1_PREADY,
+  output wire          io_apbSlave_1_PWRITE,
+  output wire [31:0]   io_apbSlave_1_PWDATA,
+  input  wire [31:0]   io_apbSlave_1_PRDATA,
+  input  wire          io_apbSlave_1_PSLVERROR,
   output wire          system_uart_0_io_interrupt,
+  output wire          system_uart_1_io_interrupt,
   output wire          system_spi_0_io_interrupt,
   output wire [0:0]    system_spi_0_io_sclk_write,
   output wire          system_spi_0_io_data_0_writeEnable,
@@ -296,6 +299,15 @@ module Axi4PeripheralTop (
   wire       [3:0]    bmbPeripheral_bmb_decoder_io_outputs_11_cmd_payload_fragment_mask;
   wire       [2:0]    bmbPeripheral_bmb_decoder_io_outputs_11_cmd_payload_fragment_context;
   wire                bmbPeripheral_bmb_decoder_io_outputs_11_rsp_ready;
+  wire                bmbPeripheral_bmb_decoder_io_outputs_12_cmd_valid;
+  wire                bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_last;
+  wire       [0:0]    bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_opcode;
+  wire       [23:0]   bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_address;
+  wire       [1:0]    bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_length;
+  wire       [31:0]   bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_data;
+  wire       [3:0]    bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_mask;
+  wire       [2:0]    bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_context;
+  wire                bmbPeripheral_bmb_decoder_io_outputs_12_rsp_ready;
   wire                system_uart_0_io_logic_io_bus_cmd_ready;
   wire                system_uart_0_io_logic_io_bus_rsp_valid;
   wire                system_uart_0_io_logic_io_bus_rsp_payload_last;
@@ -304,6 +316,14 @@ module Axi4PeripheralTop (
   wire       [2:0]    system_uart_0_io_logic_io_bus_rsp_payload_fragment_context;
   wire                system_uart_0_io_logic_io_uart_txd;
   wire                system_uart_0_io_logic_system_uart_0_io_interrupt_source;
+  wire                system_uart_1_io_logic_io_bus_cmd_ready;
+  wire                system_uart_1_io_logic_io_bus_rsp_valid;
+  wire                system_uart_1_io_logic_io_bus_rsp_payload_last;
+  wire       [0:0]    system_uart_1_io_logic_io_bus_rsp_payload_fragment_opcode;
+  wire       [31:0]   system_uart_1_io_logic_io_bus_rsp_payload_fragment_data;
+  wire       [2:0]    system_uart_1_io_logic_io_bus_rsp_payload_fragment_context;
+  wire                system_uart_1_io_logic_io_uart_txd;
+  wire                system_uart_1_io_logic_system_uart_1_io_interrupt_source;
   wire                system_spi_0_io_logic_io_ctrl_cmd_ready;
   wire                system_spi_0_io_logic_io_ctrl_rsp_valid;
   wire                system_spi_0_io_logic_io_ctrl_rsp_payload_last;
@@ -372,17 +392,6 @@ module Axi4PeripheralTop (
   wire       [31:0]   system_watchdog_logic_logic_io_bus_rsp_payload_fragment_data;
   wire       [2:0]    system_watchdog_logic_logic_io_bus_rsp_payload_fragment_context;
   wire       [1:0]    system_watchdog_logic_logic_io_panics;
-  wire                io_apbSlave_3_logic_io_input_cmd_ready;
-  wire                io_apbSlave_3_logic_io_input_rsp_valid;
-  wire                io_apbSlave_3_logic_io_input_rsp_payload_last;
-  wire       [0:0]    io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode;
-  wire       [31:0]   io_apbSlave_3_logic_io_input_rsp_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_3_logic_io_input_rsp_payload_fragment_context;
-  wire       [11:0]   io_apbSlave_3_logic_io_output_PADDR;
-  wire       [0:0]    io_apbSlave_3_logic_io_output_PSEL;
-  wire                io_apbSlave_3_logic_io_output_PENABLE;
-  wire                io_apbSlave_3_logic_io_output_PWRITE;
-  wire       [31:0]   io_apbSlave_3_logic_io_output_PWDATA;
   wire                io_apbSlave_2_logic_io_input_cmd_ready;
   wire                io_apbSlave_2_logic_io_input_rsp_valid;
   wire                io_apbSlave_2_logic_io_input_rsp_payload_last;
@@ -394,6 +403,17 @@ module Axi4PeripheralTop (
   wire                io_apbSlave_2_logic_io_output_PENABLE;
   wire                io_apbSlave_2_logic_io_output_PWRITE;
   wire       [31:0]   io_apbSlave_2_logic_io_output_PWDATA;
+  wire                io_apbSlave_3_logic_io_input_cmd_ready;
+  wire                io_apbSlave_3_logic_io_input_rsp_valid;
+  wire                io_apbSlave_3_logic_io_input_rsp_payload_last;
+  wire       [0:0]    io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode;
+  wire       [31:0]   io_apbSlave_3_logic_io_input_rsp_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_3_logic_io_input_rsp_payload_fragment_context;
+  wire       [11:0]   io_apbSlave_3_logic_io_output_PADDR;
+  wire       [0:0]    io_apbSlave_3_logic_io_output_PSEL;
+  wire                io_apbSlave_3_logic_io_output_PENABLE;
+  wire                io_apbSlave_3_logic_io_output_PWRITE;
+  wire       [31:0]   io_apbSlave_3_logic_io_output_PWDATA;
   wire                io_apbSlave_0_logic_io_input_cmd_ready;
   wire                io_apbSlave_0_logic_io_input_rsp_valid;
   wire                io_apbSlave_0_logic_io_input_rsp_payload_last;
@@ -405,17 +425,6 @@ module Axi4PeripheralTop (
   wire                io_apbSlave_0_logic_io_output_PENABLE;
   wire                io_apbSlave_0_logic_io_output_PWRITE;
   wire       [31:0]   io_apbSlave_0_logic_io_output_PWDATA;
-  wire                io_apbSlave_1_logic_io_input_cmd_ready;
-  wire                io_apbSlave_1_logic_io_input_rsp_valid;
-  wire                io_apbSlave_1_logic_io_input_rsp_payload_last;
-  wire       [0:0]    io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode;
-  wire       [31:0]   io_apbSlave_1_logic_io_input_rsp_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_1_logic_io_input_rsp_payload_fragment_context;
-  wire       [11:0]   io_apbSlave_1_logic_io_output_PADDR;
-  wire       [0:0]    io_apbSlave_1_logic_io_output_PSEL;
-  wire                io_apbSlave_1_logic_io_output_PENABLE;
-  wire                io_apbSlave_1_logic_io_output_PWRITE;
-  wire       [31:0]   io_apbSlave_1_logic_io_output_PWDATA;
   wire                io_apbSlave_4_logic_io_input_cmd_ready;
   wire                io_apbSlave_4_logic_io_input_rsp_valid;
   wire                io_apbSlave_4_logic_io_input_rsp_payload_last;
@@ -427,6 +436,17 @@ module Axi4PeripheralTop (
   wire                io_apbSlave_4_logic_io_output_PENABLE;
   wire                io_apbSlave_4_logic_io_output_PWRITE;
   wire       [31:0]   io_apbSlave_4_logic_io_output_PWDATA;
+  wire                io_apbSlave_1_logic_io_input_cmd_ready;
+  wire                io_apbSlave_1_logic_io_input_rsp_valid;
+  wire                io_apbSlave_1_logic_io_input_rsp_payload_last;
+  wire       [0:0]    io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode;
+  wire       [31:0]   io_apbSlave_1_logic_io_input_rsp_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_1_logic_io_input_rsp_payload_fragment_context;
+  wire       [11:0]   io_apbSlave_1_logic_io_output_PADDR;
+  wire       [0:0]    io_apbSlave_1_logic_io_output_PSEL;
+  wire                io_apbSlave_1_logic_io_output_PENABLE;
+  wire                io_apbSlave_1_logic_io_output_PWRITE;
+  wire       [31:0]   io_apbSlave_1_logic_io_output_PWDATA;
   wire                _zz_axiShared_b_ready;
   wire                _zz_axiShared_r_ready;
   wire                axi_aw_halfPipe_valid;
@@ -568,6 +588,43 @@ module Axi4PeripheralTop (
   reg        [0:0]    _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   reg        [31:0]   _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   reg        [2:0]    _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
+  wire       [0:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
+  wire       [5:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
+  wire       [1:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
+  wire       [31:0]   system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
+  wire       [2:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  wire       [0:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  wire       [31:0]   system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  wire       [2:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  wire                _zz_io_bus_rsp_ready_1;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_ready;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_last;
+  wire       [0:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_opcode;
+  wire       [5:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_address;
+  wire       [1:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_length;
+  wire       [31:0]   system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_data;
+  wire       [2:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_context;
+  reg                 system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid;
+  wire                system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_fire;
+  reg                 system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_last;
+  reg        [0:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_opcode;
+  reg        [5:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_address;
+  reg        [1:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_length;
+  reg        [31:0]   system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_data;
+  reg        [2:0]    system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_context;
+  wire                _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  reg                 _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1;
+  reg                 _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  reg        [0:0]    _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  reg        [31:0]   _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  reg        [2:0]    _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   wire                system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
   wire                system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
   wire                system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
@@ -716,20 +773,6 @@ module Axi4PeripheralTop (
   wire       [0:0]    system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   wire       [31:0]   system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   wire       [2:0]    system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  wire       [0:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  wire       [11:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  wire       [1:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  wire       [31:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  wire       [0:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  wire       [31:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   wire                io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
   wire                io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
   wire                io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
@@ -744,6 +787,20 @@ module Axi4PeripheralTop (
   wire       [0:0]    io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   wire       [31:0]   io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   wire       [2:0]    io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
+  wire       [0:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
+  wire       [11:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
+  wire       [1:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
+  wire       [31:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
+  wire                io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  wire       [0:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  wire       [31:0]   io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   wire                io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
   wire                io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
   wire                io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
@@ -758,20 +815,6 @@ module Axi4PeripheralTop (
   wire       [0:0]    io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   wire       [31:0]   io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   wire       [2:0]    io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
-  wire       [0:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
-  wire       [11:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
-  wire       [1:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
-  wire       [31:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
-  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  wire       [0:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  wire       [31:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  wire       [2:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   wire                io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
   wire                io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
   wire                io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
@@ -786,6 +829,20 @@ module Axi4PeripheralTop (
   wire       [0:0]    io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   wire       [31:0]   io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   wire       [2:0]    io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
+  wire       [0:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
+  wire       [11:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
+  wire       [1:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
+  wire       [31:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready;
+  wire                io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  wire       [0:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  wire       [31:0]   io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  wire       [2:0]    io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   wire                bmbPeripheral_bmb_withoutMask_cmd_valid;
   wire                bmbPeripheral_bmb_withoutMask_cmd_ready;
   wire                bmbPeripheral_bmb_withoutMask_cmd_payload_last;
@@ -954,6 +1011,20 @@ module Axi4PeripheralTop (
   wire       [0:0]    bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_11;
   wire       [31:0]   bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_11;
   wire       [2:0]    bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_11;
+  wire                bmbPeripheral_bmb_withoutMask_cmd_valid_12;
+  wire                bmbPeripheral_bmb_withoutMask_cmd_ready_12;
+  wire                bmbPeripheral_bmb_withoutMask_cmd_payload_last_12;
+  wire       [0:0]    bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_12;
+  wire       [23:0]   bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_12;
+  wire       [1:0]    bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_12;
+  wire       [31:0]   bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_12;
+  wire       [2:0]    bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_12;
+  wire                bmbPeripheral_bmb_withoutMask_rsp_valid_12;
+  wire                bmbPeripheral_bmb_withoutMask_rsp_ready_12;
+  wire                bmbPeripheral_bmb_withoutMask_rsp_payload_last_12;
+  wire       [0:0]    bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_12;
+  wire       [31:0]   bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_12;
+  wire       [2:0]    bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_12;
 
   Axi4PeripheralStreamArbiter streamArbiter (
     .io_inputs_0_valid         (axi_ar_halfPipe_valid                     ), //i
@@ -1284,6 +1355,21 @@ module Axi4PeripheralTop (
     .io_outputs_11_rsp_payload_fragment_opcode  (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_11              ), //i
     .io_outputs_11_rsp_payload_fragment_data    (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_11[31:0]          ), //i
     .io_outputs_11_rsp_payload_fragment_context (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_11[2:0]        ), //i
+    .io_outputs_12_cmd_valid                    (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_valid                         ), //o
+    .io_outputs_12_cmd_ready                    (bmbPeripheral_bmb_withoutMask_cmd_ready_12                                ), //i
+    .io_outputs_12_cmd_payload_last             (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_last                  ), //o
+    .io_outputs_12_cmd_payload_fragment_opcode  (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_opcode       ), //o
+    .io_outputs_12_cmd_payload_fragment_address (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_address[23:0]), //o
+    .io_outputs_12_cmd_payload_fragment_length  (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_length[1:0]  ), //o
+    .io_outputs_12_cmd_payload_fragment_data    (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_data[31:0]   ), //o
+    .io_outputs_12_cmd_payload_fragment_mask    (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_mask[3:0]    ), //o
+    .io_outputs_12_cmd_payload_fragment_context (bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_context[2:0] ), //o
+    .io_outputs_12_rsp_valid                    (bmbPeripheral_bmb_withoutMask_rsp_valid_12                                ), //i
+    .io_outputs_12_rsp_ready                    (bmbPeripheral_bmb_decoder_io_outputs_12_rsp_ready                         ), //o
+    .io_outputs_12_rsp_payload_last             (bmbPeripheral_bmb_withoutMask_rsp_payload_last_12                         ), //i
+    .io_outputs_12_rsp_payload_fragment_opcode  (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_12              ), //i
+    .io_outputs_12_rsp_payload_fragment_data    (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_12[31:0]          ), //i
+    .io_outputs_12_rsp_payload_fragment_context (bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_12[2:0]        ), //i
     .clk                                        (clk                                                                       ), //i
     .reset                                      (reset                                                                     )  //i
   );
@@ -1305,6 +1391,27 @@ module Axi4PeripheralTop (
     .io_uart_txd                         (system_uart_0_io_logic_io_uart_txd                                                                     ), //o
     .io_uart_rxd                         (system_uart_0_io_rxd                                                                                   ), //i
     .system_uart_0_io_interrupt_source   (system_uart_0_io_logic_system_uart_0_io_interrupt_source                                               ), //o
+    .clk                                 (clk                                                                                                    ), //i
+    .reset                               (reset                                                                                                  )  //i
+  );
+  Axi4PeripheralBmbUartCtrl_1 system_uart_1_io_logic (
+    .io_bus_cmd_valid                    (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid                        ), //i
+    .io_bus_cmd_ready                    (system_uart_1_io_logic_io_bus_cmd_ready                                                                ), //o
+    .io_bus_cmd_payload_last             (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_last                 ), //i
+    .io_bus_cmd_payload_fragment_opcode  (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_opcode      ), //i
+    .io_bus_cmd_payload_fragment_address (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_address[5:0]), //i
+    .io_bus_cmd_payload_fragment_length  (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_length[1:0] ), //i
+    .io_bus_cmd_payload_fragment_data    (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_data[31:0]  ), //i
+    .io_bus_cmd_payload_fragment_context (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_context[2:0]), //i
+    .io_bus_rsp_valid                    (system_uart_1_io_logic_io_bus_rsp_valid                                                                ), //o
+    .io_bus_rsp_ready                    (_zz_io_bus_rsp_ready_1                                                                                 ), //i
+    .io_bus_rsp_payload_last             (system_uart_1_io_logic_io_bus_rsp_payload_last                                                         ), //o
+    .io_bus_rsp_payload_fragment_opcode  (system_uart_1_io_logic_io_bus_rsp_payload_fragment_opcode                                              ), //o
+    .io_bus_rsp_payload_fragment_data    (system_uart_1_io_logic_io_bus_rsp_payload_fragment_data[31:0]                                          ), //o
+    .io_bus_rsp_payload_fragment_context (system_uart_1_io_logic_io_bus_rsp_payload_fragment_context[2:0]                                        ), //o
+    .io_uart_txd                         (system_uart_1_io_logic_io_uart_txd                                                                     ), //o
+    .io_uart_rxd                         (system_uart_1_io_rxd                                                                                   ), //i
+    .system_uart_1_io_interrupt_source   (system_uart_1_io_logic_system_uart_1_io_interrupt_source                                               ), //o
     .clk                                 (clk                                                                                                    ), //i
     .reset                               (reset                                                                                                  )  //i
   );
@@ -1462,32 +1569,6 @@ module Axi4PeripheralTop (
     .clk                                 (clk                                                                                                ), //i
     .reset                               (reset                                                                                              )  //i
   );
-  Axi4PeripheralBmbToApb3Bridge io_apbSlave_3_logic (
-    .io_input_cmd_valid                    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
-    .io_input_cmd_ready                    (io_apbSlave_3_logic_io_input_cmd_ready                                                       ), //o
-    .io_input_cmd_payload_last             (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last                  ), //i
-    .io_input_cmd_payload_fragment_opcode  (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode       ), //i
-    .io_input_cmd_payload_fragment_address (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address[11:0]), //i
-    .io_input_cmd_payload_fragment_length  (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length[1:0]  ), //i
-    .io_input_cmd_payload_fragment_data    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data[31:0]   ), //i
-    .io_input_cmd_payload_fragment_context (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context[2:0] ), //i
-    .io_input_rsp_valid                    (io_apbSlave_3_logic_io_input_rsp_valid                                                       ), //o
-    .io_input_rsp_ready                    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready                         ), //i
-    .io_input_rsp_payload_last             (io_apbSlave_3_logic_io_input_rsp_payload_last                                                ), //o
-    .io_input_rsp_payload_fragment_opcode  (io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode                                     ), //o
-    .io_input_rsp_payload_fragment_data    (io_apbSlave_3_logic_io_input_rsp_payload_fragment_data[31:0]                                 ), //o
-    .io_input_rsp_payload_fragment_context (io_apbSlave_3_logic_io_input_rsp_payload_fragment_context[2:0]                               ), //o
-    .io_output_PADDR                       (io_apbSlave_3_logic_io_output_PADDR[11:0]                                                    ), //o
-    .io_output_PSEL                        (io_apbSlave_3_logic_io_output_PSEL                                                           ), //o
-    .io_output_PENABLE                     (io_apbSlave_3_logic_io_output_PENABLE                                                        ), //o
-    .io_output_PREADY                      (io_apbSlave_3_PREADY                                                                         ), //i
-    .io_output_PWRITE                      (io_apbSlave_3_logic_io_output_PWRITE                                                         ), //o
-    .io_output_PWDATA                      (io_apbSlave_3_logic_io_output_PWDATA[31:0]                                                   ), //o
-    .io_output_PRDATA                      (io_apbSlave_3_PRDATA[31:0]                                                                   ), //i
-    .io_output_PSLVERROR                   (io_apbSlave_3_PSLVERROR                                                                      ), //i
-    .clk                                   (clk                                                                                          ), //i
-    .reset                                 (reset                                                                                        )  //i
-  );
   Axi4PeripheralBmbToApb3Bridge io_apbSlave_2_logic (
     .io_input_cmd_valid                    (io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
     .io_input_cmd_ready                    (io_apbSlave_2_logic_io_input_cmd_ready                                                       ), //o
@@ -1511,6 +1592,32 @@ module Axi4PeripheralTop (
     .io_output_PWDATA                      (io_apbSlave_2_logic_io_output_PWDATA[31:0]                                                   ), //o
     .io_output_PRDATA                      (io_apbSlave_2_PRDATA[31:0]                                                                   ), //i
     .io_output_PSLVERROR                   (io_apbSlave_2_PSLVERROR                                                                      ), //i
+    .clk                                   (clk                                                                                          ), //i
+    .reset                                 (reset                                                                                        )  //i
+  );
+  Axi4PeripheralBmbToApb3Bridge io_apbSlave_3_logic (
+    .io_input_cmd_valid                    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
+    .io_input_cmd_ready                    (io_apbSlave_3_logic_io_input_cmd_ready                                                       ), //o
+    .io_input_cmd_payload_last             (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last                  ), //i
+    .io_input_cmd_payload_fragment_opcode  (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode       ), //i
+    .io_input_cmd_payload_fragment_address (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address[11:0]), //i
+    .io_input_cmd_payload_fragment_length  (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length[1:0]  ), //i
+    .io_input_cmd_payload_fragment_data    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data[31:0]   ), //i
+    .io_input_cmd_payload_fragment_context (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context[2:0] ), //i
+    .io_input_rsp_valid                    (io_apbSlave_3_logic_io_input_rsp_valid                                                       ), //o
+    .io_input_rsp_ready                    (io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready                         ), //i
+    .io_input_rsp_payload_last             (io_apbSlave_3_logic_io_input_rsp_payload_last                                                ), //o
+    .io_input_rsp_payload_fragment_opcode  (io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode                                     ), //o
+    .io_input_rsp_payload_fragment_data    (io_apbSlave_3_logic_io_input_rsp_payload_fragment_data[31:0]                                 ), //o
+    .io_input_rsp_payload_fragment_context (io_apbSlave_3_logic_io_input_rsp_payload_fragment_context[2:0]                               ), //o
+    .io_output_PADDR                       (io_apbSlave_3_logic_io_output_PADDR[11:0]                                                    ), //o
+    .io_output_PSEL                        (io_apbSlave_3_logic_io_output_PSEL                                                           ), //o
+    .io_output_PENABLE                     (io_apbSlave_3_logic_io_output_PENABLE                                                        ), //o
+    .io_output_PREADY                      (io_apbSlave_3_PREADY                                                                         ), //i
+    .io_output_PWRITE                      (io_apbSlave_3_logic_io_output_PWRITE                                                         ), //o
+    .io_output_PWDATA                      (io_apbSlave_3_logic_io_output_PWDATA[31:0]                                                   ), //o
+    .io_output_PRDATA                      (io_apbSlave_3_PRDATA[31:0]                                                                   ), //i
+    .io_output_PSLVERROR                   (io_apbSlave_3_PSLVERROR                                                                      ), //i
     .clk                                   (clk                                                                                          ), //i
     .reset                                 (reset                                                                                        )  //i
   );
@@ -1540,32 +1647,6 @@ module Axi4PeripheralTop (
     .clk                                   (clk                                                                                          ), //i
     .reset                                 (reset                                                                                        )  //i
   );
-  Axi4PeripheralBmbToApb3Bridge io_apbSlave_1_logic (
-    .io_input_cmd_valid                    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
-    .io_input_cmd_ready                    (io_apbSlave_1_logic_io_input_cmd_ready                                                       ), //o
-    .io_input_cmd_payload_last             (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last                  ), //i
-    .io_input_cmd_payload_fragment_opcode  (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode       ), //i
-    .io_input_cmd_payload_fragment_address (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address[11:0]), //i
-    .io_input_cmd_payload_fragment_length  (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length[1:0]  ), //i
-    .io_input_cmd_payload_fragment_data    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data[31:0]   ), //i
-    .io_input_cmd_payload_fragment_context (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context[2:0] ), //i
-    .io_input_rsp_valid                    (io_apbSlave_1_logic_io_input_rsp_valid                                                       ), //o
-    .io_input_rsp_ready                    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready                         ), //i
-    .io_input_rsp_payload_last             (io_apbSlave_1_logic_io_input_rsp_payload_last                                                ), //o
-    .io_input_rsp_payload_fragment_opcode  (io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode                                     ), //o
-    .io_input_rsp_payload_fragment_data    (io_apbSlave_1_logic_io_input_rsp_payload_fragment_data[31:0]                                 ), //o
-    .io_input_rsp_payload_fragment_context (io_apbSlave_1_logic_io_input_rsp_payload_fragment_context[2:0]                               ), //o
-    .io_output_PADDR                       (io_apbSlave_1_logic_io_output_PADDR[11:0]                                                    ), //o
-    .io_output_PSEL                        (io_apbSlave_1_logic_io_output_PSEL                                                           ), //o
-    .io_output_PENABLE                     (io_apbSlave_1_logic_io_output_PENABLE                                                        ), //o
-    .io_output_PREADY                      (io_apbSlave_1_PREADY                                                                         ), //i
-    .io_output_PWRITE                      (io_apbSlave_1_logic_io_output_PWRITE                                                         ), //o
-    .io_output_PWDATA                      (io_apbSlave_1_logic_io_output_PWDATA[31:0]                                                   ), //o
-    .io_output_PRDATA                      (io_apbSlave_1_PRDATA[31:0]                                                                   ), //i
-    .io_output_PSLVERROR                   (io_apbSlave_1_PSLVERROR                                                                      ), //i
-    .clk                                   (clk                                                                                          ), //i
-    .reset                                 (reset                                                                                        )  //i
-  );
   Axi4PeripheralBmbToApb3Bridge io_apbSlave_4_logic (
     .io_input_cmd_valid                    (io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
     .io_input_cmd_ready                    (io_apbSlave_4_logic_io_input_cmd_ready                                                       ), //o
@@ -1589,6 +1670,32 @@ module Axi4PeripheralTop (
     .io_output_PWDATA                      (io_apbSlave_4_logic_io_output_PWDATA[31:0]                                                   ), //o
     .io_output_PRDATA                      (io_apbSlave_4_PRDATA[31:0]                                                                   ), //i
     .io_output_PSLVERROR                   (io_apbSlave_4_PSLVERROR                                                                      ), //i
+    .clk                                   (clk                                                                                          ), //i
+    .reset                                 (reset                                                                                        )  //i
+  );
+  Axi4PeripheralBmbToApb3Bridge io_apbSlave_1_logic (
+    .io_input_cmd_valid                    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid                         ), //i
+    .io_input_cmd_ready                    (io_apbSlave_1_logic_io_input_cmd_ready                                                       ), //o
+    .io_input_cmd_payload_last             (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last                  ), //i
+    .io_input_cmd_payload_fragment_opcode  (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode       ), //i
+    .io_input_cmd_payload_fragment_address (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address[11:0]), //i
+    .io_input_cmd_payload_fragment_length  (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length[1:0]  ), //i
+    .io_input_cmd_payload_fragment_data    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data[31:0]   ), //i
+    .io_input_cmd_payload_fragment_context (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context[2:0] ), //i
+    .io_input_rsp_valid                    (io_apbSlave_1_logic_io_input_rsp_valid                                                       ), //o
+    .io_input_rsp_ready                    (io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready                         ), //i
+    .io_input_rsp_payload_last             (io_apbSlave_1_logic_io_input_rsp_payload_last                                                ), //o
+    .io_input_rsp_payload_fragment_opcode  (io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode                                     ), //o
+    .io_input_rsp_payload_fragment_data    (io_apbSlave_1_logic_io_input_rsp_payload_fragment_data[31:0]                                 ), //o
+    .io_input_rsp_payload_fragment_context (io_apbSlave_1_logic_io_input_rsp_payload_fragment_context[2:0]                               ), //o
+    .io_output_PADDR                       (io_apbSlave_1_logic_io_output_PADDR[11:0]                                                    ), //o
+    .io_output_PSEL                        (io_apbSlave_1_logic_io_output_PSEL                                                           ), //o
+    .io_output_PENABLE                     (io_apbSlave_1_logic_io_output_PENABLE                                                        ), //o
+    .io_output_PREADY                      (io_apbSlave_1_PREADY                                                                         ), //i
+    .io_output_PWRITE                      (io_apbSlave_1_logic_io_output_PWRITE                                                         ), //o
+    .io_output_PWDATA                      (io_apbSlave_1_logic_io_output_PWDATA[31:0]                                                   ), //o
+    .io_output_PRDATA                      (io_apbSlave_1_PRDATA[31:0]                                                                   ), //i
+    .io_output_PSLVERROR                   (io_apbSlave_1_PSLVERROR                                                                      ), //i
     .clk                                   (clk                                                                                          ), //i
     .reset                                 (reset                                                                                        )  //i
   );
@@ -1679,6 +1786,7 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_rsp_payload_fragment_data = bmbPeripheral_bmb_decoder_io_input_rsp_payload_fragment_data;
   assign bmbPeripheral_bmb_rsp_payload_fragment_context = bmbPeripheral_bmb_decoder_io_input_rsp_payload_fragment_context;
   assign system_uart_0_io_txd = system_uart_0_io_logic_io_uart_txd;
+  assign system_uart_1_io_txd = system_uart_1_io_logic_io_uart_txd;
   assign system_i2c_0_io_sda_write = system_i2c_0_io_logic_io_i2c_sda_write;
   assign system_i2c_0_io_scl_write = system_i2c_0_io_logic_io_i2c_scl_write;
   assign system_i2c_1_io_sda_write = system_i2c_1_io_logic_io_i2c_sda_write;
@@ -1690,31 +1798,31 @@ module Axi4PeripheralTop (
   assign system_gpio_0_io_interrupts_2 = system_gpio_0_io_logic_io_interrupt[2];
   assign system_gpio_0_io_interrupts_3 = system_gpio_0_io_logic_io_interrupt[3];
   assign system_watchdog_logic_panics_0_source = system_watchdog_logic_logic_io_panics[0];
-  assign io_apbSlave_3_PADDR = io_apbSlave_3_logic_io_output_PADDR;
-  assign io_apbSlave_3_PSEL = io_apbSlave_3_logic_io_output_PSEL;
-  assign io_apbSlave_3_PENABLE = io_apbSlave_3_logic_io_output_PENABLE;
-  assign io_apbSlave_3_PWRITE = io_apbSlave_3_logic_io_output_PWRITE;
-  assign io_apbSlave_3_PWDATA = io_apbSlave_3_logic_io_output_PWDATA;
   assign io_apbSlave_2_PADDR = io_apbSlave_2_logic_io_output_PADDR;
   assign io_apbSlave_2_PSEL = io_apbSlave_2_logic_io_output_PSEL;
   assign io_apbSlave_2_PENABLE = io_apbSlave_2_logic_io_output_PENABLE;
   assign io_apbSlave_2_PWRITE = io_apbSlave_2_logic_io_output_PWRITE;
   assign io_apbSlave_2_PWDATA = io_apbSlave_2_logic_io_output_PWDATA;
+  assign io_apbSlave_3_PADDR = io_apbSlave_3_logic_io_output_PADDR;
+  assign io_apbSlave_3_PSEL = io_apbSlave_3_logic_io_output_PSEL;
+  assign io_apbSlave_3_PENABLE = io_apbSlave_3_logic_io_output_PENABLE;
+  assign io_apbSlave_3_PWRITE = io_apbSlave_3_logic_io_output_PWRITE;
+  assign io_apbSlave_3_PWDATA = io_apbSlave_3_logic_io_output_PWDATA;
   assign io_apbSlave_0_PADDR = io_apbSlave_0_logic_io_output_PADDR;
   assign io_apbSlave_0_PSEL = io_apbSlave_0_logic_io_output_PSEL;
   assign io_apbSlave_0_PENABLE = io_apbSlave_0_logic_io_output_PENABLE;
   assign io_apbSlave_0_PWRITE = io_apbSlave_0_logic_io_output_PWRITE;
   assign io_apbSlave_0_PWDATA = io_apbSlave_0_logic_io_output_PWDATA;
-  assign io_apbSlave_1_PADDR = io_apbSlave_1_logic_io_output_PADDR;
-  assign io_apbSlave_1_PSEL = io_apbSlave_1_logic_io_output_PSEL;
-  assign io_apbSlave_1_PENABLE = io_apbSlave_1_logic_io_output_PENABLE;
-  assign io_apbSlave_1_PWRITE = io_apbSlave_1_logic_io_output_PWRITE;
-  assign io_apbSlave_1_PWDATA = io_apbSlave_1_logic_io_output_PWDATA;
   assign io_apbSlave_4_PADDR = io_apbSlave_4_logic_io_output_PADDR;
   assign io_apbSlave_4_PSEL = io_apbSlave_4_logic_io_output_PSEL;
   assign io_apbSlave_4_PENABLE = io_apbSlave_4_logic_io_output_PENABLE;
   assign io_apbSlave_4_PWRITE = io_apbSlave_4_logic_io_output_PWRITE;
   assign io_apbSlave_4_PWDATA = io_apbSlave_4_logic_io_output_PWDATA;
+  assign io_apbSlave_1_PADDR = io_apbSlave_1_logic_io_output_PADDR;
+  assign io_apbSlave_1_PSEL = io_apbSlave_1_logic_io_output_PSEL;
+  assign io_apbSlave_1_PENABLE = io_apbSlave_1_logic_io_output_PENABLE;
+  assign io_apbSlave_1_PWRITE = io_apbSlave_1_logic_io_output_PWRITE;
+  assign io_apbSlave_1_PWDATA = io_apbSlave_1_logic_io_output_PWDATA;
   assign system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_fire = (system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid && system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_ready);
   assign system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = (! system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid);
   assign system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid = system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid;
@@ -1733,6 +1841,24 @@ module Axi4PeripheralTop (
   assign system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   assign system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign system_uart_0_io_interrupt = system_uart_0_io_logic_system_uart_0_io_interrupt_source;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_fire = (system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid && system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_ready);
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = (! system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid);
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_valid = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_last = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_last;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_opcode = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_opcode;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_address = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_address;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_length = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_length;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_data = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_data;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_payload_fragment_context = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_context;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_ready = system_uart_1_io_logic_io_bus_cmd_ready;
+  assign _zz_io_bus_rsp_ready_1 = (! _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1);
+  assign _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_uart_1_io_interrupt = system_uart_1_io_logic_system_uart_1_io_interrupt_source;
   assign system_spi_0_io_interrupt = system_spi_0_io_logic_system_spi_0_io_interrupt_source;
   assign system_spi_0_io_sclk_write = system_spi_0_io_logic_io_spi_sclk_write;
   assign system_spi_0_io_data_0_writeEnable = system_spi_0_io_logic_io_spi_data_0_writeEnable;
@@ -1833,36 +1959,36 @@ module Axi4PeripheralTop (
   assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = system_watchdog_logic_logic_io_bus_rsp_payload_fragment_context;
   assign system_watchdog_logic_panics_0 = system_watchdog_logic_panics_0_source;
   assign system_watchdog_hardPanic_reset = system_watchdog_logic_logic_io_panics[1];
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_3_logic_io_input_cmd_ready;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_3_logic_io_input_rsp_valid;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_3_logic_io_input_rsp_payload_last;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_3_logic_io_input_rsp_payload_fragment_data;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_3_logic_io_input_rsp_payload_fragment_context;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_2_logic_io_input_cmd_ready;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_2_logic_io_input_rsp_valid;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_2_logic_io_input_rsp_payload_last;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_2_logic_io_input_rsp_payload_fragment_opcode;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_2_logic_io_input_rsp_payload_fragment_data;
   assign io_apbSlave_2_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_2_logic_io_input_rsp_payload_fragment_context;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_3_logic_io_input_cmd_ready;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_3_logic_io_input_rsp_valid;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_3_logic_io_input_rsp_payload_last;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_3_logic_io_input_rsp_payload_fragment_opcode;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_3_logic_io_input_rsp_payload_fragment_data;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_3_logic_io_input_rsp_payload_fragment_context;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_0_logic_io_input_cmd_ready;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_0_logic_io_input_rsp_valid;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_0_logic_io_input_rsp_payload_last;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_0_logic_io_input_rsp_payload_fragment_opcode;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_0_logic_io_input_rsp_payload_fragment_data;
   assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_0_logic_io_input_rsp_payload_fragment_context;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_1_logic_io_input_cmd_ready;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_1_logic_io_input_rsp_valid;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_1_logic_io_input_rsp_payload_last;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_1_logic_io_input_rsp_payload_fragment_data;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_1_logic_io_input_rsp_payload_fragment_context;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_4_logic_io_input_cmd_ready;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_4_logic_io_input_rsp_valid;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_4_logic_io_input_rsp_payload_last;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_4_logic_io_input_rsp_payload_fragment_opcode;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_4_logic_io_input_rsp_payload_fragment_data;
   assign io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_4_logic_io_input_rsp_payload_fragment_context;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready = io_apbSlave_1_logic_io_input_cmd_ready;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid = io_apbSlave_1_logic_io_input_rsp_valid;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last = io_apbSlave_1_logic_io_input_rsp_payload_last;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode = io_apbSlave_1_logic_io_input_rsp_payload_fragment_opcode;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data = io_apbSlave_1_logic_io_input_rsp_payload_fragment_data;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context = io_apbSlave_1_logic_io_input_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid = bmbPeripheral_bmb_decoder_io_outputs_0_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready = bmbPeripheral_bmb_decoder_io_outputs_0_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last = bmbPeripheral_bmb_decoder_io_outputs_0_cmd_payload_last;
@@ -1893,20 +2019,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_1 = bmbPeripheral_bmb_decoder_io_outputs_1_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_1 = bmbPeripheral_bmb_decoder_io_outputs_1_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_1 = bmbPeripheral_bmb_decoder_io_outputs_1_cmd_payload_fragment_context;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_1;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_1;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_1;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_1;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_1[11:0];
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_1;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_1;
-  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_1;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_1 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_1;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_1;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_1;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_1;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_1[5:0];
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_1;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_1;
+  assign system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_1;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_1 = system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_2 = bmbPeripheral_bmb_decoder_io_outputs_2_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_2 = bmbPeripheral_bmb_decoder_io_outputs_2_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_2 = bmbPeripheral_bmb_decoder_io_outputs_2_cmd_payload_last;
@@ -1915,20 +2041,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_2 = bmbPeripheral_bmb_decoder_io_outputs_2_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_2 = bmbPeripheral_bmb_decoder_io_outputs_2_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_2 = bmbPeripheral_bmb_decoder_io_outputs_2_cmd_payload_fragment_context;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_2;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_2;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_2;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_2;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_2[11:0];
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_2;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_2;
-  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_2;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_2 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_2;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_2;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_2;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_2;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_2[11:0];
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_2;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_2;
+  assign system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_2;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_2 = system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_3 = bmbPeripheral_bmb_decoder_io_outputs_3_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_3 = bmbPeripheral_bmb_decoder_io_outputs_3_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_3 = bmbPeripheral_bmb_decoder_io_outputs_3_cmd_payload_last;
@@ -1937,20 +2063,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_3 = bmbPeripheral_bmb_decoder_io_outputs_3_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_3 = bmbPeripheral_bmb_decoder_io_outputs_3_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_3 = bmbPeripheral_bmb_decoder_io_outputs_3_cmd_payload_fragment_context;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_3;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_3;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_3;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_3;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_3[7:0];
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_3;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_3;
-  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_3;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_3 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_3;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_3;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_3;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_3;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_3[11:0];
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_3;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_3;
+  assign system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_3;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_3 = system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_4 = bmbPeripheral_bmb_decoder_io_outputs_4_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_4 = bmbPeripheral_bmb_decoder_io_outputs_4_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_4 = bmbPeripheral_bmb_decoder_io_outputs_4_cmd_payload_last;
@@ -1959,20 +2085,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_4 = bmbPeripheral_bmb_decoder_io_outputs_4_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_4 = bmbPeripheral_bmb_decoder_io_outputs_4_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_4 = bmbPeripheral_bmb_decoder_io_outputs_4_cmd_payload_fragment_context;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_4;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_4;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_4;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_4;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_4[7:0];
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_4;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_4;
-  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_4;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_4 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_4;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_4;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_4;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_4;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_4[7:0];
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_4;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_4;
+  assign system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_4;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_4 = system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_5 = bmbPeripheral_bmb_decoder_io_outputs_5_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_5 = bmbPeripheral_bmb_decoder_io_outputs_5_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_5 = bmbPeripheral_bmb_decoder_io_outputs_5_cmd_payload_last;
@@ -1981,20 +2107,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_5 = bmbPeripheral_bmb_decoder_io_outputs_5_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_5 = bmbPeripheral_bmb_decoder_io_outputs_5_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_5 = bmbPeripheral_bmb_decoder_io_outputs_5_cmd_payload_fragment_context;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_5;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_5;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_5;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_5;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_5[7:0];
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_5;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_5;
-  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_5;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_5 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_5;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_5;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_5;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_5;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_5[7:0];
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_5;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_5;
+  assign system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_5;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_5 = system_i2c_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_6 = bmbPeripheral_bmb_decoder_io_outputs_6_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_6 = bmbPeripheral_bmb_decoder_io_outputs_6_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_6 = bmbPeripheral_bmb_decoder_io_outputs_6_cmd_payload_last;
@@ -2003,20 +2129,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_6 = bmbPeripheral_bmb_decoder_io_outputs_6_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_6 = bmbPeripheral_bmb_decoder_io_outputs_6_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_6 = bmbPeripheral_bmb_decoder_io_outputs_6_cmd_payload_fragment_context;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_6;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_6;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_6;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_6;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_6[7:0];
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_6;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_6;
-  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_6;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_6 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_6;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_6;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_6;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_6;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_6[7:0];
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_6;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_6;
+  assign system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_6;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_6 = system_gpio_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_7 = bmbPeripheral_bmb_decoder_io_outputs_7_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_7 = bmbPeripheral_bmb_decoder_io_outputs_7_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_7 = bmbPeripheral_bmb_decoder_io_outputs_7_cmd_payload_last;
@@ -2025,20 +2151,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_7 = bmbPeripheral_bmb_decoder_io_outputs_7_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_7 = bmbPeripheral_bmb_decoder_io_outputs_7_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_7 = bmbPeripheral_bmb_decoder_io_outputs_7_cmd_payload_fragment_context;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_7;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_7;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_7;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_7;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_7[11:0];
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_7;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_7;
-  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_7;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_7 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_7;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_7;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_7;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_7;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_7[7:0];
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_7;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_7;
+  assign system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_7;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_7 = system_watchdog_logic_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_8 = bmbPeripheral_bmb_decoder_io_outputs_8_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_8 = bmbPeripheral_bmb_decoder_io_outputs_8_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_8 = bmbPeripheral_bmb_decoder_io_outputs_8_cmd_payload_last;
@@ -2069,20 +2195,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_9 = bmbPeripheral_bmb_decoder_io_outputs_9_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_9 = bmbPeripheral_bmb_decoder_io_outputs_9_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_9 = bmbPeripheral_bmb_decoder_io_outputs_9_cmd_payload_fragment_context;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_9;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_9;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_9;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_9;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_9[11:0];
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_9;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_9;
-  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_9;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_9 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_9;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_9;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_9;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_9;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_9[11:0];
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_9;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_9;
+  assign io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_9;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_9 = io_apbSlave_3_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_10 = bmbPeripheral_bmb_decoder_io_outputs_10_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_10 = bmbPeripheral_bmb_decoder_io_outputs_10_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_10 = bmbPeripheral_bmb_decoder_io_outputs_10_cmd_payload_last;
@@ -2091,20 +2217,20 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_10 = bmbPeripheral_bmb_decoder_io_outputs_10_cmd_payload_fragment_length;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_10 = bmbPeripheral_bmb_decoder_io_outputs_10_cmd_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_10 = bmbPeripheral_bmb_decoder_io_outputs_10_cmd_payload_fragment_context;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_10;
-  assign bmbPeripheral_bmb_withoutMask_cmd_ready_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
-  assign bmbPeripheral_bmb_withoutMask_rsp_valid_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_10;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_10;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_10;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_10[11:0];
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_10;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_10;
-  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_10;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
-  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_10 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_10;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_10;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_10;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_10;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_10[11:0];
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_10;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_10;
+  assign io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_10;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_10 = io_apbSlave_0_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   assign bmbPeripheral_bmb_withoutMask_cmd_valid_11 = bmbPeripheral_bmb_decoder_io_outputs_11_cmd_valid;
   assign bmbPeripheral_bmb_withoutMask_rsp_ready_11 = bmbPeripheral_bmb_decoder_io_outputs_11_rsp_ready;
   assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_11 = bmbPeripheral_bmb_decoder_io_outputs_11_cmd_payload_last;
@@ -2127,6 +2253,28 @@ module Axi4PeripheralTop (
   assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_11 = io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
   assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_11 = io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
   assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_11 = io_apbSlave_4_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
+  assign bmbPeripheral_bmb_withoutMask_cmd_valid_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_valid;
+  assign bmbPeripheral_bmb_withoutMask_rsp_ready_12 = bmbPeripheral_bmb_decoder_io_outputs_12_rsp_ready;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_last_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_last;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_address;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_length;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_12 = bmbPeripheral_bmb_decoder_io_outputs_12_cmd_payload_fragment_context;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid = bmbPeripheral_bmb_withoutMask_cmd_valid_12;
+  assign bmbPeripheral_bmb_withoutMask_cmd_ready_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready;
+  assign bmbPeripheral_bmb_withoutMask_rsp_valid_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready = bmbPeripheral_bmb_withoutMask_rsp_ready_12;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last = bmbPeripheral_bmb_withoutMask_cmd_payload_last_12;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_last_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_opcode_12;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_address_12[11:0];
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_length_12;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_data_12;
+  assign io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context = bmbPeripheral_bmb_withoutMask_cmd_payload_fragment_context_12;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_opcode_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_data_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data;
+  assign bmbPeripheral_bmb_withoutMask_rsp_payload_fragment_context_12 = io_apbSlave_1_input_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context;
   always @(posedge clk) begin
     if(reset) begin
       axi_aw_rValid <= 1'b0;
@@ -2136,6 +2284,8 @@ module Axi4PeripheralTop (
       _zz_axi_rvalid_1 <= 1'b0;
       system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
       _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1 <= 1'b0;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
+      _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1 <= 1'b0;
       system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
       system_spi_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
       system_i2c_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
@@ -2182,6 +2332,18 @@ module Axi4PeripheralTop (
       end
       if((_zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid && system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready)) begin
         _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1 <= 1'b0;
+      end
+      if(system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid) begin
+        system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b1;
+      end
+      if(system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_halfPipe_fire) begin
+        system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b0;
+      end
+      if(system_uart_1_io_logic_io_bus_rsp_valid) begin
+        _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1 <= 1'b1;
+      end
+      if((_zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid && system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_ready)) begin
+        _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_valid_1 <= 1'b0;
       end
       if(system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_valid) begin
         system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rValid <= 1'b1;
@@ -2251,6 +2413,20 @@ module Axi4PeripheralTop (
       _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode <= system_uart_0_io_logic_io_bus_rsp_payload_fragment_opcode;
       _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data <= system_uart_0_io_logic_io_bus_rsp_payload_fragment_data;
       _zz_system_uart_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context <= system_uart_0_io_logic_io_bus_rsp_payload_fragment_context;
+    end
+    if(system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready) begin
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_last <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_opcode <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_opcode;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_address <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_address;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_length <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_length;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_data <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_data;
+      system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_fragment_context <= system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_fragment_context;
+    end
+    if(_zz_io_bus_rsp_ready_1) begin
+      _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_last <= system_uart_1_io_logic_io_bus_rsp_payload_last;
+      _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_opcode <= system_uart_1_io_logic_io_bus_rsp_payload_fragment_opcode;
+      _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_data <= system_uart_1_io_logic_io_bus_rsp_payload_fragment_data;
+      _zz_system_uart_1_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_rsp_payload_fragment_context <= system_uart_1_io_logic_io_bus_rsp_payload_fragment_context;
     end
     if(system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_ready) begin
       system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_rData_last <= system_spi_0_io_ctrl_slaveModel_arbiterGen_oneToOne_arbiter_cmd_payload_last;
@@ -6555,7 +6731,7 @@ module Axi4PeripheralBmbSpiXdrMasterCtrl_1 (
     .clk                       (clk                                                                                             ), //i
     .reset                     (reset                                                                                           )  //i
   );
-  Axi4PeripheralStreamFifo_2 mapping_cmdLogic_streamUnbuffered_queueWithAvailability (
+  Axi4PeripheralStreamFifo_4 mapping_cmdLogic_streamUnbuffered_queueWithAvailability (
     .io_push_valid         (mapping_cmdLogic_streamUnbuffered_valid                                         ), //i
     .io_push_ready         (mapping_cmdLogic_streamUnbuffered_queueWithAvailability_io_push_ready           ), //o
     .io_push_payload_kind  (mapping_cmdLogic_streamUnbuffered_payload_kind                                  ), //i
@@ -6574,7 +6750,7 @@ module Axi4PeripheralBmbSpiXdrMasterCtrl_1 (
     .clk                   (clk                                                                             ), //i
     .reset                 (reset                                                                           )  //i
   );
-  Axi4PeripheralStreamFifo_3 ctrl_io_rsp_queueWithOccupancy (
+  Axi4PeripheralStreamFifo_5 ctrl_io_rsp_queueWithOccupancy (
     .io_push_valid        (ctrl_io_rsp_toStream_valid                             ), //i
     .io_push_ready        (ctrl_io_rsp_queueWithOccupancy_io_push_ready           ), //o
     .io_push_payload_data (ctrl_io_rsp_toStream_payload_data[7:0]                 ), //i
@@ -7034,7 +7210,7 @@ module Axi4PeripheralBmbSpiXdrMasterCtrl (
     .clk                       (clk                                                                                             ), //i
     .reset                     (reset                                                                                           )  //i
   );
-  Axi4PeripheralStreamFifo_2 mapping_cmdLogic_streamUnbuffered_queueWithAvailability (
+  Axi4PeripheralStreamFifo_4 mapping_cmdLogic_streamUnbuffered_queueWithAvailability (
     .io_push_valid         (mapping_cmdLogic_streamUnbuffered_valid                                         ), //i
     .io_push_ready         (mapping_cmdLogic_streamUnbuffered_queueWithAvailability_io_push_ready           ), //o
     .io_push_payload_kind  (mapping_cmdLogic_streamUnbuffered_payload_kind                                  ), //i
@@ -7053,7 +7229,7 @@ module Axi4PeripheralBmbSpiXdrMasterCtrl (
     .clk                   (clk                                                                             ), //i
     .reset                 (reset                                                                           )  //i
   );
-  Axi4PeripheralStreamFifo_3 ctrl_io_rsp_queueWithOccupancy (
+  Axi4PeripheralStreamFifo_5 ctrl_io_rsp_queueWithOccupancy (
     .io_push_valid        (ctrl_io_rsp_toStream_valid                             ), //i
     .io_push_ready        (ctrl_io_rsp_queueWithOccupancy_io_push_ready           ), //o
     .io_push_payload_data (ctrl_io_rsp_toStream_payload_data[7:0]                 ), //i
@@ -7334,6 +7510,498 @@ module Axi4PeripheralBmbSpiXdrMasterCtrl (
       default : begin
       end
     endcase
+  end
+
+
+endmodule
+
+module Axi4PeripheralBmbUartCtrl_1 (
+  input  wire          io_bus_cmd_valid,
+  output wire          io_bus_cmd_ready,
+  input  wire          io_bus_cmd_payload_last,
+  input  wire [0:0]    io_bus_cmd_payload_fragment_opcode,
+  input  wire [5:0]    io_bus_cmd_payload_fragment_address,
+  input  wire [1:0]    io_bus_cmd_payload_fragment_length,
+  input  wire [31:0]   io_bus_cmd_payload_fragment_data,
+  input  wire [2:0]    io_bus_cmd_payload_fragment_context,
+  output wire          io_bus_rsp_valid,
+  input  wire          io_bus_rsp_ready,
+  output wire          io_bus_rsp_payload_last,
+  output wire [0:0]    io_bus_rsp_payload_fragment_opcode,
+  output wire [31:0]   io_bus_rsp_payload_fragment_data,
+  output wire [2:0]    io_bus_rsp_payload_fragment_context,
+  output wire          io_uart_txd,
+  input  wire          io_uart_rxd,
+  output wire          system_uart_1_io_interrupt_source,
+  input  wire          clk,
+  input  wire          reset
+);
+  localparam Axi4PeripheralUartStopType_ONE = 1'd0;
+  localparam Axi4PeripheralUartStopType_TWO = 1'd1;
+  localparam Axi4PeripheralUartParityType_NONE = 2'd0;
+  localparam Axi4PeripheralUartParityType_EVEN = 2'd1;
+  localparam Axi4PeripheralUartParityType_ODD = 2'd2;
+
+  reg                 uartCtrl_io_read_queueWithOccupancy_io_pop_ready;
+  wire                uartCtrl_io_write_ready;
+  wire                uartCtrl_io_read_valid;
+  wire       [7:0]    uartCtrl_io_read_payload;
+  wire                uartCtrl_io_uart_txd;
+  wire                uartCtrl_io_readError;
+  wire                uartCtrl_io_readBreak;
+  wire                bridge_write_streamUnbuffered_queueWithOccupancy_io_push_ready;
+  wire                bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_valid;
+  wire       [7:0]    bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_payload;
+  wire       [7:0]    bridge_write_streamUnbuffered_queueWithOccupancy_io_occupancy;
+  wire       [7:0]    bridge_write_streamUnbuffered_queueWithOccupancy_io_availability;
+  wire                uartCtrl_io_read_queueWithOccupancy_io_push_ready;
+  wire                uartCtrl_io_read_queueWithOccupancy_io_pop_valid;
+  wire       [7:0]    uartCtrl_io_read_queueWithOccupancy_io_pop_payload;
+  wire       [7:0]    uartCtrl_io_read_queueWithOccupancy_io_occupancy;
+  wire       [7:0]    uartCtrl_io_read_queueWithOccupancy_io_availability;
+  wire       [0:0]    _zz_bridge_misc_readError;
+  wire       [0:0]    _zz_bridge_misc_readOverflowError;
+  wire       [0:0]    _zz_bridge_misc_breakDetected;
+  wire       [0:0]    _zz_bridge_misc_doBreak;
+  wire       [0:0]    _zz_bridge_misc_doBreak_1;
+  wire       [7:0]    _zz_busCtrl_rsp_payload_fragment_data;
+  wire                busCtrl_readErrorFlag;
+  wire                busCtrl_writeErrorFlag;
+  wire                busCtrl_readHaltTrigger;
+  wire                busCtrl_writeHaltTrigger;
+  wire                busCtrl_rsp_valid;
+  wire                busCtrl_rsp_ready;
+  wire                busCtrl_rsp_payload_last;
+  reg        [0:0]    busCtrl_rsp_payload_fragment_opcode;
+  reg        [31:0]   busCtrl_rsp_payload_fragment_data;
+  wire       [2:0]    busCtrl_rsp_payload_fragment_context;
+  wire                _zz_busCtrl_rsp_ready;
+  reg                 _zz_busCtrl_rsp_ready_1;
+  wire                _zz_io_bus_rsp_valid;
+  reg                 _zz_io_bus_rsp_valid_1;
+  reg                 _zz_io_bus_rsp_payload_last;
+  reg        [0:0]    _zz_io_bus_rsp_payload_fragment_opcode;
+  reg        [31:0]   _zz_io_bus_rsp_payload_fragment_data;
+  reg        [2:0]    _zz_io_bus_rsp_payload_fragment_context;
+  wire                when_Stream_l375;
+  wire                busCtrl_askWrite;
+  wire                busCtrl_askRead;
+  wire                io_bus_cmd_fire;
+  wire                busCtrl_doWrite;
+  wire                busCtrl_doRead;
+  wire                when_BmbSlaveFactory_l33;
+  wire                when_BmbSlaveFactory_l35;
+  wire                bridge_busCtrlWrapped_readErrorFlag;
+  wire                bridge_busCtrlWrapped_writeErrorFlag;
+  reg        [2:0]    bridge_uartConfigReg_frame_dataLength;
+  reg        [0:0]    bridge_uartConfigReg_frame_stop;
+  reg        [1:0]    bridge_uartConfigReg_frame_parity;
+  reg        [19:0]   bridge_uartConfigReg_clockDivider;
+  reg                 _zz_bridge_write_streamUnbuffered_valid;
+  wire                bridge_write_streamUnbuffered_valid;
+  wire                bridge_write_streamUnbuffered_ready;
+  wire       [7:0]    bridge_write_streamUnbuffered_payload;
+  reg                 bridge_read_streamBreaked_valid;
+  reg                 bridge_read_streamBreaked_ready;
+  wire       [7:0]    bridge_read_streamBreaked_payload;
+  reg                 bridge_interruptCtrl_writeIntEnable;
+  reg                 bridge_interruptCtrl_readIntEnable;
+  wire                bridge_interruptCtrl_readInt;
+  wire                bridge_interruptCtrl_writeInt;
+  wire                bridge_interruptCtrl_interrupt;
+  reg                 bridge_misc_readError;
+  reg                 when_BusSlaveFactory_l341;
+  wire                when_BusSlaveFactory_l347;
+  reg                 bridge_misc_readOverflowError;
+  reg                 when_BusSlaveFactory_l341_1;
+  wire                when_BusSlaveFactory_l347_1;
+  wire                uartCtrl_io_read_isStall;
+  reg                 bridge_misc_breakDetected;
+  reg                 uartCtrl_io_readBreak_regNext;
+  wire                when_UartCtrl_l155;
+  reg                 when_BusSlaveFactory_l341_2;
+  wire                when_BusSlaveFactory_l347_2;
+  reg                 bridge_misc_doBreak;
+  reg                 when_BusSlaveFactory_l377;
+  wire                when_BusSlaveFactory_l379;
+  reg                 when_BusSlaveFactory_l341_3;
+  wire                when_BusSlaveFactory_l347_3;
+  wire       [1:0]    _zz_bridge_uartConfigReg_frame_parity;
+  wire       [0:0]    _zz_bridge_uartConfigReg_frame_stop;
+  wire                when_BmbSlaveFactory_l77;
+  `ifndef SYNTHESIS
+  reg [23:0] bridge_uartConfigReg_frame_stop_string;
+  reg [31:0] bridge_uartConfigReg_frame_parity_string;
+  reg [31:0] _zz_bridge_uartConfigReg_frame_parity_string;
+  reg [23:0] _zz_bridge_uartConfigReg_frame_stop_string;
+  `endif
+
+
+  assign _zz_bridge_misc_readError = 1'b0;
+  assign _zz_bridge_misc_readOverflowError = 1'b0;
+  assign _zz_bridge_misc_breakDetected = 1'b0;
+  assign _zz_bridge_misc_doBreak = 1'b1;
+  assign _zz_bridge_misc_doBreak_1 = 1'b0;
+  assign _zz_busCtrl_rsp_payload_fragment_data = (8'h80 - bridge_write_streamUnbuffered_queueWithOccupancy_io_occupancy);
+  Axi4PeripheralUartCtrl uartCtrl (
+    .io_config_frame_dataLength (bridge_uartConfigReg_frame_dataLength[2:0]                          ), //i
+    .io_config_frame_stop       (bridge_uartConfigReg_frame_stop                                     ), //i
+    .io_config_frame_parity     (bridge_uartConfigReg_frame_parity[1:0]                              ), //i
+    .io_config_clockDivider     (bridge_uartConfigReg_clockDivider[19:0]                             ), //i
+    .io_write_valid             (bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_valid       ), //i
+    .io_write_ready             (uartCtrl_io_write_ready                                             ), //o
+    .io_write_payload           (bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_payload[7:0]), //i
+    .io_read_valid              (uartCtrl_io_read_valid                                              ), //o
+    .io_read_ready              (uartCtrl_io_read_queueWithOccupancy_io_push_ready                   ), //i
+    .io_read_payload            (uartCtrl_io_read_payload[7:0]                                       ), //o
+    .io_uart_txd                (uartCtrl_io_uart_txd                                                ), //o
+    .io_uart_rxd                (io_uart_rxd                                                         ), //i
+    .io_readError               (uartCtrl_io_readError                                               ), //o
+    .io_writeBreak              (bridge_misc_doBreak                                                 ), //i
+    .io_readBreak               (uartCtrl_io_readBreak                                               ), //o
+    .clk                        (clk                                                                 ), //i
+    .reset                      (reset                                                               )  //i
+  );
+  Axi4PeripheralStreamFifo bridge_write_streamUnbuffered_queueWithOccupancy (
+    .io_push_valid   (bridge_write_streamUnbuffered_valid                                  ), //i
+    .io_push_ready   (bridge_write_streamUnbuffered_queueWithOccupancy_io_push_ready       ), //o
+    .io_push_payload (bridge_write_streamUnbuffered_payload[7:0]                           ), //i
+    .io_pop_valid    (bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_valid        ), //o
+    .io_pop_ready    (uartCtrl_io_write_ready                                              ), //i
+    .io_pop_payload  (bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_payload[7:0] ), //o
+    .io_flush        (1'b0                                                                 ), //i
+    .io_occupancy    (bridge_write_streamUnbuffered_queueWithOccupancy_io_occupancy[7:0]   ), //o
+    .io_availability (bridge_write_streamUnbuffered_queueWithOccupancy_io_availability[7:0]), //o
+    .clk             (clk                                                                  ), //i
+    .reset           (reset                                                                )  //i
+  );
+  Axi4PeripheralStreamFifo uartCtrl_io_read_queueWithOccupancy (
+    .io_push_valid   (uartCtrl_io_read_valid                                  ), //i
+    .io_push_ready   (uartCtrl_io_read_queueWithOccupancy_io_push_ready       ), //o
+    .io_push_payload (uartCtrl_io_read_payload[7:0]                           ), //i
+    .io_pop_valid    (uartCtrl_io_read_queueWithOccupancy_io_pop_valid        ), //o
+    .io_pop_ready    (uartCtrl_io_read_queueWithOccupancy_io_pop_ready        ), //i
+    .io_pop_payload  (uartCtrl_io_read_queueWithOccupancy_io_pop_payload[7:0] ), //o
+    .io_flush        (1'b0                                                    ), //i
+    .io_occupancy    (uartCtrl_io_read_queueWithOccupancy_io_occupancy[7:0]   ), //o
+    .io_availability (uartCtrl_io_read_queueWithOccupancy_io_availability[7:0]), //o
+    .clk             (clk                                                     ), //i
+    .reset           (reset                                                   )  //i
+  );
+  `ifndef SYNTHESIS
+  always @(*) begin
+    case(bridge_uartConfigReg_frame_stop)
+      Axi4PeripheralUartStopType_ONE : bridge_uartConfigReg_frame_stop_string = "ONE";
+      Axi4PeripheralUartStopType_TWO : bridge_uartConfigReg_frame_stop_string = "TWO";
+      default : bridge_uartConfigReg_frame_stop_string = "???";
+    endcase
+  end
+  always @(*) begin
+    case(bridge_uartConfigReg_frame_parity)
+      Axi4PeripheralUartParityType_NONE : bridge_uartConfigReg_frame_parity_string = "NONE";
+      Axi4PeripheralUartParityType_EVEN : bridge_uartConfigReg_frame_parity_string = "EVEN";
+      Axi4PeripheralUartParityType_ODD : bridge_uartConfigReg_frame_parity_string = "ODD ";
+      default : bridge_uartConfigReg_frame_parity_string = "????";
+    endcase
+  end
+  always @(*) begin
+    case(_zz_bridge_uartConfigReg_frame_parity)
+      Axi4PeripheralUartParityType_NONE : _zz_bridge_uartConfigReg_frame_parity_string = "NONE";
+      Axi4PeripheralUartParityType_EVEN : _zz_bridge_uartConfigReg_frame_parity_string = "EVEN";
+      Axi4PeripheralUartParityType_ODD : _zz_bridge_uartConfigReg_frame_parity_string = "ODD ";
+      default : _zz_bridge_uartConfigReg_frame_parity_string = "????";
+    endcase
+  end
+  always @(*) begin
+    case(_zz_bridge_uartConfigReg_frame_stop)
+      Axi4PeripheralUartStopType_ONE : _zz_bridge_uartConfigReg_frame_stop_string = "ONE";
+      Axi4PeripheralUartStopType_TWO : _zz_bridge_uartConfigReg_frame_stop_string = "TWO";
+      default : _zz_bridge_uartConfigReg_frame_stop_string = "???";
+    endcase
+  end
+  `endif
+
+  assign io_uart_txd = uartCtrl_io_uart_txd;
+  assign busCtrl_readErrorFlag = 1'b0;
+  assign busCtrl_writeErrorFlag = 1'b0;
+  assign busCtrl_readHaltTrigger = 1'b0;
+  assign busCtrl_writeHaltTrigger = 1'b0;
+  assign _zz_busCtrl_rsp_ready = (! (busCtrl_readHaltTrigger || busCtrl_writeHaltTrigger));
+  assign busCtrl_rsp_ready = (_zz_busCtrl_rsp_ready_1 && _zz_busCtrl_rsp_ready);
+  always @(*) begin
+    _zz_busCtrl_rsp_ready_1 = io_bus_rsp_ready;
+    if(when_Stream_l375) begin
+      _zz_busCtrl_rsp_ready_1 = 1'b1;
+    end
+  end
+
+  assign when_Stream_l375 = (! _zz_io_bus_rsp_valid);
+  assign _zz_io_bus_rsp_valid = _zz_io_bus_rsp_valid_1;
+  assign io_bus_rsp_valid = _zz_io_bus_rsp_valid;
+  assign io_bus_rsp_payload_last = _zz_io_bus_rsp_payload_last;
+  assign io_bus_rsp_payload_fragment_opcode = _zz_io_bus_rsp_payload_fragment_opcode;
+  assign io_bus_rsp_payload_fragment_data = _zz_io_bus_rsp_payload_fragment_data;
+  assign io_bus_rsp_payload_fragment_context = _zz_io_bus_rsp_payload_fragment_context;
+  assign busCtrl_askWrite = (io_bus_cmd_valid && (io_bus_cmd_payload_fragment_opcode == 1'b1));
+  assign busCtrl_askRead = (io_bus_cmd_valid && (io_bus_cmd_payload_fragment_opcode == 1'b0));
+  assign io_bus_cmd_fire = (io_bus_cmd_valid && io_bus_cmd_ready);
+  assign busCtrl_doWrite = (io_bus_cmd_fire && (io_bus_cmd_payload_fragment_opcode == 1'b1));
+  assign busCtrl_doRead = (io_bus_cmd_fire && (io_bus_cmd_payload_fragment_opcode == 1'b0));
+  assign busCtrl_rsp_valid = io_bus_cmd_valid;
+  assign io_bus_cmd_ready = busCtrl_rsp_ready;
+  assign busCtrl_rsp_payload_last = 1'b1;
+  assign when_BmbSlaveFactory_l33 = (busCtrl_doWrite && busCtrl_writeErrorFlag);
+  always @(*) begin
+    if(when_BmbSlaveFactory_l33) begin
+      busCtrl_rsp_payload_fragment_opcode = 1'b1;
+    end else begin
+      if(when_BmbSlaveFactory_l35) begin
+        busCtrl_rsp_payload_fragment_opcode = 1'b1;
+      end else begin
+        busCtrl_rsp_payload_fragment_opcode = 1'b0;
+      end
+    end
+  end
+
+  assign when_BmbSlaveFactory_l35 = (busCtrl_doRead && busCtrl_readErrorFlag);
+  always @(*) begin
+    busCtrl_rsp_payload_fragment_data = 32'h0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h0 : begin
+        busCtrl_rsp_payload_fragment_data[16 : 16] = (bridge_read_streamBreaked_valid ^ 1'b0);
+        busCtrl_rsp_payload_fragment_data[7 : 0] = bridge_read_streamBreaked_payload;
+      end
+      6'h04 : begin
+        busCtrl_rsp_payload_fragment_data[23 : 16] = _zz_busCtrl_rsp_payload_fragment_data;
+        busCtrl_rsp_payload_fragment_data[15 : 15] = bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_valid;
+        busCtrl_rsp_payload_fragment_data[31 : 24] = uartCtrl_io_read_queueWithOccupancy_io_occupancy;
+        busCtrl_rsp_payload_fragment_data[0 : 0] = bridge_interruptCtrl_writeIntEnable;
+        busCtrl_rsp_payload_fragment_data[1 : 1] = bridge_interruptCtrl_readIntEnable;
+        busCtrl_rsp_payload_fragment_data[8 : 8] = bridge_interruptCtrl_writeInt;
+        busCtrl_rsp_payload_fragment_data[9 : 9] = bridge_interruptCtrl_readInt;
+      end
+      6'h10 : begin
+        busCtrl_rsp_payload_fragment_data[0 : 0] = bridge_misc_readError;
+        busCtrl_rsp_payload_fragment_data[1 : 1] = bridge_misc_readOverflowError;
+        busCtrl_rsp_payload_fragment_data[8 : 8] = uartCtrl_io_readBreak;
+        busCtrl_rsp_payload_fragment_data[9 : 9] = bridge_misc_breakDetected;
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign busCtrl_rsp_payload_fragment_context = io_bus_cmd_payload_fragment_context;
+  assign bridge_busCtrlWrapped_readErrorFlag = 1'b0;
+  assign bridge_busCtrlWrapped_writeErrorFlag = 1'b0;
+  always @(*) begin
+    _zz_bridge_write_streamUnbuffered_valid = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h0 : begin
+        if(busCtrl_doWrite) begin
+          _zz_bridge_write_streamUnbuffered_valid = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign bridge_write_streamUnbuffered_valid = _zz_bridge_write_streamUnbuffered_valid;
+  assign bridge_write_streamUnbuffered_payload = io_bus_cmd_payload_fragment_data[7 : 0];
+  assign bridge_write_streamUnbuffered_ready = bridge_write_streamUnbuffered_queueWithOccupancy_io_push_ready;
+  always @(*) begin
+    bridge_read_streamBreaked_valid = uartCtrl_io_read_queueWithOccupancy_io_pop_valid;
+    if(uartCtrl_io_readBreak) begin
+      bridge_read_streamBreaked_valid = 1'b0;
+    end
+  end
+
+  always @(*) begin
+    uartCtrl_io_read_queueWithOccupancy_io_pop_ready = bridge_read_streamBreaked_ready;
+    if(uartCtrl_io_readBreak) begin
+      uartCtrl_io_read_queueWithOccupancy_io_pop_ready = 1'b1;
+    end
+  end
+
+  assign bridge_read_streamBreaked_payload = uartCtrl_io_read_queueWithOccupancy_io_pop_payload;
+  always @(*) begin
+    bridge_read_streamBreaked_ready = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h0 : begin
+        if(busCtrl_doRead) begin
+          bridge_read_streamBreaked_ready = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign bridge_interruptCtrl_readInt = (bridge_interruptCtrl_readIntEnable && bridge_read_streamBreaked_valid);
+  assign bridge_interruptCtrl_writeInt = (bridge_interruptCtrl_writeIntEnable && (! bridge_write_streamUnbuffered_queueWithOccupancy_io_pop_valid));
+  assign bridge_interruptCtrl_interrupt = (bridge_interruptCtrl_readInt || bridge_interruptCtrl_writeInt);
+  always @(*) begin
+    when_BusSlaveFactory_l341 = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h10 : begin
+        if(busCtrl_doWrite) begin
+          when_BusSlaveFactory_l341 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347 = io_bus_cmd_payload_fragment_data[0];
+  always @(*) begin
+    when_BusSlaveFactory_l341_1 = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h10 : begin
+        if(busCtrl_doWrite) begin
+          when_BusSlaveFactory_l341_1 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_1 = io_bus_cmd_payload_fragment_data[1];
+  assign uartCtrl_io_read_isStall = (uartCtrl_io_read_valid && (! uartCtrl_io_read_queueWithOccupancy_io_push_ready));
+  assign when_UartCtrl_l155 = (uartCtrl_io_readBreak && (! uartCtrl_io_readBreak_regNext));
+  always @(*) begin
+    when_BusSlaveFactory_l341_2 = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h10 : begin
+        if(busCtrl_doWrite) begin
+          when_BusSlaveFactory_l341_2 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_2 = io_bus_cmd_payload_fragment_data[9];
+  always @(*) begin
+    when_BusSlaveFactory_l377 = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h10 : begin
+        if(busCtrl_doWrite) begin
+          when_BusSlaveFactory_l377 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l379 = io_bus_cmd_payload_fragment_data[10];
+  always @(*) begin
+    when_BusSlaveFactory_l341_3 = 1'b0;
+    case(io_bus_cmd_payload_fragment_address)
+      6'h10 : begin
+        if(busCtrl_doWrite) begin
+          when_BusSlaveFactory_l341_3 = 1'b1;
+        end
+      end
+      default : begin
+      end
+    endcase
+  end
+
+  assign when_BusSlaveFactory_l347_3 = io_bus_cmd_payload_fragment_data[11];
+  assign system_uart_1_io_interrupt_source = bridge_interruptCtrl_interrupt;
+  assign _zz_bridge_uartConfigReg_frame_parity = io_bus_cmd_payload_fragment_data[9 : 8];
+  assign _zz_bridge_uartConfigReg_frame_stop = io_bus_cmd_payload_fragment_data[16 : 16];
+  assign when_BmbSlaveFactory_l77 = ((io_bus_cmd_payload_fragment_address & (~ 6'h03)) == 6'h08);
+  always @(posedge clk) begin
+    if(reset) begin
+      _zz_io_bus_rsp_valid_1 <= 1'b0;
+      bridge_uartConfigReg_clockDivider <= 20'h0;
+      bridge_uartConfigReg_clockDivider <= 20'h000d8;
+      bridge_uartConfigReg_frame_dataLength <= 3'b111;
+      bridge_uartConfigReg_frame_parity <= Axi4PeripheralUartParityType_NONE;
+      bridge_uartConfigReg_frame_stop <= Axi4PeripheralUartStopType_ONE;
+      bridge_interruptCtrl_writeIntEnable <= 1'b0;
+      bridge_interruptCtrl_readIntEnable <= 1'b0;
+      bridge_misc_readError <= 1'b0;
+      bridge_misc_readOverflowError <= 1'b0;
+      bridge_misc_breakDetected <= 1'b0;
+      bridge_misc_doBreak <= 1'b0;
+    end else begin
+      if(_zz_busCtrl_rsp_ready_1) begin
+        _zz_io_bus_rsp_valid_1 <= (busCtrl_rsp_valid && _zz_busCtrl_rsp_ready);
+      end
+      if(when_BusSlaveFactory_l341) begin
+        if(when_BusSlaveFactory_l347) begin
+          bridge_misc_readError <= _zz_bridge_misc_readError[0];
+        end
+      end
+      if(uartCtrl_io_readError) begin
+        bridge_misc_readError <= 1'b1;
+      end
+      if(when_BusSlaveFactory_l341_1) begin
+        if(when_BusSlaveFactory_l347_1) begin
+          bridge_misc_readOverflowError <= _zz_bridge_misc_readOverflowError[0];
+        end
+      end
+      if(uartCtrl_io_read_isStall) begin
+        bridge_misc_readOverflowError <= 1'b1;
+      end
+      if(when_UartCtrl_l155) begin
+        bridge_misc_breakDetected <= 1'b1;
+      end
+      if(when_BusSlaveFactory_l341_2) begin
+        if(when_BusSlaveFactory_l347_2) begin
+          bridge_misc_breakDetected <= _zz_bridge_misc_breakDetected[0];
+        end
+      end
+      if(when_BusSlaveFactory_l377) begin
+        if(when_BusSlaveFactory_l379) begin
+          bridge_misc_doBreak <= _zz_bridge_misc_doBreak[0];
+        end
+      end
+      if(when_BusSlaveFactory_l341_3) begin
+        if(when_BusSlaveFactory_l347_3) begin
+          bridge_misc_doBreak <= _zz_bridge_misc_doBreak_1[0];
+        end
+      end
+      case(io_bus_cmd_payload_fragment_address)
+        6'h0c : begin
+          if(busCtrl_doWrite) begin
+            bridge_uartConfigReg_frame_dataLength <= io_bus_cmd_payload_fragment_data[2 : 0];
+            bridge_uartConfigReg_frame_parity <= _zz_bridge_uartConfigReg_frame_parity;
+            bridge_uartConfigReg_frame_stop <= _zz_bridge_uartConfigReg_frame_stop;
+          end
+        end
+        6'h04 : begin
+          if(busCtrl_doWrite) begin
+            bridge_interruptCtrl_writeIntEnable <= io_bus_cmd_payload_fragment_data[0];
+            bridge_interruptCtrl_readIntEnable <= io_bus_cmd_payload_fragment_data[1];
+          end
+        end
+        default : begin
+        end
+      endcase
+      if(when_BmbSlaveFactory_l77) begin
+        if(busCtrl_doWrite) begin
+          bridge_uartConfigReg_clockDivider[19 : 0] <= io_bus_cmd_payload_fragment_data[19 : 0];
+        end
+      end
+    end
+  end
+
+  always @(posedge clk) begin
+    if(_zz_busCtrl_rsp_ready_1) begin
+      _zz_io_bus_rsp_payload_last <= busCtrl_rsp_payload_last;
+      _zz_io_bus_rsp_payload_fragment_opcode <= busCtrl_rsp_payload_fragment_opcode;
+      _zz_io_bus_rsp_payload_fragment_data <= busCtrl_rsp_payload_fragment_data;
+      _zz_io_bus_rsp_payload_fragment_context <= busCtrl_rsp_payload_fragment_context;
+    end
+    uartCtrl_io_readBreak_regNext <= uartCtrl_io_readBreak;
   end
 
 
@@ -8027,24 +8695,39 @@ module Axi4PeripheralBmbDecoder_1 (
   input  wire [0:0]    io_outputs_11_rsp_payload_fragment_opcode,
   input  wire [31:0]   io_outputs_11_rsp_payload_fragment_data,
   input  wire [2:0]    io_outputs_11_rsp_payload_fragment_context,
+  output reg           io_outputs_12_cmd_valid,
+  input  wire          io_outputs_12_cmd_ready,
+  output wire          io_outputs_12_cmd_payload_last,
+  output wire [0:0]    io_outputs_12_cmd_payload_fragment_opcode,
+  output wire [23:0]   io_outputs_12_cmd_payload_fragment_address,
+  output wire [1:0]    io_outputs_12_cmd_payload_fragment_length,
+  output wire [31:0]   io_outputs_12_cmd_payload_fragment_data,
+  output wire [3:0]    io_outputs_12_cmd_payload_fragment_mask,
+  output wire [2:0]    io_outputs_12_cmd_payload_fragment_context,
+  input  wire          io_outputs_12_rsp_valid,
+  output wire          io_outputs_12_rsp_ready,
+  input  wire          io_outputs_12_rsp_payload_last,
+  input  wire [0:0]    io_outputs_12_rsp_payload_fragment_opcode,
+  input  wire [31:0]   io_outputs_12_rsp_payload_fragment_data,
+  input  wire [2:0]    io_outputs_12_rsp_payload_fragment_context,
   input  wire          clk,
   input  wire          reset
 );
 
   wire       [0:0]    _zz_logic_noHitS0;
-  wire       [1:0]    _zz_logic_noHitS0_1;
+  wire       [2:0]    _zz_logic_noHitS0_1;
   wire                _zz_logic_input_ready;
   wire       [0:0]    _zz_logic_input_ready_1;
-  wire       [4:0]    _zz_logic_input_ready_2;
+  wire       [5:0]    _zz_logic_input_ready_2;
   wire       [6:0]    _zz_logic_rspPendingCounter;
   wire       [6:0]    _zz_logic_rspPendingCounter_1;
   wire       [0:0]    _zz_logic_rspPendingCounter_2;
   wire       [6:0]    _zz_logic_rspPendingCounter_3;
   wire       [0:0]    _zz_logic_rspPendingCounter_4;
   wire       [0:0]    _zz_logic_rspNoHitValid;
-  wire       [1:0]    _zz_logic_rspNoHitValid_1;
+  wire       [2:0]    _zz_logic_rspNoHitValid_1;
   wire       [0:0]    _zz_io_input_rsp_valid;
-  wire       [2:0]    _zz_io_input_rsp_valid_1;
+  wire       [3:0]    _zz_io_input_rsp_valid_1;
   reg                 _zz_io_input_rsp_payload_last_5;
   reg        [0:0]    _zz_io_input_rsp_payload_fragment_opcode;
   reg        [31:0]   _zz_io_input_rsp_payload_fragment_data;
@@ -8072,6 +8755,7 @@ module Axi4PeripheralBmbDecoder_1 (
   wire                logic_hitsS0_9;
   wire                logic_hitsS0_10;
   wire                logic_hitsS0_11;
+  wire                logic_hitsS0_12;
   wire                logic_noHitS0;
   wire                _zz_io_outputs_0_cmd_payload_last;
   wire                _zz_io_outputs_1_cmd_payload_last;
@@ -8085,6 +8769,7 @@ module Axi4PeripheralBmbDecoder_1 (
   wire                _zz_io_outputs_9_cmd_payload_last;
   wire                _zz_io_outputs_10_cmd_payload_last;
   wire                _zz_io_outputs_11_cmd_payload_last;
+  wire                _zz_io_outputs_12_cmd_payload_last;
   reg        [6:0]    logic_rspPendingCounter;
   wire                logic_input_fire;
   wire                io_input_rsp_fire;
@@ -8102,6 +8787,7 @@ module Axi4PeripheralBmbDecoder_1 (
   reg                 logic_rspHits_9;
   reg                 logic_rspHits_10;
   reg                 logic_rspHits_11;
+  reg                 logic_rspHits_12;
   wire                logic_rspPending;
   wire                logic_rspNoHitValid;
   reg                 logic_rspNoHit_doIt;
@@ -8120,17 +8806,17 @@ module Axi4PeripheralBmbDecoder_1 (
   assign _zz_logic_rspPendingCounter_1 = {6'd0, _zz_logic_rspPendingCounter_2};
   assign _zz_logic_rspPendingCounter_4 = (io_input_rsp_fire && io_input_rsp_payload_last);
   assign _zz_logic_rspPendingCounter_3 = {6'd0, _zz_logic_rspPendingCounter_4};
-  assign _zz_logic_noHitS0 = logic_hitsS0_2;
-  assign _zz_logic_noHitS0_1 = {logic_hitsS0_1,logic_hitsS0_0};
-  assign _zz_logic_input_ready = (logic_hitsS0_6 && io_outputs_6_cmd_ready);
-  assign _zz_logic_input_ready_1 = (logic_hitsS0_5 && io_outputs_5_cmd_ready);
-  assign _zz_logic_input_ready_2 = {(logic_hitsS0_4 && io_outputs_4_cmd_ready),{(logic_hitsS0_3 && io_outputs_3_cmd_ready),{(logic_hitsS0_2 && io_outputs_2_cmd_ready),{(logic_hitsS0_1 && io_outputs_1_cmd_ready),(logic_hitsS0_0 && io_outputs_0_cmd_ready)}}}};
-  assign _zz_logic_rspNoHitValid = logic_rspHits_2;
-  assign _zz_logic_rspNoHitValid_1 = {logic_rspHits_1,logic_rspHits_0};
-  assign _zz_io_input_rsp_valid = io_outputs_3_rsp_valid;
-  assign _zz_io_input_rsp_valid_1 = {io_outputs_2_rsp_valid,{io_outputs_1_rsp_valid,io_outputs_0_rsp_valid}};
-  assign _zz_logic_cmdWait = (((((logic_hitsS0_0 != logic_rspHits_0) || (logic_hitsS0_1 != logic_rspHits_1)) || (logic_hitsS0_2 != logic_rspHits_2)) || (logic_hitsS0_3 != logic_rspHits_3)) || (logic_hitsS0_4 != logic_rspHits_4));
-  assign _zz_logic_cmdWait_1 = (logic_hitsS0_5 != logic_rspHits_5);
+  assign _zz_logic_noHitS0 = logic_hitsS0_3;
+  assign _zz_logic_noHitS0_1 = {logic_hitsS0_2,{logic_hitsS0_1,logic_hitsS0_0}};
+  assign _zz_logic_input_ready = (logic_hitsS0_7 && io_outputs_7_cmd_ready);
+  assign _zz_logic_input_ready_1 = (logic_hitsS0_6 && io_outputs_6_cmd_ready);
+  assign _zz_logic_input_ready_2 = {(logic_hitsS0_5 && io_outputs_5_cmd_ready),{(logic_hitsS0_4 && io_outputs_4_cmd_ready),{(logic_hitsS0_3 && io_outputs_3_cmd_ready),{(logic_hitsS0_2 && io_outputs_2_cmd_ready),{(logic_hitsS0_1 && io_outputs_1_cmd_ready),(logic_hitsS0_0 && io_outputs_0_cmd_ready)}}}}};
+  assign _zz_logic_rspNoHitValid = logic_rspHits_3;
+  assign _zz_logic_rspNoHitValid_1 = {logic_rspHits_2,{logic_rspHits_1,logic_rspHits_0}};
+  assign _zz_io_input_rsp_valid = io_outputs_4_rsp_valid;
+  assign _zz_io_input_rsp_valid_1 = {io_outputs_3_rsp_valid,{io_outputs_2_rsp_valid,{io_outputs_1_rsp_valid,io_outputs_0_rsp_valid}}};
+  assign _zz_logic_cmdWait = ((((((logic_hitsS0_0 != logic_rspHits_0) || (logic_hitsS0_1 != logic_rspHits_1)) || (logic_hitsS0_2 != logic_rspHits_2)) || (logic_hitsS0_3 != logic_rspHits_3)) || (logic_hitsS0_4 != logic_rspHits_4)) || (logic_hitsS0_5 != logic_rspHits_5));
+  assign _zz_logic_cmdWait_1 = (logic_hitsS0_6 != logic_rspHits_6);
   always @(*) begin
     case(_zz_io_input_rsp_payload_last_4)
       4'b0000 : begin
@@ -8199,11 +8885,17 @@ module Axi4PeripheralBmbDecoder_1 (
         _zz_io_input_rsp_payload_fragment_data = io_outputs_10_rsp_payload_fragment_data;
         _zz_io_input_rsp_payload_fragment_context = io_outputs_10_rsp_payload_fragment_context;
       end
-      default : begin
+      4'b1011 : begin
         _zz_io_input_rsp_payload_last_5 = io_outputs_11_rsp_payload_last;
         _zz_io_input_rsp_payload_fragment_opcode = io_outputs_11_rsp_payload_fragment_opcode;
         _zz_io_input_rsp_payload_fragment_data = io_outputs_11_rsp_payload_fragment_data;
         _zz_io_input_rsp_payload_fragment_context = io_outputs_11_rsp_payload_fragment_context;
+      end
+      default : begin
+        _zz_io_input_rsp_payload_last_5 = io_outputs_12_rsp_payload_last;
+        _zz_io_input_rsp_payload_fragment_opcode = io_outputs_12_rsp_payload_fragment_opcode;
+        _zz_io_input_rsp_payload_fragment_data = io_outputs_12_rsp_payload_fragment_data;
+        _zz_io_input_rsp_payload_fragment_context = io_outputs_12_rsp_payload_fragment_context;
       end
     endcase
   end
@@ -8217,7 +8909,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign logic_input_payload_fragment_data = io_input_cmd_payload_fragment_data;
   assign logic_input_payload_fragment_mask = io_input_cmd_payload_fragment_mask;
   assign logic_input_payload_fragment_context = io_input_cmd_payload_fragment_context;
-  assign logic_noHitS0 = (! (|{logic_hitsS0_11,{logic_hitsS0_10,{logic_hitsS0_9,{logic_hitsS0_8,{logic_hitsS0_7,{logic_hitsS0_6,{logic_hitsS0_5,{logic_hitsS0_4,{logic_hitsS0_3,{_zz_logic_noHitS0,_zz_logic_noHitS0_1}}}}}}}}}}));
+  assign logic_noHitS0 = (! (|{logic_hitsS0_12,{logic_hitsS0_11,{logic_hitsS0_10,{logic_hitsS0_9,{logic_hitsS0_8,{logic_hitsS0_7,{logic_hitsS0_6,{logic_hitsS0_5,{logic_hitsS0_4,{_zz_logic_noHitS0,_zz_logic_noHitS0_1}}}}}}}}}}));
   assign logic_hitsS0_0 = ((io_input_cmd_payload_fragment_address & (~ 24'h00003f)) == 24'h010000);
   always @(*) begin
     io_outputs_0_cmd_valid = (logic_input_valid && logic_hitsS0_0);
@@ -8234,7 +8926,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_0_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_0_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_0_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_1 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h030000);
+  assign logic_hitsS0_1 = ((io_input_cmd_payload_fragment_address & (~ 24'h00003f)) == 24'h011000);
   always @(*) begin
     io_outputs_1_cmd_valid = (logic_input_valid && logic_hitsS0_1);
     if(logic_cmdWait) begin
@@ -8250,7 +8942,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_1_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_1_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_1_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_2 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h031000);
+  assign logic_hitsS0_2 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h030000);
   always @(*) begin
     io_outputs_2_cmd_valid = (logic_input_valid && logic_hitsS0_2);
     if(logic_cmdWait) begin
@@ -8266,7 +8958,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_2_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_2_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_2_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_3 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h020000);
+  assign logic_hitsS0_3 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h031000);
   always @(*) begin
     io_outputs_3_cmd_valid = (logic_input_valid && logic_hitsS0_3);
     if(logic_cmdWait) begin
@@ -8282,7 +8974,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_3_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_3_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_3_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_4 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h021000);
+  assign logic_hitsS0_4 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h020000);
   always @(*) begin
     io_outputs_4_cmd_valid = (logic_input_valid && logic_hitsS0_4);
     if(logic_cmdWait) begin
@@ -8298,7 +8990,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_4_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_4_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_4_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_5 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h040000);
+  assign logic_hitsS0_5 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h021000);
   always @(*) begin
     io_outputs_5_cmd_valid = (logic_input_valid && logic_hitsS0_5);
     if(logic_cmdWait) begin
@@ -8314,7 +9006,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_5_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_5_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_5_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_6 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h050000);
+  assign logic_hitsS0_6 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h040000);
   always @(*) begin
     io_outputs_6_cmd_valid = (logic_input_valid && logic_hitsS0_6);
     if(logic_cmdWait) begin
@@ -8330,7 +9022,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_6_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_6_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_6_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_7 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h400000);
+  assign logic_hitsS0_7 = ((io_input_cmd_payload_fragment_address & (~ 24'h0000ff)) == 24'h050000);
   always @(*) begin
     io_outputs_7_cmd_valid = (logic_input_valid && logic_hitsS0_7);
     if(logic_cmdWait) begin
@@ -8362,7 +9054,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_8_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_8_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_8_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_9 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h100000);
+  assign logic_hitsS0_9 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h400000);
   always @(*) begin
     io_outputs_9_cmd_valid = (logic_input_valid && logic_hitsS0_9);
     if(logic_cmdWait) begin
@@ -8378,7 +9070,7 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_9_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_9_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_9_cmd_payload_fragment_context = logic_input_payload_fragment_context;
-  assign logic_hitsS0_10 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h200000);
+  assign logic_hitsS0_10 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h100000);
   always @(*) begin
     io_outputs_10_cmd_valid = (logic_input_valid && logic_hitsS0_10);
     if(logic_cmdWait) begin
@@ -8410,8 +9102,24 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_11_cmd_payload_fragment_data = logic_input_payload_fragment_data;
   assign io_outputs_11_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
   assign io_outputs_11_cmd_payload_fragment_context = logic_input_payload_fragment_context;
+  assign logic_hitsS0_12 = ((io_input_cmd_payload_fragment_address & (~ 24'h000fff)) == 24'h200000);
   always @(*) begin
-    logic_input_ready = ((|{(logic_hitsS0_11 && io_outputs_11_cmd_ready),{(logic_hitsS0_10 && io_outputs_10_cmd_ready),{(logic_hitsS0_9 && io_outputs_9_cmd_ready),{(logic_hitsS0_8 && io_outputs_8_cmd_ready),{(logic_hitsS0_7 && io_outputs_7_cmd_ready),{_zz_logic_input_ready,{_zz_logic_input_ready_1,_zz_logic_input_ready_2}}}}}}}) || logic_noHitS0);
+    io_outputs_12_cmd_valid = (logic_input_valid && logic_hitsS0_12);
+    if(logic_cmdWait) begin
+      io_outputs_12_cmd_valid = 1'b0;
+    end
+  end
+
+  assign _zz_io_outputs_12_cmd_payload_last = logic_input_payload_last;
+  assign io_outputs_12_cmd_payload_last = _zz_io_outputs_12_cmd_payload_last;
+  assign io_outputs_12_cmd_payload_fragment_opcode = logic_input_payload_fragment_opcode;
+  assign io_outputs_12_cmd_payload_fragment_address = logic_input_payload_fragment_address;
+  assign io_outputs_12_cmd_payload_fragment_length = logic_input_payload_fragment_length;
+  assign io_outputs_12_cmd_payload_fragment_data = logic_input_payload_fragment_data;
+  assign io_outputs_12_cmd_payload_fragment_mask = logic_input_payload_fragment_mask;
+  assign io_outputs_12_cmd_payload_fragment_context = logic_input_payload_fragment_context;
+  always @(*) begin
+    logic_input_ready = ((|{(logic_hitsS0_12 && io_outputs_12_cmd_ready),{(logic_hitsS0_11 && io_outputs_11_cmd_ready),{(logic_hitsS0_10 && io_outputs_10_cmd_ready),{(logic_hitsS0_9 && io_outputs_9_cmd_ready),{(logic_hitsS0_8 && io_outputs_8_cmd_ready),{_zz_logic_input_ready,{_zz_logic_input_ready_1,_zz_logic_input_ready_2}}}}}}}) || logic_noHitS0);
     if(logic_cmdWait) begin
       logic_input_ready = 1'b0;
     end
@@ -8421,11 +9129,11 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_input_rsp_fire = (io_input_rsp_valid && io_input_rsp_ready);
   assign when_BmbDecoder_l56 = (logic_input_valid && (! logic_cmdWait));
   assign logic_rspPending = (logic_rspPendingCounter != 7'h0);
-  assign logic_rspNoHitValid = (! (|{logic_rspHits_11,{logic_rspHits_10,{logic_rspHits_9,{logic_rspHits_8,{logic_rspHits_7,{logic_rspHits_6,{logic_rspHits_5,{logic_rspHits_4,{logic_rspHits_3,{_zz_logic_rspNoHitValid,_zz_logic_rspNoHitValid_1}}}}}}}}}}));
+  assign logic_rspNoHitValid = (! (|{logic_rspHits_12,{logic_rspHits_11,{logic_rspHits_10,{logic_rspHits_9,{logic_rspHits_8,{logic_rspHits_7,{logic_rspHits_6,{logic_rspHits_5,{logic_rspHits_4,{_zz_logic_rspNoHitValid,_zz_logic_rspNoHitValid_1}}}}}}}}}}));
   assign when_BmbDecoder_l60 = (io_input_rsp_fire && io_input_rsp_payload_last);
   assign when_BmbDecoder_l60_1 = ((logic_input_fire && logic_noHitS0) && logic_input_payload_last);
   always @(*) begin
-    io_input_rsp_valid = ((|{io_outputs_11_rsp_valid,{io_outputs_10_rsp_valid,{io_outputs_9_rsp_valid,{io_outputs_8_rsp_valid,{io_outputs_7_rsp_valid,{io_outputs_6_rsp_valid,{io_outputs_5_rsp_valid,{io_outputs_4_rsp_valid,{_zz_io_input_rsp_valid,_zz_io_input_rsp_valid_1}}}}}}}}}) || (logic_rspPending && logic_rspNoHitValid));
+    io_input_rsp_valid = ((|{io_outputs_12_rsp_valid,{io_outputs_11_rsp_valid,{io_outputs_10_rsp_valid,{io_outputs_9_rsp_valid,{io_outputs_8_rsp_valid,{io_outputs_7_rsp_valid,{io_outputs_6_rsp_valid,{io_outputs_5_rsp_valid,{_zz_io_input_rsp_valid,_zz_io_input_rsp_valid_1}}}}}}}}}) || (logic_rspPending && logic_rspNoHitValid));
     if(logic_rspNoHit_doIt) begin
       io_input_rsp_valid = 1'b1;
     end
@@ -8433,8 +9141,8 @@ module Axi4PeripheralBmbDecoder_1 (
 
   assign _zz_io_input_rsp_payload_last = (((((logic_rspHits_1 || logic_rspHits_3) || logic_rspHits_5) || logic_rspHits_7) || logic_rspHits_9) || logic_rspHits_11);
   assign _zz_io_input_rsp_payload_last_1 = (((((logic_rspHits_2 || logic_rspHits_3) || logic_rspHits_6) || logic_rspHits_7) || logic_rspHits_10) || logic_rspHits_11);
-  assign _zz_io_input_rsp_payload_last_2 = (((logic_rspHits_4 || logic_rspHits_5) || logic_rspHits_6) || logic_rspHits_7);
-  assign _zz_io_input_rsp_payload_last_3 = (((logic_rspHits_8 || logic_rspHits_9) || logic_rspHits_10) || logic_rspHits_11);
+  assign _zz_io_input_rsp_payload_last_2 = ((((logic_rspHits_4 || logic_rspHits_5) || logic_rspHits_6) || logic_rspHits_7) || logic_rspHits_12);
+  assign _zz_io_input_rsp_payload_last_3 = ((((logic_rspHits_8 || logic_rspHits_9) || logic_rspHits_10) || logic_rspHits_11) || logic_rspHits_12);
   assign _zz_io_input_rsp_payload_last_4 = {_zz_io_input_rsp_payload_last_3,{_zz_io_input_rsp_payload_last_2,{_zz_io_input_rsp_payload_last_1,_zz_io_input_rsp_payload_last}}};
   always @(*) begin
     io_input_rsp_payload_last = _zz_io_input_rsp_payload_last_5;
@@ -8470,7 +9178,8 @@ module Axi4PeripheralBmbDecoder_1 (
   assign io_outputs_9_rsp_ready = io_input_rsp_ready;
   assign io_outputs_10_rsp_ready = io_input_rsp_ready;
   assign io_outputs_11_rsp_ready = io_input_rsp_ready;
-  assign logic_cmdWait = ((logic_rspPending && ((((((((_zz_logic_cmdWait || _zz_logic_cmdWait_1) || (logic_hitsS0_6 != logic_rspHits_6)) || (logic_hitsS0_7 != logic_rspHits_7)) || (logic_hitsS0_8 != logic_rspHits_8)) || (logic_hitsS0_9 != logic_rspHits_9)) || (logic_hitsS0_10 != logic_rspHits_10)) || (logic_hitsS0_11 != logic_rspHits_11)) || logic_rspNoHitValid)) || (logic_rspPendingCounter == 7'h40));
+  assign io_outputs_12_rsp_ready = io_input_rsp_ready;
+  assign logic_cmdWait = ((logic_rspPending && ((((((((_zz_logic_cmdWait || _zz_logic_cmdWait_1) || (logic_hitsS0_7 != logic_rspHits_7)) || (logic_hitsS0_8 != logic_rspHits_8)) || (logic_hitsS0_9 != logic_rspHits_9)) || (logic_hitsS0_10 != logic_rspHits_10)) || (logic_hitsS0_11 != logic_rspHits_11)) || (logic_hitsS0_12 != logic_rspHits_12)) || logic_rspNoHitValid)) || (logic_rspPendingCounter == 7'h40));
   always @(posedge clk) begin
     if(reset) begin
       logic_rspPendingCounter <= 7'h0;
@@ -8500,6 +9209,7 @@ module Axi4PeripheralBmbDecoder_1 (
       logic_rspHits_9 <= logic_hitsS0_9;
       logic_rspHits_10 <= logic_hitsS0_10;
       logic_rspHits_11 <= logic_hitsS0_11;
+      logic_rspHits_12 <= logic_hitsS0_12;
     end
     if(logic_input_fire) begin
       logic_rspNoHit_singleBeatRsp <= (logic_input_payload_fragment_opcode == 1'b1);
@@ -9259,13 +9969,13 @@ module Axi4PeripheralI2cSlave (
   `endif
 
 
-  (* keep_hierarchy = "TRUE" *) Axi4PeripheralBufferCC_1 io_i2c_scl_read_buffercc (
+  (* keep_hierarchy = "TRUE" *) Axi4PeripheralBufferCC_2 io_i2c_scl_read_buffercc (
     .io_dataIn  (io_i2c_scl_read                    ), //i
     .io_dataOut (io_i2c_scl_read_buffercc_io_dataOut), //o
     .clk        (clk                                ), //i
     .reset      (reset                              )  //i
   );
-  (* keep_hierarchy = "TRUE" *) Axi4PeripheralBufferCC_1 io_i2c_sda_read_buffercc (
+  (* keep_hierarchy = "TRUE" *) Axi4PeripheralBufferCC_2 io_i2c_sda_read_buffercc (
     .io_dataIn  (io_i2c_sda_read                    ), //i
     .io_dataOut (io_i2c_sda_read_buffercc_io_dataOut), //o
     .clk        (clk                                ), //i
@@ -9504,13 +10214,13 @@ module Axi4PeripheralI2cSlave (
 
 endmodule
 
-//Axi4PeripheralStreamFifo_5 replaced by Axi4PeripheralStreamFifo_3
+//Axi4PeripheralStreamFifo_7 replaced by Axi4PeripheralStreamFifo_5
 
-//Axi4PeripheralStreamFifo_4 replaced by Axi4PeripheralStreamFifo_2
+//Axi4PeripheralStreamFifo_6 replaced by Axi4PeripheralStreamFifo_4
 
 //Axi4PeripheralTopLevel_1 replaced by Axi4PeripheralTopLevel
 
-module Axi4PeripheralStreamFifo_3 (
+module Axi4PeripheralStreamFifo_5 (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire [7:0]    io_push_payload_data,
@@ -9664,7 +10374,7 @@ module Axi4PeripheralStreamFifo_3 (
 
 endmodule
 
-module Axi4PeripheralStreamFifo_2 (
+module Axi4PeripheralStreamFifo_4 (
   input  wire          io_push_valid,
   output wire          io_push_ready,
   input  wire          io_push_payload_kind,
@@ -10496,6 +11206,12 @@ module Axi4PeripheralTopLevel (
 
 endmodule
 
+//Axi4PeripheralStreamFifo_3 replaced by Axi4PeripheralStreamFifo
+
+//Axi4PeripheralStreamFifo_2 replaced by Axi4PeripheralStreamFifo
+
+//Axi4PeripheralUartCtrl_1 replaced by Axi4PeripheralUartCtrl
+
 //Axi4PeripheralStreamFifo_1 replaced by Axi4PeripheralStreamFifo
 
 module Axi4PeripheralStreamFifo (
@@ -10781,13 +11497,13 @@ module Axi4PeripheralUartCtrl (
 
 endmodule
 
-//Axi4PeripheralBufferCC_4 replaced by Axi4PeripheralBufferCC_1
+//Axi4PeripheralBufferCC_5 replaced by Axi4PeripheralBufferCC_2
 
-//Axi4PeripheralBufferCC_3 replaced by Axi4PeripheralBufferCC_1
+//Axi4PeripheralBufferCC_4 replaced by Axi4PeripheralBufferCC_2
 
-//Axi4PeripheralBufferCC_2 replaced by Axi4PeripheralBufferCC_1
+//Axi4PeripheralBufferCC_3 replaced by Axi4PeripheralBufferCC_2
 
-module Axi4PeripheralBufferCC_1 (
+module Axi4PeripheralBufferCC_2 (
   input  wire          io_dataIn,
   output wire          io_dataOut,
   input  wire          clk,
@@ -10810,6 +11526,10 @@ module Axi4PeripheralBufferCC_1 (
 
 
 endmodule
+
+//Axi4PeripheralUartCtrlRx_1 replaced by Axi4PeripheralUartCtrlRx
+
+//Axi4PeripheralUartCtrlTx_1 replaced by Axi4PeripheralUartCtrlTx
 
 module Axi4PeripheralUartCtrlRx (
   input  wire [2:0]    io_configFrame_dataLength,
@@ -11344,6 +12064,8 @@ module Axi4PeripheralUartCtrlTx (
 
 
 endmodule
+
+//Axi4PeripheralBufferCC_1 replaced by Axi4PeripheralBufferCC
 
 module Axi4PeripheralBufferCC (
   input  wire          io_dataIn,
