@@ -452,6 +452,12 @@
         <efxpt:comp_gpio name="system_uart_0_io_txd" gpio_def="GPIOR_165" mode="output" bus_name="" io_standard="3.3 V LVCMOS">
             <efxpt:output_config name="system_uart_0_io_txd" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="2" fastclk_name=""/>
         </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="system_uart_1_io_rxd" gpio_def="GPIOR_97" mode="input" bus_name="" io_standard="3.3 V LVCMOS">
+            <efxpt:input_config name="system_uart_1_io_rxd" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="system_uart_1_io_rxd_PULL_UP_ENA" dyn_delay_en_name="system_uart_1_io_rxd_DLY_ENA" dyn_delay_reset_name="system_uart_1_io_rxd_DLY_RST" dyn_delay_ctrl_name="system_uart_1_io_rxd_DLY_CTRL" clkmux_buf_name=""/>
+        </efxpt:comp_gpio>
+        <efxpt:comp_gpio name="system_uart_1_io_txd" gpio_def="GPIOR_99" mode="output" bus_name="" io_standard="3.3 V LVCMOS">
+            <efxpt:output_config name="system_uart_1_io_txd" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+        </efxpt:comp_gpio>
         <efxpt:global_unused_config state="input with weak pullup"/>
         <efxpt:bus name="hdmi_yuv_data" mode="output" msb="15" lsb="0"/>
         <efxpt:bus name="system_gpio_0_io" mode="inout" msb="3" lsb="0"/>
