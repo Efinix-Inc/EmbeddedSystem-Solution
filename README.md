@@ -50,7 +50,7 @@ It is compatible with both Titanium and Trion devices, ensuring flexibility and 
 | **Sensors** | [Sensors](docs/app/ug_sensors.md) | [sensor_PCF8523_rtc](docs/app/ug_sensors.md#rtcdemo-sensor_PCF8523_rtc) <br> [sensor_EMC1413_temp](docs/app/ug_sensors.md#sensor_EMC1413_temp) |
 | **Solutions** | [Solution](docs/app/ug_solution.md) | [cameraStreaming_HDMI](docs/app/ug_solution.md#camerastreaming_hdmi) <br> [cameraStreaming_ETH](docs/app/ug_solution.md#camerastreaming_eth) <br> [cameraCapture_mc](docs/app/ug_solution.md#cameracapture_mc) <br> [sd_bmpStreaming_HDMI](docs/app/ug_solution.md#sd_bmpstreaming_hdmi) |
 | **RTOS** | [FreeRTOS](docs/app/ug_freertos.md) | [iperf](docs/app/ug_freertos.md#freertosiperfdemo), [MQTT](docs/app/ug_freertos.md#freertosmqttplaintextdemo), [EchoServer](docs/app/ug_freertos.md#freertosechoserverdemo), [FAT](docs/app/ug_freertos.md#freertosfatdemo) |
-
+| **OpenAMP** | [OpenAMP](docs/app/ug_openamp.md) | [OpenAMP_Demo](docs/app/ug_openamp.md#OpenAMP_Demo) |
 
 ## Embedded System Solution Hardware Settings
 
