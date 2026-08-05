@@ -610,6 +610,7 @@ wire        userInterrupt_gpio1;
 wire        userInterrupt_gpio2;
 wire        userInterrupt_gpio3;
 wire        userInterrupt_uart;
+wire	    userInterrupt_uart1;
 wire        userInterrupt_i2c0;
 wire        userInterrupt_i2c1;
 wire        userInterrupt_spi0;
@@ -645,15 +646,15 @@ assign vision_dma_ctrl_interrupt    = | vision_dma_interrupts; // changed
 
 //Interrupts
 assign userInterruptA = userInterrupt_uart; 
-assign userInterruptB = userInterrupt_spi0;
-assign userInterruptC = userInterrupt_spi1; 
-assign userInterruptD = userInterrupt_i2c0; 
-assign userInterruptE = userInterrupt_i2c1; 
-assign userInterruptF = userInterrupt_gpio0; 
-assign userInterruptG = userInterrupt_gpio1; 
-assign userInterruptH = userInterrupt_watchdog;
-
-assign userInterruptI = 1'b0;                         
+assign userInterruptB = userInterrupt_uart1; 
+assign userInterruptC = userInterrupt_spi0; 
+assign userInterruptD = userInterrupt_spi1; 
+assign userInterruptE = userInterrupt_i2c0; 
+assign userInterruptF = userInterrupt_i2c1; 
+assign userInterruptG = userInterrupt_gpio0; 
+assign userInterruptH = userInterrupt_gpio1;
+assign userInterruptI = userInterrupt_watchdog;
+                        
 assign userInterruptJ = 1'b0;
 assign userInterruptK = 1'b0; 
 assign userInterruptL = 1'b0; 
@@ -2103,13 +2104,14 @@ EfxSapphireHpSoc_slb u_top_peripherals(
     .system_gpio_0_io_write                 ( system_gpio_0_io_write ),
     .system_gpio_0_io_writeEnable           ( system_gpio_0_io_writeEnable ),
     .userInterruptA                         ( userInterrupt_uart ),
-    .userInterruptB                         ( userInterrupt_spi0 ),
-    .userInterruptC                         ( userInterrupt_spi1 ),
-    .userInterruptD                         ( userInterrupt_i2c0 ),
-    .userInterruptE                         ( userInterrupt_i2c1 ),
-    .userInterruptF                         ( userInterrupt_gpio0 ),
-    .userInterruptG                         ( userInterrupt_gpio1 ),
-    .userInterruptH                         ( userInterrupt_watchdog ),
+    .userInterruptB                         ( userInterrupt_uart1 ), 
+    .userInterruptC                         ( userInterrupt_spi0 ),
+    .userInterruptD                         ( userInterrupt_spi1 ),
+    .userInterruptE                         ( userInterrupt_i2c0 ),
+    .userInterruptF                         ( userInterrupt_i2c1 ),
+    .userInterruptG                         ( userInterrupt_gpio0 ),
+    .userInterruptH                         ( userInterrupt_gpio1 ),
+    .userInterruptI                         ( userInterrupt_watchdog ),
     .axiA_awvalid                           ( gAXIS_m_awvalid[SLB*1 +: 1] ),
     .axiA_awready                           ( gAXIS_m_awready[SLB*1 +: 1] ),
     .axiA_awaddr                            ( gAXIS_m_awaddr[SLB*32 +: 32] ),
