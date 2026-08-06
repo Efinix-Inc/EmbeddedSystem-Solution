@@ -3,7 +3,7 @@
         "-o",
         "EfxSapphireHpSoc_slb",
         "--base_path",
-        "ip",
+        "C:\\Users\\Cai-YingTeh(i)\\.efinity\\project\\EmbeddedSystem-Solution\\ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -123,12 +123,17 @@
     },
     "output": {
         "external_script_Peripheral_Generator": [],
-        "external_source_source": [],
+        "external_source_source": [
+            "EfxSapphireHpSoc_slb\\EfxSapphireHpSoc_slb.v",
+            "EfxSapphireHpSoc_slb\\EfxSapphireHpSoc_slb_define.vh",
+            "EfxSapphireHpSoc_slb\\EfxSapphireHpSoc_slb_tmpl.vhd",
+            "EfxSapphireHpSoc_slb\\EfxSapphireHpSoc_slb_tmpl.v"
+        ],
         "external_script_PT_Configuration": [],
         "external_script_Peripheral_Post_Script": [],
         "external_script_Embedded_SW": []
     },
     "ooc_synthesis": {},
-    "sw_version": "2026.1.132.1.15",
-    "external_path_option": "RELATIVE_PATH"
+    "sw_version": "2025.2.288.4.15",
+    "generated_date": "2026-08-05T08:22:41.403389+00:00"
 }
