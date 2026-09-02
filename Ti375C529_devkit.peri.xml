@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.2.288.4.15" db_version="20261006" last_change_date="Tue Apr 21 17:00:27 2026" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
+<efxpt:design_db name="Ti375C529_devkit" device_def="Ti375C529" version="2025.2.288.4.15" db_version="20261006" last_change_date="Mon Aug 17 16:22:33 2026" xmlns:efxpt="http://www.efinixinc.com/peri_design_db" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.efinixinc.com/peri_design_db peri_design_db.xsd ">
     <efxpt:device_info>
         <efxpt:iobank_info>
             <efxpt:iobank name="2A" iostd="1.8 V LVCMOS" is_dyn_voltage="false" mode_sel_name="2A_MODE_SEL"/>
@@ -333,32 +333,32 @@
             <efxpt:input_config name="sd_cd_n" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_cd_n_PULL_UP_ENA" dyn_delay_en_name="sd_cd_n_DLY_ENA" dyn_delay_reset_name="sd_cd_n_DLY_RST" dyn_delay_ctrl_name="sd_cd_n_DLY_CTRL" clkmux_buf_name=""/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_clk" gpio_def="GPIOR_166" mode="output" bus_name="" io_standard="3.3 V LVCMOS">
-            <efxpt:output_config name="sd_clk_hi" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="2" fastclk_name=""/>
+            <efxpt:output_config name="sd_clk_hi" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_cmd" gpio_def="GPIOR_167" mode="inout" bus_name="" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_cmd_i" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_cmd_PULL_UP_ENA" dyn_delay_en_name="sd_cmd_DLY_ENA" dyn_delay_reset_name="sd_cmd_DLY_RST" dyn_delay_ctrl_name="sd_cmd_DLY_CTRL" clkmux_buf_name=""/>
-            <efxpt:output_config name="sd_cmd_o" name_ddio_lo="" register_option="none" clock_name="sd_base_clk" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
-            <efxpt:output_enable_config name="sd_cmd_oe" is_register="false" clock_name="sd_base_clk" is_clock_inverted="false" name_oen="sd_cmd_OEN"/>
+            <efxpt:output_config name="sd_cmd_o" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="sd_cmd_oe" is_register="true" clock_name="sd_base_clk" is_clock_inverted="true" name_oen="sd_cmd_OEN"/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_dat[0]" gpio_def="GPIOR_168" mode="inout" bus_name="sd_dat" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_dat_i[0]" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_dat_PULL_UP_ENA[0]" dyn_delay_en_name="sd_dat_DLY_ENA[0]" dyn_delay_reset_name="sd_dat_DLY_RST[0]" dyn_delay_ctrl_name="sd_dat_DLY_CTRL[0]" clkmux_buf_name=""/>
-            <efxpt:output_config name="sd_dat_o[0]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
-            <efxpt:output_enable_config name="sd_dat_oe[0]" is_register="false" clock_name="" is_clock_inverted="false" name_oen="sd_dat_OEN[0]"/>
+            <efxpt:output_config name="sd_dat_o[0]" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="sd_dat_oe[0]" is_register="true" clock_name="sd_base_clk" is_clock_inverted="true" name_oen="sd_dat_OEN[0]"/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_dat[1]" gpio_def="GPIOR_169" mode="inout" bus_name="sd_dat" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_dat_i[1]" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_dat_PULL_UP_ENA[1]" dyn_delay_en_name="sd_dat_DLY_ENA[1]" dyn_delay_reset_name="sd_dat_DLY_RST[1]" dyn_delay_ctrl_name="sd_dat_DLY_CTRL[1]" clkmux_buf_name=""/>
-            <efxpt:output_config name="sd_dat_o[1]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
-            <efxpt:output_enable_config name="sd_dat_oe[1]" is_register="false" clock_name="" is_clock_inverted="false" name_oen="sd_dat_OEN[1]"/>
+            <efxpt:output_config name="sd_dat_o[1]" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="sd_dat_oe[1]" is_register="true" clock_name="sd_base_clk" is_clock_inverted="true" name_oen="sd_dat_OEN[1]"/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_dat[2]" gpio_def="GPIOR_170" mode="inout" bus_name="sd_dat" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_dat_i[2]" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_dat_PULL_UP_ENA[2]" dyn_delay_en_name="sd_dat_DLY_ENA[2]" dyn_delay_reset_name="sd_dat_DLY_RST[2]" dyn_delay_ctrl_name="sd_dat_DLY_CTRL[2]" clkmux_buf_name=""/>
-            <efxpt:output_config name="sd_dat_o[2]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
-            <efxpt:output_enable_config name="sd_dat_oe[2]" is_register="false" clock_name="" is_clock_inverted="false" name_oen="sd_dat_OEN[2]"/>
+            <efxpt:output_config name="sd_dat_o[2]" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="sd_dat_oe[2]" is_register="true" clock_name="sd_base_clk" is_clock_inverted="true" name_oen="sd_dat_OEN[2]"/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_dat[3]" gpio_def="GPIOR_171" mode="inout" bus_name="sd_dat" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_dat_i[3]" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_dat_PULL_UP_ENA[3]" dyn_delay_en_name="sd_dat_DLY_ENA[3]" dyn_delay_reset_name="sd_dat_DLY_RST[3]" dyn_delay_ctrl_name="sd_dat_DLY_CTRL[3]" clkmux_buf_name=""/>
-            <efxpt:output_config name="sd_dat_o[3]" name_ddio_lo="" register_option="none" clock_name="" is_clock_inverted="false" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
-            <efxpt:output_enable_config name="sd_dat_oe[3]" is_register="false" clock_name="" is_clock_inverted="false" name_oen="sd_dat_OEN[3]"/>
+            <efxpt:output_config name="sd_dat_o[3]" name_ddio_lo="" register_option="register" clock_name="sd_base_clk" is_clock_inverted="true" is_slew_rate="false" tied_option="none" ddio_type="none" delay="0" is_serial="false" drive_strength="4" fastclk_name=""/>
+            <efxpt:output_enable_config name="sd_dat_oe[3]" is_register="true" clock_name="sd_base_clk" is_clock_inverted="true" name_oen="sd_dat_OEN[3]"/>
         </efxpt:comp_gpio>
         <efxpt:comp_gpio name="sd_wp" gpio_def="GPIOR_102" mode="input" bus_name="" io_standard="3.3 V LVCMOS">
             <efxpt:input_config name="sd_wp" name_ddio_lo="" conn_type="normal" is_register="false" clock_name="" is_clock_inverted="false" pull_option="none" is_schmitt_trigger="false" ddio_type="none" is_bus_hold="false" delay="0" is_serial="false" is_dyn_delay="false" fastclk_name="" pullup_ena_name="sd_wp_PULL_UP_ENA" dyn_delay_en_name="sd_wp_DLY_ENA" dyn_delay_reset_name="sd_wp_DLY_RST" dyn_delay_ctrl_name="sd_wp_DLY_CTRL" clkmux_buf_name=""/>
