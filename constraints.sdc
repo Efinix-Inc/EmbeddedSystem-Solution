@@ -50,11 +50,28 @@ set_clock_latency -source -setup 1.970 [get_ports {rgmii_rxc_phy}]
 set_clock_latency -source -hold 0.943 [get_ports {rgmii_rxc_phy}]
 
 # Exclusive Clock Group
-set_clock_groups -exclusive -group {cam_ck_CLKOUT} -group {io_usbClk} -group {core_clk} -group {mux_clk} -group {io_tseClk_90 io_tseClk} -group {io_memoryClk} -group {i_pixel_clk} -group {i_hdmi_clk_148p5MHz} -group {io_ddrMasters_0_clk} -group {sd_base_clk} -group {io_peripheralClk} -group {i_sys_clk_25mhz} -group {io_cfuClk} -group {jtagCtrl_tck}
-set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
-set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
-set_clock_groups -asynchronous -group sdio_base_clk -group sdio_base_clk_cal
-set_clock_groups -asynchronous -group sdio_base_clk -group io_peripheralClk
+set_clock_groups -exclusive -group {cam_ck_CLKOUT} \
+-group {io_usbClk} \
+-group {core_clk} \
+-group {mux_clk} \
+-group {io_tseClk_90 io_tseClk} \
+-group {io_memoryClk} \
+-group {i_pixel_clk} \
+-group {i_hdmi_clk_148p5MHz} \
+-group {io_ddrMasters_0_clk} \
+-group {sd_base_clk} \
+-group {io_peripheralClk} \
+-group {i_sys_clk_25mhz} \
+-group {io_cfuClk} \
+-group {jtagCtrl_tck} \
+-group {sdio_base_clk} \
+-group {sdio_base_clk_cal} \
+-group {clk_200m} \
+-group {clk_200m_cal}
+#set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
+#set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
+#set_clock_groups -asynchronous -group sdio_base_clk -group sdio_base_clk_cal
+#set_clock_groups -asynchronous -group sdio_base_clk -group io_peripheralClk
 
 # GPIO Constraints
 ####################

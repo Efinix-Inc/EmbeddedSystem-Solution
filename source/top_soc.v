@@ -1677,7 +1677,7 @@ wire                            emmc_dev_rst;
 wire                            emmc_ip_rst;
 wire                            emmc_dat_oe_w;
 
-system_reg  u_system_reg
+emmc_system_reg  u_emmc_system_reg
 (
     .s_axi_aclk                         (io_peripheralClk                   ),
     .s_axi_aresetn                      (~io_peripheralReset                ),
@@ -1716,8 +1716,7 @@ end
 
 emmc_host_controller #(
     .ADMA_DATA_WIDTH                    (ADMA_DATA_WIDTH                    ),
-    .BASE_CLK_FREQ                      (200                                ),   // MHz, the frequency of emmc_base_clk
-    .SHIFT_SEL                          (5'h4                               )
+    .BASE_CLK_FREQ                      (200                                )   // MHz, the frequency of emmc_base_clk
 )
 u_emmc_host_controller
 (
@@ -1818,7 +1817,7 @@ end
 
 assign sdio_dev_rst_n = ~sdio_dev_rst;
 
-system_reg_sdio  u_system_reg_sdio
+sdio_system_reg  u_sdio_system_reg
 (
     .s_axi_aclk                         (io_peripheralClk                      ),
     .s_axi_aresetn                      (~io_peripheralReset                   ),
