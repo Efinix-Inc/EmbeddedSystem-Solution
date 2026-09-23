@@ -95,13 +95,13 @@ void main() {
 	for(n=0;n<total_block_n;n+=MAX_BLK_BUF)
 	{
 		// Erase Block
-		SD_EraseBlk(mmc,cmd,0,MAX_BLK_BUF);
+		SD_EraseBlk(mmc,cmd,n,MAX_BLK_BUF);
 
 		// Get write start time
 		timer_start=clint_getTime(BSP_CLINT);
 
 		// Write to block
-		SD_WRITE_BLOCK(mmc,0,buf,MAX_BLK_BUF);
+		SD_WRITE_BLOCK(mmc,n,buf,MAX_BLK_BUF);
 
 		// Get write finish time
 		timer_end=clint_getTime(BSP_CLINT);
@@ -110,7 +110,7 @@ void main() {
 		rd_timer_start=clint_getTime(BSP_CLINT);
 
 		// Read from block
-		SD_READ_BLOCK(mmc,0,rd_buf,MAX_BLK_BUF);
+		SD_READ_BLOCK(mmc,n,rd_buf,MAX_BLK_BUF);
 
 		//Get read finish time
 		rd_timer_end=clint_getTime(BSP_CLINT);
