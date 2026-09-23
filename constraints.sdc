@@ -32,9 +32,9 @@ create_clock -period 40.000 -name usb_pll_clk_CLKOUT0 [get_ports {usb_pll_clk_CL
 create_clock -period 16.667 -name io_usbClk [get_ports {io_usbClk}]
 create_clock -period 10.000 -name i_pixel_clk [get_ports {i_pixel_clk}]
 create_clock -period 5.000 -name fb [get_ports {fb}]
-create_clock -period 5.000 -name clk_200m [get_ports {clk_200m}]
-create_clock -period 5.000 -name clk_200m_cal [get_ports {clk_200m_cal}]
-create_clock -waveform {1.250 3.750} -period 5.000 -name clk90_200m [get_ports {clk90_200m}]
+create_clock -period 5.000 -name emmc_base_clk [get_ports {emmc_base_clk}]
+create_clock -period 5.000 -name emmc_base_clk_cal [get_ports {emmc_base_clk_cal}]
+create_clock -period 5.000 -name emmc_base_clk_shift [get_ports {emmc_base_clk_shift}]
 create_clock -period 5.000 -name sdio_pll_fb [get_ports {sdio_pll_fb}]
 create_clock -period 5.000 -name sdio_base_clk [get_ports {sdio_base_clk}]
 create_clock -period 5.000 -name sdio_base_clk_cal [get_ports {sdio_base_clk_cal}]
@@ -66,8 +66,8 @@ set_clock_groups -exclusive -group {cam_ck_CLKOUT} \
 -group {jtagCtrl_tck} \
 -group {sdio_base_clk} \
 -group {sdio_base_clk_cal} \
--group {clk_200m} \
--group {clk_200m_cal}
+-group {emmc_base_clk} \
+-group {emmc_base_clk_cal}
 #set_clock_groups -asynchronous -group clk_200m -group clk_200m_cal
 #set_clock_groups -asynchronous -group clk_200m -group io_peripheralClk
 #set_clock_groups -asynchronous -group sdio_base_clk -group sdio_base_clk_cal
