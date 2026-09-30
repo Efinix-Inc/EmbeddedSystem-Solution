@@ -3,7 +3,7 @@
         "-o",
         "gSDHC",
         "--base_path",
-        "/home/cslau/Desktop/Workspace/Gitlab/embedded-solution/Ti375/ip",
+        "/home/kmlau/work/embedded-solution/ip",
         "--vlnv",
         {
             "vendor": "efinixinc.com",
@@ -13,19 +13,19 @@
         }
     ],
     "conf": {
-        "DATA_BUFFER_DEPTH": "512",
+        "DATA_BUFFER_DEPTH": "4096",
         "ADMA_DATA_WIDTH": "128"
     },
     "output": {
         "external_script_reference_design": [],
         "external_source_source": [
-            "gSDHC/gSDHC.v",
+            "gSDHC/gSDHC_define.vh",
             "gSDHC/gSDHC_tmpl.vhd",
             "gSDHC/gSDHC_tmpl.v",
-            "gSDHC/gSDHC_define.vh"
+            "gSDHC/gSDHC.v"
         ]
     },
     "ooc_synthesis": {},
-    "sw_version": "2025.1.110.3.16",
-    "generated_date": "2025-07-29T05:51:55.637565+00:00"
+    "sw_version": "2025.2.288.4.15",
+    "generated_date": "2026-09-23T06:26:03.139270+00:00"
 }

@@ -11,4 +11,4 @@ outflow
 build
 workspace
 SimSOC
-
+*.orig

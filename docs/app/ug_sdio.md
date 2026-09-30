@@ -49,6 +49,8 @@
   - [8.1 Date Register (0x000)](#81-date-register-0x000)
   - [8.2 Test Register (0x004)](#82-test-register-0x004)
   - [8.3 Reset Register (0x008)](#83-reset-register-0x008)
+- [9 Resources](#9-resources)
+
 
 ## 1 Introduction
 
@@ -134,6 +136,7 @@ As shown in the figure below, if the output clock **Clock N** is set to **Dynami
 In the Example Design project **sdio_pll**, the clock output corresponding to sdio_base_clk_cal is **Clock2** and is configured for Dynamic Phase Shift. Therefore, the value of SHIFT_SEL\[4:0\] is 5'b00100 (i.e., 5'h4).
 
 If the clock output corresponding to sdio_base_clk_cal changes, the value of SHIFT_SEL\[4:0\] should be updated accordingly.
+
 ![SHIFT_SEL.png](../images/sdio/SHIFT_SEL.png)
 
 Figure 3. SHIFT_SEL
@@ -146,37 +149,61 @@ The PLL configuration for high-speed modes is backward compatible with lower-spe
 
 When the speed mode is set to **SDR104**, the following requirements apply:
 
-- The frequencies of sdio_base_clk, sdio_base_clk_cal, and sdio_base_clk_shift are 200 MHz.
-- The initial phase of sdio_base_clk_shift is 135°, which serves as the output clock for the sdio_clk pin.
-- sdio_base_clk_cal is configured to support dynamic phase adjustment. According to **Base Register 1 (0x00C) bits \[8:6\]**, each increment of the sdio_pll_SHIFT value delays sdio_base_clk_cal by 45°. In practice, each increment of sdio_pll_SHIFT introduces a delay of 0.5 Fpll cycles to sdio_base_clk_cal.
+1)	The **sdio_base_clk**, **sdio_base_clk_cal**, and **sdio_base_clk_shift** clocks must operate at the same frequency and be configured to **200** MHz. All three clocks must be generated from the same PLL.
+2)	Set the phase offset of **sdio_base_clk** to **0°**. Set the phase offset of **sdio_base_clk_shift** to **135°**, which is used as the output clock for the **sdio_clk** pin.
+3)	Do not define **sdio_base_clk** and **sdio_base_clk_shift** as asynchronous clock groups. Timing paths between these two clocks must be analyzed.
+4)	Configure **sdio_base_clk_cal** with dynamic phase adjustment. According to **Base Register 1 (0x00C), bits [8:6]**, each increment of **sdio_pll_SHIFT** requires **sdio_base_clk_cal** to be delayed by **45°**. In practice, each increment of **sdio_pll_SHIFT** introduces a delay of **0.5 PLL clock cycle** to **sdio_base_clk_cal**. Therefore:
+(45° / 360°) × Tsdio_base_clk_cal = 0.5 × TFpll
+which gives:
+TFpll = Tsdio_base_clk_cal / 4
+Therefore, the PLL frequency is:
+Fpll = 4 × Fsdio_base_clk_cal = 4 × 200 MHz = **800 MHz**
+When automatic mode is used, the PLL frequency may not be configured to **800 MHz**. In this case, enable **Manual Mode** and configure the PLL parameters manually. The following figures provide the recommended PLL settings for different input clock frequencies.
 
-Calculating the Fpll frequency:
+![PLL-104M-1.png](../images/sdio/PLL-104M-1.png)
 
-T_Fpll = T_sdio_base_clk_cal / 4 = 5 ns / 4 = 1.25 ns  
-F_Fpll = 1 / T_Fpll = 1 / 1.25 ns = 800 MHz
+Figure 4. Reference PLL configuration for SDIO (sdio_base_clk = 200 MHz, PLL input clock = 25 MHz)
 
-If **Auto Mode** is used for configuration, Fpll may not be exactly 800 MHz. In this case, the **Manual Mode** switch should be enabled to configure the parameters manually. Refer to the figure below for example settings.
+![PLL-104M-2.png](../images/sdio/PLL-104M-2.png)
 
-![PLL-200M.png](../images/sdio/PLL-200M.png)
+Figure 5. Reference PLL configuration for SDIO (sdio_base_clk = 200 MHz, PLL input clock = 50 MHz)
 
-Figure 4. SDIO PLL Configuration Reference (sdio_base_clk = 200 MHz)
+![PLL-104M-3.png](../images/sdio/PLL-104M-3.png)
+
+Figure 6. Reference PLL configuration for SDIO (sdio_base_clk = 200 MHz, PLL input clock = 100 MHz)
+
+![PLL-104M-4.png](../images/sdio/PLL-104M-4.png)
+
+Figure 7. Reference PLL configuration for SDIO (sdio_base_clk = 200 MHz, PLL input clock = 200 MHz)
 
 #### 4.2.2 DDR50 / SDR25 Modes
 
 When the speed mode is set to DDR50 or SDR25, the following requirements apply:
 
-- The frequencies of **sdio_base_clk**, **sdio_base_clk_cal**, and **sdio_base_clk_shift** are 50 MHz.
-- The initial phase of **sdio_base_clk_shift** is 135°, which is used as the output clock for the SDIO_CLK pin.
-- **sdio_base_clk_cal** should be configured to support dynamic phase adjustment.  
-   Given that  
-   **T<sub>Fpll</sub> = T<sub>sdio_base_clk_cal</sub> / 4 = 20 ns / 4 = 5 ns**,  
-   the frequency of **Fpll** is 200 MHz.
+1)	The frequencies of **sdio_base_clk**, **sdio_base_clk_cal**, and **sdio_base_clk_shift** must be identical and configured to **50 MHz**. All three clocks must be generated from the same PLL.
+2)	Set the phase offset of **sdio_base_clk** to **0°**. Set the phase offset of **sdio_base_clk_shift** to **135°**, which is used as the output clock for the **sdio_clk** pin.
+3)	Do not define **sdio_base_clk** and **sdio_base_clk_shift** as asynchronous clock groups. Timing paths between these two clocks must be analyzed.
+4)	Configure **sdio_base_clk_cal** with a dynamically adjustable phase. The PLL frequency shall satisfy:
+Fpll = 4 × Fsdio_base_clk_cal = 4 × 50 MHz = 200 MHz
+When the PLL is configured in **Auto Mode**, the generated PLL frequency may not be **200 MHz**. In this case, enable **Manual Mode** and manually configure the PLL parameters. Reference PLL configurations for different input clock frequencies are provided in the following figures.
 
-Enable **Manual Mode** and refer to the figure below to manually configure the parameters.
 
-![PLL-50M.png](../images/sdio/PLL-50M.png)
+![PLL-50M-1.png](../images/sdio/PLL-50M-1.png)
 
-Figure 5. SDIO PLL Configuration Reference (sdio_base_clk = 50 MHz)
+Figure 8. Reference PLL configuration for SDIO (sdio_base_clk = 50 MHz, PLL input clock = 25 MHz)
+
+![PLL-50M-2.png](../images/sdio/PLL-50M-2.png)
+
+Figure 9. Reference PLL configuration for SDIO (sdio_base_clk = 50 MHz, PLL input clock = 50 MHz)
+
+![PLL-50M-3.png](../images/sdio/PLL-50M-3.png)
+
+Figure 10. Reference PLL configuration for SDIO (sdio_base_clk = 50 MHz, PLL input clock = 100 MHz)
+
+![PLL-50M-4.png](../images/sdio/PLL-50M-4.png)
+
+Figure 11. Reference PLL configuration for SDIO (sdio_base_clk = 50 MHz, PLL input clock = 200 MHz)
+
 
 ## 5 Interface Description
 ### 5.1 System Signals
@@ -520,7 +547,7 @@ Table 3: Register Access Attributes
 
 ![ExamDesign.png](../images/sdio/ExamDesign.png)
 
-Figure 6. Example Design Block Diagram
+Figure 12. Example Design Block Diagram
 
 The architecture of the SDIO example design is shown in the figure above.
 
@@ -553,3 +580,11 @@ The architecture of the SDIO example design is shown in the figure above.
 | 3        | 1'b0            | SDIO device reset signal (active high) | R/W        |
 | 2        | 1'b0            | SDIO Module reset signal (active high) | R/W        |
 | 1:0      | \-              | Reserved                               | \-         |
+
+## 9 Resources
+
+When **ADMA_DATA_WIDTH** is configured to **128**, **BUFFER_BLOCK_SIZE** to **2048**, and **BUFFER_BLOCK_COUNT** to **4**, the resource utilization of the SDIO Host Controller is shown in the table below:
+
+| FPGA | Logic Elements (logic, adders, flip-flops, etc.) | Memory Blocks | DSP Blocks | Efinity® Version |
+| :--- | :--- | :--- | :--- | :--- |
+| Ti375C529 C4 | 8186 / 362880 (2.26%) | 18 | 0 | 2025.2 |

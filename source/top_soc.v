@@ -401,12 +401,12 @@ output   wire       cam_d1_RST,
 
 `ifdef ENABLE_EMMC
 // EMMC
-input                           clk_200m,
-input                           clk_200m_cal,
+input                           emmc_base_clk,
+input                           emmc_base_clk_cal,
 input                           emmc_pll_locked,
-output  wire    [2:0]           pll_SHIFT,          
-output  wire    [4:0]           pll_SHIFT_SEL,      
-output  wire                    pll_SHIFT_ENA,
+output  wire    [2:0]           emmc_pll_SHIFT,          
+output  wire    [4:0]           emmc_pll_SHIFT_SEL,      
+output  wire                    emmc_pll_SHIFT_ENA,
 output  wire                    emmc_rstn,
 output  wire                    emmc_clk_HI,
 output  wire                    emmc_clk_LO,
@@ -1680,7 +1680,7 @@ wire                            emmc_dev_rst;
 wire                            emmc_ip_rst;
 wire                            emmc_dat_oe_w;
 
-system_reg  u_system_reg
+emmc_system_reg  u_emmc_system_reg
 (
     .s_axi_aclk                         (io_peripheralClk                   ),
     .s_axi_aresetn                      (~io_peripheralReset                ),
@@ -1713,24 +1713,23 @@ assign emmc_dat_OE                = {8{emmc_dat_oe_w}};
 reg emmc_rst_sync;
 
 // Fix for timing issue, reduce combo path
-always @(posedge clk_200m) begin
+always @(posedge io_peripheralClk) begin
     emmc_rst_sync <= io_peripheralReset | emmc_ip_rst;
 end
 
 emmc_host_controller #(
     .ADMA_DATA_WIDTH                    (ADMA_DATA_WIDTH                    ),
-    .BASE_CLK_FREQ                      (200                                ),   // MHz, the frequency of emmc_base_clk
-    .SHIFT_SEL                          (5'h4                               )
+    .BASE_CLK_FREQ                      (200                                )   // MHz, the frequency of emmc_base_clk
 )
 u_emmc_host_controller
 (
 //eMMC interface
-    .emmc_base_clk                      (clk_200m                           ),
-    .emmc_base_clk_cal                  (clk_200m_cal                       ),
+    .emmc_base_clk                      (emmc_base_clk                      ),
+    .emmc_base_clk_cal                  (emmc_base_clk_cal                  ),
 //--To FPGA PLL 
-    .pll_SHIFT                          (pll_SHIFT                          ),
-    .pll_SHIFT_SEL                      (pll_SHIFT_SEL                      ),
-    .pll_SHIFT_ENA                      (pll_SHIFT_ENA                      ),
+    .pll_SHIFT                          (emmc_pll_SHIFT                     ),
+    .pll_SHIFT_SEL                      (emmc_pll_SHIFT_SEL                 ),
+    .pll_SHIFT_ENA                      (emmc_pll_SHIFT_ENA                 ),
     .emmc_rst                           (emmc_rst_sync                      ),
     .emmc_int                           (emmc_int                           ),
     .emmc_clk_HI                        (emmc_clk_HI                        ),
@@ -1821,7 +1820,7 @@ end
 
 assign sdio_dev_rst_n = ~sdio_dev_rst;
 
-system_reg_sdio  u_system_reg_sdio
+sdio_system_reg  u_sdio_system_reg
 (
     .s_axi_aclk                         (io_peripheralClk                      ),
     .s_axi_aresetn                      (~io_peripheralReset                   ),
