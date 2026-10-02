@@ -15,6 +15,12 @@
 #define EMMC_RCA			2
 #define EMMC_BLOCK_LEN		512
 #define EMMC_STEP           ((EMMC_LARGE_DENSITY == 0) ? 1 : 512ULL)
+#define EMMC_SAFE_TUNING	0
+#define EMMC_TUNING_READ_READY_TIMEOUT	1000
+#define EMMC_MAX_TUNING_SAMPLE_CNT	    64
+#define EMMC_BASE_CLK_CAL_PORT          2    // Fixed to 2 
+#define EMMC_BASE_CLK_SHIFT_PORT        3    // Fixed to 3
+#define EMMC_SAMPLE_LAST_HALF           1    // 0 / 1
 
 /************************** Main Header File ***************************/
 #define DEBUG_PRINTF_EN   	1
@@ -33,6 +39,8 @@
 #define INT_BLOCK_GAP_EVENT       	0x4
 #define INT_BUFFER_WRITE_READY    	0x10
 #define INT_BUFFER_READ_READY     	0x20
+#define INT_CARD_INSERTION        	0x40
+#define INT_CARD_REMOVAL          	0x80
 #define INT_COMMAND_TIMEOUT_ERROR 	0x10000
 #define INT_COMMAND_CRC_ERROR     	0x20000
 #define INT_COMMAND_END_BIT_ERROR 	0x40000

@@ -717,9 +717,8 @@ free_buffers:
 }
 
 int test_entire_emmc(struct mmc *mmc, struct mmc_cmd *cmd, u32 dma, enum bus_speed_mode transfer_mode, enum data_bus_width bus_width,
-					 u32 clk_freq, u32 len_mode, u32 fixed_bk_num, enum erase_type erase_mode, u32 whole_space_test_num)
+					 u32 clk_freq, u32 len_mode, u32 fixed_bk_num, enum erase_type erase_mode, u32 whole_space_test_num, u32 test_size_mb)
 {
-	const u32 test_size_mb = 487; //MB, max 487MB
 	u64 uda_capacity = uda_density_calculate(mmc);
 	u32 address = 0x0;
 	u32 total_cycle = 0;
