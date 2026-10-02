@@ -55,6 +55,7 @@
 #define REG_INTERRUPT_STATUS_ENABLE				0x0134
 #define REG_INTERRUPT_SIGNAL_ENABLE				0x0138
 #define REG_HOST_CAPABILITIES					0x0140
+#define REG_HOST_ADJUSTMENT                     0x0144
 #define REG_ADMA_SYSTEM_ADDR0					0x0158
 #define REG_ADMA_SYSTEM_ADDR1					0x015C
 
@@ -138,13 +139,14 @@ static void efx_emmc_retrieve_ext_csd(struct mmc *mmc, struct mmc_cmd *cmd);
 static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, enum bus_speed_mode mode, u32 bus_width, u32 clk_mhz, u32 driver_type);
 static void efx_emmc_config_hs_timing(struct mmc *mmc, struct mmc_cmd *cmd, u32 driver_strength, u32 timing_interface);
 static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width);
-static void efx_emmc_generate_pulse(u32 sample_cnt, u32 pll_shift);
+static void efx_emmc_generate_pulse(u32 sample_cnt, u32 pll_shift, u32 clk_port);
 static int efx_emmc_block_read(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *buf, u32 dma_en);
 static int efx_emmc_block_write(struct mmc *mmc, u32 block_cnt, u32 addr, u32 *buf, u32 dma_enable);
 static int efx_emmc_erase(struct mmc *mmc, struct mmc_cmd *cmd, u32 start_addr, u32 erase_unit_num);
 static int efx_emmc_trim(struct mmc *mmc, struct mmc_cmd *cmd, u32 start_addr, u32 erase_unit_num);
 static int erase_unit_size_calculate (struct mmc *mmc, enum erase_type type);
 static u64 uda_density_calculate(struct mmc *mmc);
+static void efx_emmc_config_emmc_base_clk_shift(u32 pll_shift);
 
 /*******************************************************************************
 *
@@ -260,7 +262,6 @@ static int sd_ctrl_cmd(struct mmc *mmc, struct mmc_cmd *cmd)
 			bsp_uDelay(1);
 		}
 	}
-
 	time_out = 0;
 	while(1) {
 		if(IntPtr.command_complete == 0x1) {
@@ -737,6 +738,9 @@ static int efx_emmc_init(struct mmc *mmc, struct mmc_cmd *cmd)
 	mmc->max_block_len = (reg_read(REG_HOST_CAPABILITIES) >> 16) & 0xffff;
 	bsp_printf_full("EMMC max block length: %d bytes\r\n", mmc->max_block_len);
 
+	efx_emmc_generate_pulse(0, 0, EMMC_BASE_CLK_CAL_PORT); // sample_cnt=0   emmc_base_clk_cal 0°
+	efx_emmc_config_emmc_base_clk_shift(2); // emmc_base_clk_shift 90°
+
 	efx_emmc_config_clk(mmc, 400);
 
 	efx_emmc_config_ip_bus_mode(0x0, 0x0);
@@ -910,6 +914,7 @@ static void efx_emmc_retrieve_csd(struct mmc *mmc, struct mmc_cmd *cmd)
 
 static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, enum bus_speed_mode mode, u32 bus_width, u32 clk_mhz, u32 driver_type)
 {
+	int ret = 0;
 	u32 card_is_locked = 0;
 
 	efx_emmc_config_clk(mmc, 400);
@@ -986,15 +991,45 @@ static int efx_emmc_switch_bus_speed_mode(struct mmc *mmc, struct mmc_cmd *cmd, 
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x1);
 		efx_emmc_config_bus_mode(mmc, cmd, sdr, bus_width);
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x2);
-		efx_emmc_config_clk(mmc, 1000 * clk_mhz);
-		efx_emmc_tuning(mmc, cmd, bus_width);
+		efx_emmc_config_emmc_base_clk_shift(3); // emmc_base_clk_shift 135°
+		if (EMMC_SAFE_TUNING == 1) {
+			for (int i = 0; i < 6; i++) {
+				if (i == 0) {
+					efx_emmc_config_clk(mmc, 1000 * clk_mhz);
+				} else {
+					efx_emmc_config_clk(mmc, 1000 * clk_mhz / (i * 2));
+				}
+				ret = efx_emmc_tuning(mmc, cmd, bus_width);
+				if (ret != -2) {
+					break;
+				}
+			}
+		} else {
+			efx_emmc_config_clk(mmc, 1000 * clk_mhz);
+			efx_emmc_tuning(mmc, cmd, bus_width);
+		}
 	} else if (mode == hs400) {
 		bsp_printf_full("Switch to HS400 mode\r\n");
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x1);
 		efx_emmc_config_bus_mode(mmc, cmd, ddr, bus_width);
 		efx_emmc_config_hs_timing(mmc, cmd, driver_type, 0x3);
-		efx_emmc_config_clk(mmc, 1000 * clk_mhz);
-		efx_emmc_tuning(mmc, cmd, bus_width);
+		efx_emmc_config_emmc_base_clk_shift(2); // emmc_base_clk_shift 90°
+		if (EMMC_SAFE_TUNING == 1) {
+			for (int i = 0; i < 6; i++) {
+				if (i == 0) {
+					efx_emmc_config_clk(mmc, 1000 * clk_mhz);
+				} else {
+					efx_emmc_config_clk(mmc, 1000 * clk_mhz / (i * 2));
+				}
+				ret = efx_emmc_tuning(mmc, cmd, bus_width);
+				if (ret != -2) {
+					break;
+				}
+			}
+		} else {
+			efx_emmc_config_clk(mmc, 1000 * clk_mhz);
+			efx_emmc_tuning(mmc, cmd, bus_width);
+		}
 	} else if (mode == hssdr) {
 		bsp_printf_full("Error: HS SDR mode not supported yet\r\n");
 		return -1;
@@ -1159,13 +1194,21 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 	u32 block_size = 0;
 	u32 read_count = 0;
 	u32 pattern = 0;
-	int result_map[mmc->clk_div][pll_shift_num];
-	u32 read_ready = 0;
 	u32 pattern_mismatch = 0;
 	u32 optimal_sample_cnt = 0;
 	u32 optimal_pll_shift = 0;
 	u32 map_all_zero = 1;
 	u32 tuning_time = 1;
+	u32 ddr_mode = 0;
+
+	if ((mmc->clk_div == 0) || (mmc->clk_div > EMMC_MAX_TUNING_SAMPLE_CNT)) {
+		bsp_printf_full("Error: Invalid clk_div for tuning: %d\r\n", mmc->clk_div);
+		return -1;
+	}
+
+	int result_map[mmc->clk_div][pll_shift_num];
+
+	ddr_mode = reg_is_bit_set(REG_HOST_POWER_BLOCKGAP_WAKEUP_CONTROL, 3);
 
 	memset(result_map, 0, sizeof(result_map));
 
@@ -1192,28 +1235,34 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 			for (int pll_shift = 0; pll_shift < pll_shift_num; pll_shift++) {
 				bsp_printf_full("Tuning #%d: sample_cnt 0x%x pll_shift 0x%x\r\n", tuning_cnt, sample_cnt, pll_shift);
 				IntPtr.data_crc_error = 0;
+				IntPtr.command_crc_error = 0;
 				pattern_mismatch = 0;
-				efx_emmc_generate_pulse(sample_cnt, pll_shift);
+				efx_emmc_generate_pulse(sample_cnt, pll_shift, EMMC_BASE_CLK_CAL_PORT);
 
 				reg_write((block_cnt << 16) | (block_size), REG_BLOCK_SIZE_COUNT);
 				reg_write(0x0, REG_ARGUMENT1);
 				reg_write(0x153a0010, REG_TRANFER_MODE_COMMAND);
 
-				while (1) {
+				for (int timeout = 0; timeout < EMMC_TUNING_READ_READY_TIMEOUT; timeout++) {
 					if (reg_is_bit_set(REG_PRESENT_STATE, 11)) {
 						break;
-					} else {
-						bsp_uDelay(200);
-	//					bsp_printf_full("sample_cnt %d pll_shift %d data not yet ready\r\n", sample_cnt, pll_shift);
 					}
+					bsp_uDelay(200);
 				}
 
-				for (int i = 0; i < read_count; i++) {
-					pattern = reg_read(REG_BUFFER_DATA_PORT);
-					if (((bus_width == 0x1) && (pattern != tuning_block_pattern_4b_mode[i])) ||
-					    ((bus_width == 0x2) && (pattern != tuning_block_pattern_8b_mode[i])) ||
-					     (IntPtr.data_crc_error == 0x1)) {
-						pattern_mismatch = 1;
+				if (reg_is_bit_cleared(REG_PRESENT_STATE, 11)) {
+					pattern_mismatch = 1;
+					bsp_printf_full("Error: Tuning data not ready, sample_cnt 0x%x pll_shift 0x%x\r\n", sample_cnt, pll_shift);
+				} else {
+					for (int i = 0; i < read_count; i++) {
+						pattern = reg_read(REG_BUFFER_DATA_PORT);
+						if (((bus_width == 0x1) && (pattern != tuning_block_pattern_4b_mode[i])) ||
+						    ((bus_width == 0x2) && (pattern != tuning_block_pattern_8b_mode[i])) ||
+						     (IntPtr.data_crc_error == 0x1) || (IntPtr.command_crc_error == 0x1) ||
+							 ((EMMC_SAMPLE_LAST_HALF == 1) && (ddr_mode == 0) && (reg_is_bit_set(REG_HOST_ADJUSTMENT, 8) == 0 || reg_is_bit_set(REG_HOST_ADJUSTMENT, 9) == 0)) ||
+							 ((EMMC_SAMPLE_LAST_HALF == 0) && (ddr_mode == 0) && (reg_is_bit_set(REG_HOST_ADJUSTMENT, 8) == 1 || reg_is_bit_set(REG_HOST_ADJUSTMENT, 10) == 1))) {
+							pattern_mismatch = 1;
+						}
 					}
 				}
 
@@ -1227,6 +1276,7 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 		}
 	}
 	IntPtr.data_crc_error = 0;
+	IntPtr.command_crc_error = 0;
 
 	bsp_printf_full("Tuning map:\r\n");
 	for (int i = 0; i < mmc-> clk_div; i++) {
@@ -1241,63 +1291,76 @@ static int efx_emmc_tuning(struct mmc *mmc, struct mmc_cmd *cmd, u32 bus_width)
 
 		if (map_all_zero) {
 			bsp_printf_full("Error: No '1' detected in entire tuning map\r\n");
-			return -1;
+			return -2;
 		}
 
 	int rows = mmc->clk_div; // Number of rows
-	int cols = pll_shift_num; // Number of columns
+	int cols = pll_shift_num * mmc->clk_div; // Number of columns
 
-	// Step 1: Find rows with the longest consecutive 1s
-	int result[rows][1];
-	int ret = 0;
+	int result_map_pp[cols];
+	int result_map_ext[2 * cols];
 
-	ret = find_rows_with_longest_ones(rows, cols, result_map, result);
-
-	if (ret) {
-	bsp_printf_full("Error: All sample_cnt and pll_shift combinations failed\r\n");
-	return -1;
-	}
-
-	// Print the result array
-	bsp_printf_full("Result array:\r\n");
 	for (int i = 0; i < rows; i++) {
-	bsp_printf_full("%d\r\n", result[i][0]);
+		for (int j = 0; j < pll_shift_num; j++) {
+			result_map_pp[i * pll_shift_num + j] = result_map[i][j];
+		}
 	}
 
-	// Step 2: Find the center row of the result array
-	int center_row = find_center_row(rows, result);
+	for (int i = 0; i < 2 * cols; i++) {
+		if (i < cols) {
+			result_map_ext[i] = result_map_pp[i];
+		} else {
+			result_map_ext[i] = result_map_pp[i - cols];
+		}
+	}
 
-	if (center_row != -1) {
-	optimal_sample_cnt = center_row;
-	bsp_printf_full("Optimal sample count: %d\r\n", optimal_sample_cnt);
+	int center_col = find_center_of_row(2 * cols, result_map_ext);
+	int first_col  = find_first_of_row(2 * cols, result_map_ext);
+	int last_col   = find_last_of_row(2 * cols, result_map_ext);
+    int sel_col    = center_col;
 
-	// Step 3: Find the center of the longest consecutive 1s in the original array
-	int center_col = find_center_of_row(center_row, cols, result_map[center_row]);
+//    if(ddr_mode == 0) {
+//    	sel_col = (EMMC_SAMPLE_LAST_HALF == 1) ? first_col : last_col;
+//    } else {
+//    	sel_col = center_col;
+//    }
 
-	if (center_col != -1) {
-		optimal_pll_shift = center_col;
+	if (sel_col != -1) {
+		optimal_sample_cnt = (sel_col / pll_shift_num < mmc->clk_div) ? sel_col / pll_shift_num : (sel_col / pll_shift_num) - mmc->clk_div;
+		optimal_pll_shift = sel_col % pll_shift_num;
+
+		bsp_printf_full("Optimal sample count: %d\r\n", optimal_sample_cnt);
 		bsp_printf_full("Optimal PLL shift: 0x%.1x\r\n", optimal_pll_shift);
 	} else {
-		bsp_printf_full("No sequence of 1s found in row %d.\r\n", center_row);
-	}
-	} else {
-	bsp_printf_full("No sequence of 1s found.\r\n");
+		bsp_printf_full("No sequence of 1s found.\r\n");
+		return -1;
 	}
 
-	efx_emmc_generate_pulse(optimal_sample_cnt, optimal_pll_shift);
+	efx_emmc_generate_pulse(optimal_sample_cnt, optimal_pll_shift, EMMC_BASE_CLK_CAL_PORT);
 
 	//test_tuning_algo();
 	return 0;
 }
 
-static void efx_emmc_generate_pulse(u32 sample_cnt, u32 pll_shift)
+static void efx_emmc_generate_pulse(u32 sample_cnt, u32 pll_shift, u32 clk_port)
 {
+	u32 pll_shift_sel = 0;
 	u32 pll_setting = 0;
-	pll_setting = (sample_cnt << 16) | (pll_shift << 6);
+
+	pll_shift_sel = 1 << clk_port;
+	pll_setting = (sample_cnt << 16) | (pll_shift << 6) | (pll_shift_sel << 1);
 	reg_write(pll_setting | 0x0, REG_BASE_REGISTER1);
 	reg_write(pll_setting | 0x1, REG_BASE_REGISTER1);
 	reg_write(pll_setting | 0x0, REG_BASE_REGISTER1);
 	bsp_uDelay(50*1000);
+}
+
+static void efx_emmc_config_emmc_base_clk_shift(u32 pll_shift)
+{
+	u32 sample_cnt_value = 0;
+
+	sample_cnt_value = (reg_read(REG_BASE_REGISTER1) >> 16) & 0xFFFF;
+	efx_emmc_generate_pulse(sample_cnt_value, pll_shift, EMMC_BASE_CLK_SHIFT_PORT);
 }
 
 static u64 uda_density_calculate(struct mmc *mmc)

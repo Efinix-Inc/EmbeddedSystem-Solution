@@ -75,12 +75,12 @@ void main()
 	u32 erase_mode = trim;  // erase/trim
 	u32 speed_mode = hs400;  // hs400/hs200
 	u32 bus_width = x8;      // hs200:x4/x8  hs400:x8
+	u32 test_size_mb = 8;    //MB, max 487MB
 
 	#if TEST_USER == TEST_USER_ENTIRE
 		u32 whole_space_test_num = 1;
-		test_entire_emmc(mmc, cmd, dma_mode, speed_mode, bus_width, clk_freq, len_mode, fixed_bk_num, erase_mode, whole_space_test_num);
+		test_entire_emmc(mmc, cmd, dma_mode, speed_mode, bus_width, clk_freq, len_mode, fixed_bk_num, erase_mode, whole_space_test_num, test_size_mb);
 	#elif TEST_USER == TEST_USER_SINGLE
-		u32 test_size_mb = 8; //MB, max 487MB
 		u32 start_addr = 100*(erase_unit_size_calculate(mmc,erase_mode)/EMMC_STEP);
 		u32 erase_en = (((start_addr * EMMC_STEP) % erase_unit_size_calculate(mmc,erase_mode)) != 0x0)? 0:1;
 		double write_speed = 0.0;

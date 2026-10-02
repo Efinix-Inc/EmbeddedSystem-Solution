@@ -114,7 +114,7 @@ int find_center_row(int rows, int result[rows][1])
     return -1; // No sequence of 1s found
 }
 
-int find_center_of_row(int row, int cols, int arr[cols])
+int find_center_of_row(int cols, int arr[cols])
 {
     int max_length = 0;       // Length of the longest sequence of consecutive 1s
     int max_start = -1;       // Start index of the longest sequence
@@ -155,6 +155,84 @@ int find_center_of_row(int row, int cols, int arr[cols])
             // If the length is odd, return the middle column
             return (max_start + max_end) / 2;
         }
+    }
+
+    return -1; // No sequence of 1s found
+}
+
+int find_first_of_row(int cols, int arr[cols])
+{
+    int max_length = 0;       // Length of the longest sequence of consecutive 1s
+    int max_start = -1;       // Start index of the longest sequence
+    int max_end = -1;         // End index of the longest sequence
+
+    int current_length = 0;   // Length of the current sequence of consecutive 1s
+    int current_start = -1;   // Start index of the current sequence
+
+    for (int j = 0; j < cols; j++) {
+        if (arr[j] == 1) {
+            if (current_length == 0) {
+                current_start = j; // Start of a new sequence
+            }
+            current_length++;
+        } else {
+            if (current_length > max_length) {
+                max_length = current_length;
+                max_start = current_start;
+                max_end = j - 1;
+            }
+            current_length = 0; // Reset the current sequence
+        }
+    }
+
+    // Check the last sequence
+    if (current_length > max_length) {
+        max_length = current_length;
+        max_start = current_start;
+        max_end = cols - 1;
+    }
+
+    if (max_start != -1 && max_end != -1) {
+        return max_start;
+    }
+
+    return -1; // No sequence of 1s found
+}
+
+int find_last_of_row(int cols, int arr[cols])
+{
+    int max_length = 0;       // Length of the longest sequence of consecutive 1s
+    int max_start = -1;       // Start index of the longest sequence
+    int max_end = -1;         // End index of the longest sequence
+
+    int current_length = 0;   // Length of the current sequence of consecutive 1s
+    int current_start = -1;   // Start index of the current sequence
+
+    for (int j = 0; j < cols; j++) {
+        if (arr[j] == 1) {
+            if (current_length == 0) {
+                current_start = j; // Start of a new sequence
+            }
+            current_length++;
+        } else {
+            if (current_length > max_length) {
+                max_length = current_length;
+                max_start = current_start;
+                max_end = j - 1;
+            }
+            current_length = 0; // Reset the current sequence
+        }
+    }
+
+    // Check the last sequence
+    if (current_length > max_length) {
+        max_length = current_length;
+        max_start = current_start;
+        max_end = cols - 1;
+    }
+
+    if (max_start != -1 && max_end != -1) {
+        return max_end;
     }
 
     return -1; // No sequence of 1s found
@@ -226,7 +304,7 @@ int test_tuning_algo(void)
     	bsp_printf_full("Center row of the maximum consecutive 1s: %d\r\n", center_row);
 
         // Step 3: Find the center of the longest consecutive 1s in the original array
-        int center_col = find_center_of_row(center_row, cols, arr[center_row]);
+        int center_col = find_center_of_row(cols, arr[center_row]);
 
         if (center_col != -1) {
         	bsp_printf_full("Center column of the longest consecutive 1s in row %d: %d\r\n", center_row, center_col);
