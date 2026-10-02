@@ -12,3 +12,7 @@ build
 workspace
 SimSOC
 *.orig
+jtag_daemon.cfg
+co_debug
+ideconfig.properties
+
