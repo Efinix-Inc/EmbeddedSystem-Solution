@@ -1176,7 +1176,7 @@ tseCore  #(
     .dma_rx_rst              ( dma_rx_rst ),
     .dma_tx_rst              ( dma_tx_rst ),
     .dma_tx_descriptorUpdate ( dma_tx_descriptorUpdate ),
-    .dma_interrupts          ( dma_interrupts ),
+    .dma_interrupts          ( ),
     .eth_speed               ( eth_speed ),
     .rgmii_txd_HI            ( rgmii_txd_HI ),
     .rgmii_txd_LO            ( rgmii_txd_LO ),
